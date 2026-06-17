@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Ya Spa">
+  <defs>
+    <linearGradient id="ysC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E45C86"/><stop offset="1" stop-color="#9E2B52"/></linearGradient>
+    <linearGradient id="ysM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F285A6"/><stop offset="1" stop-color="#C73E6B"/></linearGradient>
+  </defs>
+  <g>
+    <!-- outer petals -->
+    <path d="M60 100 C 36 74 40 40 60 16 C 80 40 84 74 60 100 Z" transform="rotate(-54 60 100)" fill="#F7AEC4"/>
+    <path d="M60 100 C 36 74 40 40 60 16 C 80 40 84 74 60 100 Z" transform="rotate(54 60 100)" fill="#F7AEC4"/>
+    <!-- mid petals -->
+    <path d="M60 100 C 38 76 42 42 60 18 C 78 42 82 76 60 100 Z" transform="rotate(-27 60 100)" fill="url(#ysM)"/>
+    <path d="M60 100 C 38 76 42 42 60 18 C 78 42 82 76 60 100 Z" transform="rotate(27 60 100)" fill="url(#ysM)"/>
+    <!-- center petal -->
+    <path d="M60 102 C 40 78 44 40 60 14 C 76 40 80 78 60 102 Z" fill="url(#ysC)"/>
+    <!-- dewdrop highlight -->
+    <circle cx="60" cy="58" r="7" fill="#FFF5F7" opacity="0.9"/>
+  </g>
+</svg>

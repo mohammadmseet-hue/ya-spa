@@ -512,11 +512,66 @@ html[lang="en"] .display { font-optical-sizing: auto; font-variation-settings: "
 .reveal.d3 { transition-delay: .24s; } .reveal.d4 { transition-delay: .32s; }
 
 /* =========================================================================
+   WhatsApp ordering · cart · add buttons (added in v2)
+   ========================================================================= */
+.brand .mark { width: 46px; height: 46px; }
+
+.btn-wa { background: linear-gradient(135deg, #2BD46E, #1DA851); color: #fff; box-shadow: 0 8px 22px rgba(29,168,81,.28), inset 0 1px 0 rgba(255,255,255,.2); }
+.btn-wa:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(29,168,81,.34); filter: brightness(1.03); }
+.btn-wa svg { width: 1.25em; height: 1.25em; }
+
+/* Add-to-order button on cards */
+.btn-add { margin-top: 1rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  font-weight: 700; font-size: .92rem; padding: .72rem 1rem; border-radius: var(--r-pill);
+  background: var(--pink-100); color: var(--pink-700); transition: .22s var(--ease); }
+.btn-add .add-plus { font-size: 1.15em; line-height: 1; transition: transform .25s; }
+.btn-add:hover { background: var(--pink-200); transform: translateY(-2px); }
+.btn-add.added { background: var(--success-600); color: #fff; }
+.btn-add.added .add-plus { transform: rotate(45deg); }
+
+/* Massage grid (6 cards) */
+.massage-grid { grid-template-columns: repeat(3, 1fr); }
+
+/* Women-only assurance note */
+.women-note { margin-top: 2.4rem; display: flex; align-items: center; gap: .8rem; justify-content: center;
+  max-width: 760px; margin-inline: auto; text-align: center; background: var(--pink-100); color: var(--pink-700);
+  border: 1px solid var(--pink-200); border-radius: var(--r-pill); padding: .9rem 1.5rem; font-weight: 600; font-size: .95rem; }
+.women-note svg { width: 1.4em; height: 1.4em; flex: none; color: var(--pink-600); }
+
+/* Estimator category label (on dark) */
+.est-cat { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pink-300); opacity: .8; margin: 1rem 0 .2rem; }
+.est-cat:first-child { margin-top: 0; }
+.pay-note { margin-top: .8rem; font-size: .78rem; color: var(--pink-200); opacity: .75; text-align: center; }
+
+/* Order CTA row */
+.order-cta { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; margin-top: 1.8rem; }
+
+/* Sticky cart bar */
+.cartbar { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 70;
+  background: rgba(255,252,250,.96); backdrop-filter: blur(14px); border-top: 1px solid var(--pink-200);
+  box-shadow: 0 -8px 30px rgba(158,43,82,.12); padding-block: .7rem; animation: cartUp .4s var(--ease-out); }
+@keyframes cartUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.cartbar-in { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.cartbar-info { display: flex; align-items: baseline; gap: .7rem; }
+.cartbar-count { background: var(--pink-600); color: #fff; font-weight: 700; font-size: .82rem; padding: .25rem .7rem; border-radius: var(--r-pill); }
+.cartbar-total { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--ink-900); }
+
+/* Floating WhatsApp */
+.wa-float { position: fixed; inset-inline-end: 24px; inset-block-end: 24px; z-index: 80;
+  width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #2BD46E, #1DA851);
+  display: grid; place-items: center; box-shadow: 0 10px 26px rgba(29,168,81,.4); transition: .25s; }
+.wa-float svg { width: 30px; height: 30px; color: #fff; }
+.wa-float::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 0 rgba(43,212,110,.5); animation: waPulse 2.6s infinite; }
+@keyframes waPulse { 0%{box-shadow:0 0 0 0 rgba(43,212,110,.5)} 70%{box-shadow:0 0 0 16px rgba(43,212,110,0)} 100%{box-shadow:0 0 0 0 rgba(43,212,110,0)} }
+.wa-float:hover { transform: scale(1.08); }
+body.cart-open .wa-float, body.cart-open .totop { inset-block-end: 92px; }
+
+/* =========================================================================
    Responsive
    ========================================================================= */
 @media (max-width: 1040px) {
   .why-grid { grid-template-columns: repeat(2, 1fr); }
-  .svc-grid { grid-template-columns: repeat(2, 1fr); }
+  .svc-grid, .massage-grid { grid-template-columns: repeat(2, 1fr); }
   .trust-grid { grid-template-columns: repeat(3, 1fr); }
   .steps { grid-template-columns: repeat(2, 1fr); }
   .step:not(:last-child)::after { display: none; }
@@ -538,7 +593,7 @@ html[lang="en"] .display { font-optical-sizing: auto; font-variation-settings: "
   .pkg.featured:hover { transform: translateY(-8px); }
 }
 @media (max-width: 560px) {
-  .why-grid, .svc-grid, .trust-grid, .steps, .safety-grid, .footer-grid { grid-template-columns: 1fr; }
+  .why-grid, .svc-grid, .massage-grid, .trust-grid, .steps, .safety-grid, .footer-grid { grid-template-columns: 1fr; }
   .cta-form { flex-direction: column; }
   .cta-form .btn { width: 100%; }
   .footer-bottom { flex-direction: column; }
