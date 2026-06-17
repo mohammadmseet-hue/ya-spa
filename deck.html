@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ya Spa · Investor Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 12c8 14 26 14 26 30S58 80 50 88C42 80 24 58 24 42S42 26 50 12z' fill='%23E45C86'/%3E%3Ccircle cx='50' cy='46' r='9' fill='%23FFF5F7'/%3E%3C/svg%3E">
+<style>
+:root{
+  --pink-100:#FDE8EE;--pink-200:#FBD0DD;--pink-300:#F7AEC4;--pink-400:#F285A6;
+  --pink-500:#E45C86;--pink-600:#C73E6B;--pink-700:#9E2B52;
+  --gold-300:#E9D8B8;--gold-500:#C9A24B;--mauve:#7A5C7E;
+  --ink:#1a0d14;--ink-2:#2a1620;--cream:#FFFCFA;
+  --font-d:"Fraunces",Georgia,serif;--font-b:"IBM Plex Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:var(--font-b);background:var(--ink);color:#fff;overflow:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-d);font-weight:700;line-height:1.08;letter-spacing:-.02em}
+
+/* deck shell */
+.deck{height:100vh;width:100vw;position:relative}
+.slides{display:flex;height:100%;transition:transform .7s cubic-bezier(.7,0,.2,1)}
+.slide{min-width:100vw;height:100vh;padding:clamp(2rem,6vw,6rem) clamp(1.5rem,8vw,9rem);display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.slide-inner{max-width:1100px;width:100%;margin:0 auto;position:relative;z-index:2}
+.kicker{font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:.8rem;color:var(--pink-300);margin-bottom:1.4rem;display:flex;align-items:center;gap:.6rem}
+.kicker::before{content:"";width:28px;height:2px;background:var(--gold-500)}
+.slide h1{font-size:clamp(2.4rem,6vw,5rem)}
+.slide h2{font-size:clamp(1.8rem,4.2vw,3.4rem);margin-bottom:1.5rem}
+.slide p.big{font-size:clamp(1.1rem,1.8vw,1.5rem);color:var(--pink-100);opacity:.85;max-width:760px;line-height:1.6}
+.slide .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;z-index:1}
+.b-pink{width:520px;height:520px;background:radial-gradient(circle,var(--pink-600),transparent 60%);top:-160px;right:-120px}
+.b-gold{width:420px;height:420px;background:radial-gradient(circle,var(--mauve),transparent 60%);bottom:-160px;left:-100px;opacity:.3}
+
+.brandbar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:1.2rem clamp(1.5rem,8vw,4rem);z-index:30;pointer-events:none}
+.brandbar .brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-d);font-weight:700;font-size:1.2rem}
+.brandbar .brand svg{width:30px;height:30px}
+.brandbar .conf{font-size:.72rem;opacity:.5;letter-spacing:.1em}
+
+/* grids */
+.cols{display:grid;gap:clamp(1rem,2.5vw,2rem);margin-top:1rem}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:repeat(3,1fr)}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:1.6rem;backdrop-filter:blur(6px)}
+.card h3{font-size:1.2rem;margin-bottom:.5rem;font-family:var(--font-b);font-weight:700}
+.card p{color:var(--pink-100);opacity:.7;font-size:.95rem;line-height:1.55}
+.card .stat{font-family:var(--font-d);font-size:clamp(2rem,4vw,3.2rem);font-weight:700;color:var(--gold-300);line-height:1}
+.card .stat small{font-size:1rem;color:var(--pink-200);opacity:.8;font-family:var(--font-b)}
+.lead-icon{width:50px;height:50px;border-radius:12px;background:rgba(228,92,134,.18);color:var(--pink-300);display:grid;place-items:center;margin-bottom:1rem}
+.lead-icon svg{width:26px;height:26px}
+
+ul.clean{list-style:none;padding:0;display:grid;gap:.9rem;margin-top:1.5rem}
+ul.clean li{display:flex;gap:.8rem;font-size:clamp(1rem,1.5vw,1.2rem);color:var(--pink-100);line-height:1.5}
+ul.clean li svg{width:1.3em;height:1.3em;color:var(--gold-500);flex:none;margin-top:.15em}
+
+/* funnel / market */
+.tam{display:flex;flex-direction:column;gap:.7rem;margin-top:1.5rem}
+.tam-row{display:flex;align-items:center;gap:1rem}
+.tam-bar{height:54px;border-radius:12px;display:flex;align-items:center;padding:0 1.2rem;font-weight:700;color:#fff;white-space:nowrap}
+.tam-row span.lbl{font-size:.9rem;opacity:.7;min-width:54px}
+
+/* table */
+table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:clamp(.85rem,1.3vw,1.05rem)}
+th,td{text-align:left;padding:.85rem 1rem;border-bottom:1px solid rgba(255,255,255,.1)}
+th{color:var(--pink-300);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em}
+td:first-child{color:var(--pink-100);opacity:.8}
+td.hl{color:var(--gold-300);font-weight:700}
+tr.total td{border-top:2px solid rgba(255,255,255,.2);font-weight:700}
+
+.quote{font-family:var(--font-d);font-size:clamp(1.6rem,3.5vw,2.8rem);line-height:1.25;max-width:900px}
+.quote .accent{color:var(--pink-400)}
+
+.ask-num{font-family:var(--font-d);font-size:clamp(3.5rem,9vw,7rem);font-weight:700;color:var(--gold-300);line-height:1}
+.ask-num small{font-size:1.4rem;color:var(--pink-200)}
+
+/* progress + nav */
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pink-500),var(--gold-500));z-index:40;transition:width .5s ease}
+.nav{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:1rem;z-index:40;background:rgba(0,0,0,.35);padding:.5rem .9rem;border-radius:999px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1)}
+.nav button{background:none;border:none;color:#fff;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;transition:.2s}
+.nav button:hover{background:rgba(255,255,255,.12)}
+.nav button svg{width:18px;height:18px}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:.2s}
+.dot.active{background:var(--gold-300);transform:scale(1.3)}
+.counter{font-size:.8rem;opacity:.6;min-width:42px;text-align:center;font-variant-numeric:tabular-nums}
+.hint-key{position:fixed;bottom:1.5rem;right:1.5rem;font-size:.72rem;opacity:.4;z-index:40}
+.backhome{position:fixed;bottom:1.5rem;left:1.5rem;font-size:.8rem;color:var(--pink-200);opacity:.6;z-index:40;text-decoration:none;pointer-events:auto}
+.backhome:hover{opacity:1}
+.disc{font-size:.72rem;opacity:.4;margin-top:1.5rem}
+@media(max-width:680px){.c2,.c3{grid-template-columns:1fr}.hint-key{display:none}.slide{padding:5rem 1.4rem 5rem}}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="brandbar">
+  <span class="brand"><svg viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F285A6"/><stop offset="1" stop-color="#9E2B52"/></linearGradient></defs><path d="M50 10c9 16 28 15 28 33S57 82 50 90C43 82 22 61 22 43S41 26 50 10z" fill="url(#g)"/><circle cx="50" cy="45" r="10" fill="#FFF5F7"/></svg> يا سبا · Ya Spa</span>
+  <span class="conf">CONFIDENTIAL · SEED ROUND · 2026</span>
+</div>
+
+<div class="deck">
+  <div class="slides" id="slides">
+
+    <!-- 1 Title -->
+    <section class="slide">
+      <span class="blob b-pink"></span><span class="blob b-gold"></span>
+      <div class="slide-inner">
+        <span class="kicker">At-home beauty · Riyadh · Saudi Arabia</span>
+        <h1>The salon, <span style="color:var(--pink-400)">delivered home.</span></h1>
+        <p class="big" style="margin-top:1.5rem">Verified, licensed female beauty professionals — in the privacy of a woman's own home. We own the one thing the whole category turns on and nobody markets: <b style="color:#fff">trust.</b></p>
+        <p class="disc">Seed round · Riyadh launch · Investor presentation</p>
+      </div>
+    </section>
+
+    <!-- 2 Problem -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">The problem</span>
+        <h2>Beauty at home is in demand — but broken on trust.</h2>
+        <div class="cols c3">
+          <div class="card"><div class="lead-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg></div><h3>Who's at my door?</h3><p>The market runs on unlicensed Instagram freelancers — no verification, no recourse, real safety anxiety for women letting a stranger into the home.</p></div>
+          <div class="card"><div class="lead-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Unreliable incumbents</h3><p>The home-services super-apps treat beauty as one tile among AC repair — and their reviews are dominated by cancellations, reschedules and slow support.</p></div>
+          <div class="card"><div class="lead-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></div><h3>Salons don't fit</h3><p>Crowding, waiting, Eid surge pricing, and — for many women — a privacy gap that the home simply solves.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 Why now -->
+    <section class="slide">
+      <span class="blob b-gold"></span>
+      <div class="slide-inner">
+        <span class="kicker">Why now</span>
+        <h2>A structural, measurable tailwind.</h2>
+        <div class="cols c2">
+          <div class="card"><div class="stat">36%<small> female labor participation</small></div><p style="margin-top:.8rem">Up from 17% in 2017 — already past the Vision 2030 target. More working women = cash-rich, time-poor.</p></div>
+          <div class="card"><div class="stat">90%<small> of 13–34s on Snapchat</small></div><p style="margin-top:.8rem">KSA is Snapchat's most-engaged market on earth — a ready-made female-beauty acquisition channel.</p></div>
+          <div class="card"><div class="stat">74%<small> buy after an influencer promo</small></div><p style="margin-top:.8rem">Vs ~49% globally, at 5.8–6.5× ROAS — the cheapest, highest-converting growth lever in the market.</p></div>
+          <div class="card"><div class="stat">~42%<small> use BNPL (Tabby / Tamara)</small></div><p style="margin-top:.8rem">SAMA-licensed instalments — decisive on high-ticket bridal packages.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Market -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">Market size</span>
+        <h2>We anchor on services, not vanity numbers.</h2>
+        <p class="big">The serviceable market is salon &amp; spa <b style="color:#fff">services</b> — growing ~9%, far faster than retail cosmetics.</p>
+        <div class="tam">
+          <div class="tam-row"><span class="lbl">TAM</span><div class="tam-bar" style="width:100%;background:linear-gradient(90deg,var(--pink-700),var(--pink-500))">KSA salon &amp; spa services ≈ $1.9B (2024) → $4.1B by 2032</div></div>
+          <div class="tam-row"><span class="lbl">SAM</span><div class="tam-bar" style="width:62%;background:linear-gradient(90deg,var(--pink-600),var(--pink-400))">Riyadh at-home beauty ≈ $65–200M / yr</div></div>
+          <div class="tam-row"><span class="lbl">SOM</span><div class="tam-bar" style="width:30%;background:linear-gradient(90deg,var(--gold-600,#A6822F),var(--gold-500))">Yr-3 target ≈ $8–20M GMV</div></div>
+        </div>
+        <p class="disc">Sources: openPR/Infinium (salon-spa services), Ken Research (on-demand home services, cited as a range). SAM/SOM are illustrative.</p>
+      </div>
+    </section>
+
+    <!-- 5 Insight -->
+    <section class="slide">
+      <span class="blob b-pink"></span>
+      <div class="slide-inner">
+        <p class="quote">Convenience is the rational hook. But <span class="accent">female-only privacy</span> is the emotional gate that decides whether the booking happens at all.</p>
+        <p class="big" style="margin-top:2rem">No competitor loudly owns <b style="color:#fff">verified-female-only, Balady-licensed, sealed-tools</b>. That open positioning is the whole company.</p>
+      </div>
+    </section>
+
+    <!-- 6 Product -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">The product</span>
+        <h2>Beauty-only. Women-first. Trust-first.</h2>
+        <div class="cols c2">
+          <ul class="clean">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Book in 4 taps — fixed price &amp; duration shown upfront</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Choose your pro by profile, rating &amp; visible trust badges</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Genuinely-available slots — no reschedule roulette</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Live tracking, in-visit safety, female Arabic support</li>
+          </ul>
+          <div class="card">
+            <h3 style="color:var(--gold-300)">Launch services</h3>
+            <p style="margin-top:.6rem;font-size:1.05rem;line-height:2">Mani-Pedi · Threading &amp; Waxing · Hair &amp; Blow-dry · Facials</p>
+            <p style="margin-top:1rem">High-frequency, standardizable, low-medical-risk — chosen for repeat cadence and to clear every regulatory landmine. Massage &amp; bridal follow in phase 2.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 Moat -->
+    <section class="slide">
+      <span class="blob b-gold"></span>
+      <div class="slide-inner">
+        <span class="kicker">The moat</span>
+        <h2>The trust stack — visible, not hidden.</h2>
+        <p class="big">Supply is compliance-gated by law. Building a licensed, vetted female workforce is hard — which is exactly why it defends us.</p>
+        <div class="cols c3" style="margin-top:1.5rem">
+          <div class="card"><h3>Licensed by design</h3><p>We hold the CR + women's-salon license + Balady home-services permit. A "freelancer pool" is non-compliant — and our competitors know it.</p></div>
+          <div class="card"><h3>Verified female workforce</h3><p>ID-verified, background-checked, health- &amp; professionally-certified women — surfaced on every profile.</p></div>
+          <div class="card"><h3>Provider-fair = quality</h3><p>20–22% take, no forced products. Happier pros churn less, steal less, rate higher — the opposite of the incumbents' grievances.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 Business model -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">Business model</span>
+        <h2>Managed marketplace — five ways to earn.</h2>
+        <div class="cols c3">
+          <div class="card"><h3>1 · Commission</h3><p>20–22% of service value, transparent, no hidden markups.</p></div>
+          <div class="card"><h3>2 · Transport &amp; minimum</h3><p>SAR 30 transport + SAR 200 basket floor protects margin.</p></div>
+          <div class="card"><h3>3 · Ya Spa Plus</h3><p>Monthly membership — the recurring-revenue retention engine.</p></div>
+          <div class="card"><h3>4 · Bridal packages</h3><p>SAR 1,200–8,500 high-margin journeys, BNPL-financed.</p></div>
+          <div class="card"><h3>5 · B2B salon overflow</h3><p>Route idle stylists from 2,600+ independent salons — the roll-up.</p></div>
+          <div class="card" style="background:rgba(228,92,134,.14);border-color:var(--pink-500)"><h3 style="color:var(--gold-300)">Profit = retention</h3><p>The model lives on repeat frequency, AOV bundling and density — not acquisition.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 Unit economics -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">Unit economics · illustrative</span>
+        <h2>A mid-ticket Riyadh visit.</h2>
+        <table>
+          <tr><td>Service value (AOV)</td><td class="hl">SAR 250</td></tr>
+          <tr><td>+ Transport</td><td>SAR 30 → customer pays 280</td></tr>
+          <tr><td>Platform commission (~22%)</td><td class="hl">+ SAR 55 revenue</td></tr>
+          <tr><td>− Provider payout, payment, ops/QC/insurance</td><td>−</td></tr>
+          <tr class="total"><td>Contribution / booking (pre-marketing)</td><td class="hl">≈ SAR 31 (~11% of GMV)</td></tr>
+        </table>
+        <ul class="clean" style="margin-top:1.2rem">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Decisive lever: <b style="color:#fff">repeat rate.</b> At ~3.7× modeled 3-yr LTV/CAC vs Urban Company's disclosed ~1.5×.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>AOV bundling + district density move the model more than take-rate.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10 Competition -->
+    <section class="slide">
+      <span class="blob b-pink"></span>
+      <div class="slide-inner">
+        <span class="kicker">Competition &amp; white space</span>
+        <h2>The category leader couldn't crack KSA alone.</h2>
+        <p class="big"><b style="color:#fff">Yammak</b> is the SMASCO × Urban Company JV. Urban Company's solo Saudi subsidiary lost money (~INR 23.4cr in 9M FY25) and is being wound down — it retreated into a manpower JV. The incumbent is distracted and operationally wounded on reliability.</p>
+        <div class="cols c2" style="margin-top:1rem">
+          <div class="card"><h3>Them</h3><p>Generalist super-apps (beauty = one tile), gray-zone freelancers, or salon-booking SaaS. None own female-only, licensed, trust-as-product.</p></div>
+          <div class="card" style="background:rgba(201,162,75,.14);border-color:var(--gold-500)"><h3 style="color:var(--gold-300)">Us</h3><p>Beauty-only, women-only, licensed-and-loud, provider-fair — out-executing generalists on the dimension they can't prioritize.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 GTM -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">Go-to-market</span>
+        <h2>District-dense, influencer-led, occasion-timed.</h2>
+        <div class="cols c3">
+          <div class="card"><div class="stat">3</div><p style="margin-top:.6rem">affluent Riyadh districts first — density beats coverage and protects margin.</p></div>
+          <div class="card"><div class="stat">Snap+TikTok</div><p style="margin-top:.6rem">Mid-tier female creators doing at-home demo content — the trust story, every post.</p></div>
+          <div class="card"><div class="stat">Eid + Bridal</div><p style="margin-top:.6rem">"Skip the Eid salon rush — no surge at home." Bridal anchors high-ticket first bookings.</p></div>
+        </div>
+        <p class="big" style="margin-top:1.5rem">Cold-start solved supply-first: own a licensed establishment, recruit experienced salon pros with a fair deal, guarantee early-cohort income to seed density.</p>
+      </div>
+    </section>
+
+    <!-- 12 Financials -->
+    <section class="slide">
+      <div class="slide-inner">
+        <span class="kicker">Projection · illustrative base case</span>
+        <h2>The marketplace J-curve.</h2>
+        <table>
+          <thead><tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr></thead>
+          <tbody>
+            <tr><td>Annual bookings</td><td>30,000</td><td>108,000</td><td>264,000</td></tr>
+            <tr><td>Active providers</td><td>~180</td><td>~500</td><td>~1,100</td></tr>
+            <tr><td>GMV</td><td class="hl">SAR 8.4M</td><td class="hl">SAR 30.2M</td><td class="hl">SAR 73.9M</td></tr>
+            <tr><td>Net revenue</td><td>SAR 1.65M</td><td>SAR 5.94M</td><td>SAR 14.5M</td></tr>
+            <tr class="total"><td>Net burn</td><td>(SAR 7.3M)</td><td>(SAR 8.7M)</td><td>(SAR 6.8M)</td></tr>
+          </tbody>
+        </table>
+        <p class="disc">Burn peaks in Year 2, narrows in Year 3. Seed proves retention &amp; unit economics; Series A funds the path to scale-driven breakeven.</p>
+      </div>
+    </section>
+
+    <!-- 13 Ask -->
+    <section class="slide">
+      <span class="blob b-gold"></span><span class="blob b-pink"></span>
+      <div class="slide-inner">
+        <span class="kicker">The ask</span>
+        <div class="ask-num">SAR 16M <small>(~$4.3M) seed</small></div>
+        <p class="big" style="margin-top:1.5rem">Funds an MVP + 18 months: compliance &amp; licensing architecture, ~200–500 licensed female providers, the trust/safety product, and influencer-led GTM across 3 Riyadh districts.</p>
+        <ul class="clean">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg><b style="color:#fff">M0–6:</b>&nbsp;Licensed &amp; live, 150 pros, first paying customers</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg><b style="color:#fff">M6–12:</b>&nbsp;Real retention cohort data — the metric that validates the model</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg><b style="color:#fff">M12–18:</b>&nbsp;Unit-positive in dense districts → Series A ready</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 14 Close -->
+    <section class="slide">
+      <span class="blob b-pink"></span>
+      <div class="slide-inner" style="text-align:center">
+        <svg viewBox="0 0 100 100" style="width:64px;height:64px;margin:0 auto 1.5rem"><path d="M50 10c9 16 28 15 28 33S57 82 50 90C43 82 22 61 22 43S41 26 50 10z" fill="var(--pink-400)"/><circle cx="50" cy="45" r="10" fill="var(--ink)"/></svg>
+        <h1>صالونكِ يجيكِ البيت</h1>
+        <p class="big" style="margin:1.5rem auto 0">Win Riyadh on trust and repeat. Then replicate, city by city.</p>
+        <p style="margin-top:2rem;color:var(--pink-200)">hello@yaspa.sa · يا سبا · Ya Spa</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<a class="backhome" href="index.html">← Back to site</a>
+<div class="hint-key">← → or Space to navigate</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg></button>
+  <div class="dots" id="dots"></div>
+  <span class="counter" id="counter">1 / 14</span>
+  <button id="next" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg></button>
+</div>
+
+<script>
+(function(){
+  const slidesEl=document.getElementById('slides');
+  const total=slidesEl.children.length;
+  let i=0;
+  const dots=document.getElementById('dots');
+  for(let k=0;k<total;k++){const d=document.createElement('span');d.className='dot'+(k===0?' active':'');d.addEventListener('click',()=>go(k));dots.appendChild(d);}
+  const isRTL=()=>document.documentElement.dir==='rtl';
+  function go(n){
+    i=Math.max(0,Math.min(total-1,n));
+    slidesEl.style.transform=`translateX(${-i*100}vw)`;
+    document.getElementById('progress').style.width=((i+1)/total*100)+'%';
+    document.getElementById('counter').textContent=(i+1)+' / '+total;
+    [...dots.children].forEach((d,k)=>d.classList.toggle('active',k===i));
+  }
+  document.getElementById('next').addEventListener('click',()=>go(i+1));
+  document.getElementById('prev').addEventListener('click',()=>go(i-1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(i+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(i-1);}
+    if(e.key==='Home')go(0); if(e.key==='End')go(total-1);
+  });
+  // touch swipe
+  let x0=null;
+  slidesEl.addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+  slidesEl.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50) go(dx<0?i+1:i-1);
+    x0=null;
+  });
+  go(0);
+})();
+</script>
+</body>
+</html>

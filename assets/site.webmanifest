@@ -1,0 +1,14 @@
+{
+  "name": "Ya Spa · يا سبا",
+  "short_name": "Ya Spa",
+  "description": "At-home beauty for women in Riyadh — verified, licensed, women-only.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFF5F7",
+  "theme_color": "#9E2B52",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

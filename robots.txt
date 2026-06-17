@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mohammadmseet-hue.github.io/ya-spa/sitemap.xml
