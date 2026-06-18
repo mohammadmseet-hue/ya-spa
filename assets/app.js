@@ -225,6 +225,30 @@
   let toastTimer;
   function toast(msg){ const t = $('#toast'); $('#toastMsg').textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 3200); }
 
+  /* ---------- PWA: service worker + install prompt ---------------------- */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+  let deferredPrompt = null;
+  const installBtn = $('#installBtn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); deferredPrompt = e;
+    if (installBtn) installBtn.hidden = false;
+  });
+  if (installBtn) installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null; installBtn.hidden = true;
+  });
+  window.addEventListener('appinstalled', () => { if (installBtn) installBtn.hidden = true; });
+  // iOS Safari: no beforeinstallprompt — show a one-time add-to-home hint
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !standalone && !localStorage.getItem('yaspa-ios-hint')) {
+    setTimeout(() => { toast(lang==='ar' ? 'لتثبيت التطبيق: شارك ← أضف إلى الشاشة الرئيسية' : 'To install: Share → Add to Home Screen'); localStorage.setItem('yaspa-ios-hint','1'); }, 3500);
+  }
+
   /* ---------- Init ------------------------------------------------------- */
   applyLang();
 })();
