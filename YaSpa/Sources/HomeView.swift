@@ -30,6 +30,7 @@ struct HomeView: View {
                     Button(app.isAr ? "EN" : "ع") { app.toggle() }
                         .font(.headline)
                         .foregroundStyle(Brand.pinkDeep)
+                        .accessibilityIdentifier("lang-massage")
                 }
             }
             .navigationDestination(for: Massage.self) { m in

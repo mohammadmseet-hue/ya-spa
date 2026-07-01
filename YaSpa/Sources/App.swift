@@ -32,13 +32,19 @@ struct YaSpaApp: App {
 
 struct RootView: View {
     @EnvironmentObject var app: AppState
+    @State private var tab = 0
 
     var body: some View {
-        TabView {
+        TabView(selection: $tab) {
+            HomeDashboardView(goToMassage: { tab = 1 })
+                .tabItem { Label(app.t("الرئيسية", "Home"), systemImage: "house.fill") }
+                .tag(0)
             HomeView()
                 .tabItem { Label(app.t("المساج", "Massage"), systemImage: "sparkles") }
+                .tag(1)
             MyBookingsView()
                 .tabItem { Label(app.t("حجوزاتي", "My bookings"), systemImage: "calendar") }
+                .tag(2)
         }
     }
 }

@@ -16,9 +16,13 @@ final class BookingUITests: XCTestCase {
 
         shot(app, "01-Home")
 
+        // Open the Massage catalog tab (the app launches on the Home dashboard)
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        shot(app, "01b-Massage")
+
         // 1) Open a massage
         let card = app.buttons["massage-swedish"]
-        XCTAssertTrue(card.waitForExistence(timeout: 15), "Massage card should be on the Home screen")
+        XCTAssertTrue(card.waitForExistence(timeout: 15), "Massage card should be on the Massage tab")
         card.tap()
 
         // 2) Start booking
@@ -69,7 +73,7 @@ final class BookingUITests: XCTestCase {
         app.buttons["confirmation-done"].tap()
 
         // 8) The booking is saved and listed under My Bookings
-        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.tabBars.buttons.element(boundBy: 2).tap()
         let saved = app.staticTexts["Swedish Massage"]
         XCTAssertTrue(saved.waitForExistence(timeout: 10), "The new booking should be listed in My Bookings")
         shot(app, "06-MyBookings")
@@ -80,6 +84,8 @@ final class BookingUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-uitest"]
         app.launch()
+
+        app.tabBars.buttons.element(boundBy: 1).tap()   // Massage tab
 
         let card = app.buttons["massage-deep"]
         XCTAssertTrue(card.waitForExistence(timeout: 15))
@@ -100,8 +106,9 @@ final class BookingUITests: XCTestCase {
         app.launchArguments = ["-uitest"]   // starts in English
         app.launch()
 
+        app.tabBars.buttons.element(boundBy: 1).tap()   // Massage tab
         XCTAssertTrue(app.staticTexts["Swedish Massage"].waitForExistence(timeout: 15))
-        app.buttons["ع"].tap()   // English mode shows the "switch to Arabic" glyph
+        app.buttons["lang-massage"].tap()   // English mode shows the "switch to Arabic" glyph
         XCTAssertTrue(app.staticTexts["المساج السويدي"].waitForExistence(timeout: 10),
                       "Massage names should switch to Arabic after tapping the language toggle")
     }
