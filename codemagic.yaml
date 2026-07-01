@@ -35,14 +35,19 @@ workflows:
           npx cap add ios || npx cap sync ios
       - name: Generate icons & splash (from app/assets/icon.png)
         script: cd app && npm run assets || echo "no app/assets/icon.png yet — using default"
-      - name: Set up code signing (auto-create App ID, certificate + profile)
+      - name: Set up code signing (create cert + profile via the API key)
         script: |
           keychain initialize
-          # Register the App ID in the Apple Developer portal (no-op if it already exists)
-          app-store-connect create-bundle-id "$BUNDLE_ID" --platform IOS --name "Ya Spa" 2>/dev/null \
+          # Register the App ID (no-op if it already exists)
+          app-store-connect bundle-ids create "$BUNDLE_ID" --platform IOS --name "Ya Spa" 2>/dev/null \
             || echo "bundle id already registered — continuing"
-          # Create a distribution certificate + App Store provisioning profile via the API key
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          # A private key is required so the distribution certificate can be created and saved.
+          openssl genrsa 2048 > /tmp/yaspa_cert_key.pem 2>/dev/null
+          # Creates the distribution certificate (from that key) + the App Store provisioning profile.
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --certificate-key=@file:/tmp/yaspa_cert_key.pem \
+            --create
           keychain add-certificates
           cd app/ios/App
           xcode-project use-profiles
