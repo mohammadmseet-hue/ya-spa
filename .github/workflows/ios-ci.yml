@@ -148,6 +148,11 @@ jobs:
           keychain initialize
           app-store-connect bundle-ids create "$BUNDLE_ID" --platform IOS --name "Ya Spa" 2>/dev/null \
             || echo "bundle id already registered — continuing"
+          # Apple caps distribution certs at 2. Prior CI runs left orphaned ones (their private
+          # keys weren't kept), so revoke all distribution certs to make room. Already-uploaded
+          # builds stay validly signed — this only affects future signing.
+          CERTS=$(app-store-connect certificates list --json 2>/dev/null | python3 -c "import json,sys;print('\n'.join(c['id'] for c in (json.load(sys.stdin) or []) if 'DISTRIBUTION' in str((c.get('attributes') or {}).get('certificateType','')).upper()))" 2>/dev/null || true)
+          for cid in $CERTS; do echo "revoking distribution cert $cid"; app-store-connect certificates delete "$cid" 2>/dev/null || true; done
           openssl genrsa 2048 > /tmp/yaspa_cert_key.pem 2>/dev/null
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \

@@ -12,12 +12,8 @@ workflows:
     max_build_duration: 60
     integrations:
       app_store_connect: Ya Spa CI
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: "massage-only-ios-app"
-          include: true
+    # Auto-trigger disabled: GitHub Actions is now the delivery pipeline. Leaving Codemagic
+    # on push would race the same App Store Connect signing certs. Run Codemagic manually if needed.
     environment:
       vars:
         BUNDLE_ID: "sa.yaspa.app"
