@@ -1,5 +1,18 @@
 import SwiftUI
 import Foundation
+import UIKit
+
+// MARK: - Haptics
+
+enum Haptics {
+    static func tap() {
+        let g = UIImpactFeedbackGenerator(style: .light)
+        g.prepare(); g.impactOccurred()
+    }
+    static func success() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+}
 
 // MARK: - Theme
 

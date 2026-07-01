@@ -68,8 +68,11 @@ struct BookingView: View {
                     ForEach(days, id: \.self) { day in
                         let selected = Calendar.current.isDate(day, inSameDayAs: selectedDay)
                         Button {
-                            selectedDay = day
-                            selectedTime = nil
+                            Haptics.tap()
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                selectedDay = day
+                                selectedTime = nil
+                            }
                         } label: {
                             VStack(spacing: 4) {
                                 Text(Scheduling.weekday(day, ar: app.isAr)).font(.caption2)
@@ -101,7 +104,11 @@ struct BookingView: View {
                     let available = Scheduling.isAvailable(day: selectedDay, time: time)
                     let selected = selectedTime == time
                     Button {
-                        if available { selectedTime = time }
+                        guard available else { return }
+                        Haptics.tap()
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                            selectedTime = time
+                        }
                     } label: {
                         Text(time)
                             .font(.system(.subheadline, design: .rounded).weight(.medium))
@@ -197,6 +204,7 @@ struct BookingView: View {
                         district: district.trimmingCharacters(in: .whitespaces),
                         notes: notes.trimmingCharacters(in: .whitespaces))
         store.add(b)
+        Haptics.success()
         confirmed = b
     }
 }

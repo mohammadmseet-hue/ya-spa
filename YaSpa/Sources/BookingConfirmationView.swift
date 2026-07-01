@@ -4,6 +4,7 @@ struct BookingConfirmationView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @State private var pop = false
     let booking: Booking
 
     var body: some View {
@@ -15,6 +16,12 @@ struct BookingConfirmationView: View {
                 Image(systemName: "checkmark")
                     .font(.system(size: 44, weight: .bold))
                     .foregroundStyle(Brand.pinkDeep)
+            }
+            .scaleEffect(pop ? 1 : 0.6)
+            .opacity(pop ? 1 : 0)
+            .onAppear {
+                Haptics.success()
+                withAnimation(.spring(response: 0.45, dampingFraction: 0.6)) { pop = true }
             }
 
             Text(app.t("تم تأكيد حجزكِ 🌸", "Your booking is confirmed 🌸"))
