@@ -36,3 +36,14 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO
+
+      - name: Archive (device Release, unsigned) — mirrors Codemagic
+        run: |
+          set -o pipefail
+          cd YaSpa
+          xcodebuild archive \
+            -project YaSpa.xcodeproj \
+            -scheme App \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/YaSpa.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
