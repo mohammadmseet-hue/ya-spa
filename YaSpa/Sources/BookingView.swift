@@ -99,8 +99,13 @@ struct BookingView: View {
 
     private var timeGrid: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(app.t("اختاري الوقت", "Choose a time"), systemImage: "clock")
-                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+            HStack {
+                Label(app.t("اختاري الوقت", "Choose a time"), systemImage: "clock")
+                    .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+                Spacer()
+                Text(Scheduling.longDate(selectedDay, ar: app.isAr))
+                    .font(.caption).foregroundStyle(Brand.muted)
+            }
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(Scheduling.slots(), id: \.self) { time in
                     let available = Scheduling.isAvailable(day: selectedDay, time: time)

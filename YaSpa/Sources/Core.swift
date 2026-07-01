@@ -138,9 +138,15 @@ enum Scheduling {
 
     static func isAvailable(day: Date, time: String) -> Bool {
         if Runtime.isUITest { return true }
-        let d = Calendar.current.ordinality(of: .day, in: .era, for: day) ?? 0
+        let cal = Calendar.current
         let h = Int(time.prefix(2)) ?? 0
+        // A professional booking app never offers a time that has already passed today.
+        if cal.isDateInToday(day) && h <= cal.component(.hour, from: Date()) { return false }
+        let d = cal.ordinality(of: .day, in: .era, for: day) ?? 0
         return (d + h) % 4 != 0
+    }
+    static func longDate(_ date: Date, ar: Bool) -> String {
+        fmt(ar ? "ar" : "en_US_POSIX", "EEEE، d MMM").string(from: date)
     }
     static func iso(_ date: Date) -> String { fmt("en_US_POSIX", "yyyy-MM-dd").string(from: date) }
     static func weekday(_ date: Date, ar: Bool) -> String { fmt(ar ? "ar" : "en", "EEE").string(from: date) }
