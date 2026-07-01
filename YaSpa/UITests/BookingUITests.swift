@@ -67,6 +67,37 @@ final class BookingUITests: XCTestCase {
         shot(app, "06-MyBookings")
     }
 
+    /// The Confirm button must stay disabled until a time slot and details are entered.
+    func testConfirmIsBlockedUntilDetailsEntered() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-uitest"]
+        app.launch()
+
+        let card = app.buttons["massage-deep"]
+        XCTAssertTrue(card.waitForExistence(timeout: 15))
+        card.tap()
+
+        let book = app.buttons["book-session"]
+        XCTAssertTrue(book.waitForExistence(timeout: 10))
+        book.tap()
+
+        let confirm = app.buttons["confirm-booking"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 10))
+        XCTAssertFalse(confirm.isEnabled, "Confirm must be disabled before a slot + details are provided")
+    }
+
+    /// The language toggle switches the whole UI to Arabic.
+    func testLanguageToggleSwitchesToArabic() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-uitest"]   // starts in English
+        app.launch()
+
+        XCTAssertTrue(app.staticTexts["Swedish Massage"].waitForExistence(timeout: 15))
+        app.buttons["ع"].tap()   // English mode shows the "switch to Arabic" glyph
+        XCTAssertTrue(app.staticTexts["المساج السويدي"].waitForExistence(timeout: 10),
+                      "Massage names should switch to Arabic after tapping the language toggle")
+    }
+
     private func shot(_ app: XCUIApplication, _ name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
