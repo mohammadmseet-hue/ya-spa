@@ -48,6 +48,7 @@ struct MassageDetailView: View {
                 Text(app.t("احجزي هذه الجلسة", "Book this session"))
             }
             .buttonStyle(PrimaryButtonStyle())
+            .accessibilityIdentifier("book-session")
             .padding(16)
             .background(.ultraThinMaterial)
         }

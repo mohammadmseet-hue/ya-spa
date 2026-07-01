@@ -28,6 +28,7 @@ struct BookingConfirmationView: View {
                 .font(.system(.title2, design: .rounded).weight(.bold))
                 .foregroundStyle(Brand.ink)
                 .multilineTextAlignment(.center)
+                .accessibilityIdentifier("confirmation-title")
 
             VStack(spacing: 10) {
                 detail(app.t("الخدمة", "Service"), app.t(booking.massageNameAr, booking.massageNameEn))
@@ -60,6 +61,7 @@ struct BookingConfirmationView: View {
                 .font(.headline)
                 .foregroundStyle(Brand.muted)
                 .padding(.top, 2)
+                .accessibilityIdentifier("confirmation-done")
         }
         .padding(20)
         .background(Brand.bg.ignoresSafeArea())

@@ -66,6 +66,7 @@ struct MyBookingsView: View {
         .padding(14)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .accessibilityIdentifier("booking-row")
         .contextMenu {
             Button(role: .destructive) {
                 store.remove(b)

@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +26,21 @@ jobs:
       - name: Generate Xcode project
         run: cd YaSpa && xcodegen generate
 
+      - name: Pick a simulator
+        id: sim
+        run: |
+          read UDID NAME < <(xcrun simctl list devices available -j | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)['devices']
+          for runtime in d:
+              for dev in d[runtime]:
+                  if 'iPhone' in dev['name'] and dev.get('isAvailable'):
+                      print(dev['udid'], dev['name']); sys.exit(0)
+          ")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "Picked simulator: $NAME ($UDID)"
+
       - name: Build (iOS Simulator, no signing)
         run: |
           set -o pipefail
@@ -34,8 +49,34 @@ jobs:
             -project YaSpa.xcodeproj \
             -scheme App \
             -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO
+
+      - name: UI test — real booking flow on the simulator
+        run: |
+          set -o pipefail
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          cd YaSpa
+          xcodebuild test \
+            -project YaSpa.xcodeproj \
+            -scheme App \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}" \
+            -resultBundlePath "$GITHUB_WORKSPACE/artifacts/TestResults.xcresult" \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Screenshot the running app
+        if: always()
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name 'App.app' -path '*Debug-iphonesimulator*' | head -1)
+          echo "App bundle: $APP"
+          xcrun simctl boot "${{ steps.sim.outputs.udid }}" 2>/dev/null || true
+          sleep 3
+          xcrun simctl install "${{ steps.sim.outputs.udid }}" "$APP" || true
+          xcrun simctl launch "${{ steps.sim.outputs.udid }}" sa.yaspa.app -uitest || true
+          sleep 6
+          xcrun simctl io "${{ steps.sim.outputs.udid }}" screenshot "$GITHUB_WORKSPACE/artifacts/home.png" || true
+          ls -la "$GITHUB_WORKSPACE/artifacts"
 
       - name: Archive (device Release, unsigned) — mirrors Codemagic
         run: |
@@ -47,3 +88,11 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath build/YaSpa.xcarchive \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yaspa-evidence
+          path: artifacts/
+          if-no-files-found: warn

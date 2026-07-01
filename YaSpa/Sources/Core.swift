@@ -14,6 +14,12 @@ enum Haptics {
     }
 }
 
+// MARK: - Runtime (UI-test determinism)
+
+enum Runtime {
+    static let isUITest = ProcessInfo.processInfo.arguments.contains("-uitest")
+}
+
 // MARK: - Theme
 
 extension Color {
@@ -54,8 +60,12 @@ final class AppState: ObservableObject {
         didSet { UserDefaults.standard.set(language.rawValue, forKey: "yaspa.lang") }
     }
     init() {
-        let saved = UserDefaults.standard.string(forKey: "yaspa.lang")
-        language = AppLanguage(rawValue: saved ?? "ar") ?? .ar
+        if Runtime.isUITest {
+            language = .en
+        } else {
+            let saved = UserDefaults.standard.string(forKey: "yaspa.lang")
+            language = AppLanguage(rawValue: saved ?? "ar") ?? .ar
+        }
     }
     var isAr: Bool { language == .ar }
     var layout: LayoutDirection { isAr ? .rightToLeft : .leftToRight }
@@ -127,6 +137,7 @@ enum Scheduling {
     static func slots() -> [String] { slotHours.map { String(format: "%02d:00", $0) } }
 
     static func isAvailable(day: Date, time: String) -> Bool {
+        if Runtime.isUITest { return true }
         let d = Calendar.current.ordinality(of: .day, in: .era, for: day) ?? 0
         let h = Int(time.prefix(2)) ?? 0
         return (d + h) % 4 != 0

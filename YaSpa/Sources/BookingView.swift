@@ -34,6 +34,7 @@ struct BookingView: View {
             .padding(16)
         }
         .background(Brand.bg.ignoresSafeArea())
+        .scrollDismissesKeyboard(.immediately)
         .navigationTitle(app.t("احجزي موعدكِ", "Book your slot"))
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) { bookBar }
@@ -88,6 +89,7 @@ struct BookingView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("day-\(Scheduling.iso(day))")
                     }
                 }
                 .padding(.vertical, 2)
@@ -125,6 +127,7 @@ struct BookingView: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(!available)
+                    .accessibilityIdentifier("slot-\(time)")
                 }
             }
         }
@@ -134,14 +137,15 @@ struct BookingView: View {
         VStack(alignment: .leading, spacing: 12) {
             Label(app.t("بياناتكِ", "Your details"), systemImage: "person")
                 .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
-            field(app.t("الاسم", "Name"), text: $name)
-            field(app.t("الحي في جدة", "District in Jeddah"), text: $district)
-            field(app.t("ملاحظات (اختياري)", "Notes (optional)"), text: $notes)
+            field(app.t("الاسم", "Name"), id: "field-name", text: $name)
+            field(app.t("الحي في جدة", "District in Jeddah"), id: "field-district", text: $district)
+            field(app.t("ملاحظات (اختياري)", "Notes (optional)"), id: "field-notes", text: $notes)
         }
     }
 
-    private func field(_ placeholder: String, text: Binding<String>) -> some View {
+    private func field(_ placeholder: String, id: String, text: Binding<String>) -> some View {
         TextField(placeholder, text: text)
+            .accessibilityIdentifier(id)
             .padding(14)
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -185,6 +189,7 @@ struct BookingView: View {
                  : app.t("اختاري الوقت وأكملي بياناتكِ", "Pick a time & fill your details"))
         }
         .buttonStyle(PrimaryButtonStyle())
+        .accessibilityIdentifier("confirm-booking")
         .disabled(!canBook)
         .opacity(canBook ? 1 : 0.6)
         .padding(16)

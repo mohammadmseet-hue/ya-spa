@@ -11,6 +11,7 @@ struct HomeView: View {
                     ForEach(Catalog.all) { m in
                         NavigationLink(value: m) { MassageCard(massage: m) }
                             .buttonStyle(.plain)
+                            .accessibilityIdentifier("massage-\(m.id)")
                     }
                     trust
                 }
