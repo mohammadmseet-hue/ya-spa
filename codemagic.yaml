@@ -19,9 +19,6 @@ workflows:
     integrations:
       app_store_connect: Ya Spa ASC   # <- the API-key integration you name in the UI
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: sa.yaspa.app
       vars:
         BUNDLE_ID: "sa.yaspa.app"
         XCODE_SCHEME: "App"
@@ -38,8 +35,15 @@ workflows:
           npx cap add ios || npx cap sync ios
       - name: Generate icons & splash (from app/assets/icon.png)
         script: cd app && npm run assets || echo "no app/assets/icon.png yet — using default"
-      - name: Set up code signing
+      - name: Set up code signing (auto-create App ID, certificate + profile)
         script: |
+          keychain initialize
+          # Register the App ID in the Apple Developer portal (no-op if it already exists)
+          app-store-connect create-bundle-id "$BUNDLE_ID" --platform IOS --name "Ya Spa" 2>/dev/null \
+            || echo "bundle id already registered — continuing"
+          # Create a distribution certificate + App Store provisioning profile via the API key
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          keychain add-certificates
           cd app/ios/App
           xcode-project use-profiles
       - name: CocoaPods install
