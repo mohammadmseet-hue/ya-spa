@@ -1,79 +1,58 @@
-# Codemagic CI/CD — builds the Ya Spa app on Codemagic's cloud Macs.
-# You do NOT need your own Mac. Connect this repo in Codemagic, add your Apple
-# App Store Connect API key in the Codemagic UI, then run the ios workflow.
+# Codemagic CI/CD — builds the native SwiftUI Ya Spa app on Codemagic's cloud Macs.
+# No Mac needed. Uses XcodeGen to generate the Xcode project from YaSpa/project.yml.
 #
-# Setup once (after your Apple account activates):
-#   1. codemagic.io → add this repository.
-#   2. Codemagic → Settings → Team integrations → Developer Portal → connect your
-#      App Store Connect API key (.p8 + Key ID + Issuer ID). Name it "Ya Spa CI".
-#   3. First run the `ios` workflow to push a build to TestFlight.
-#
-# App identity (must match App Store Connect): appId = sa.yaspa.app, name = "Ya Spa".
+# One-time setup (done):
+#   - App Store Connect API key added in Codemagic Developer Portal, named "Ya Spa CI".
+#   - App record "Ya Spa" (bundle sa.yaspa.app) created in App Store Connect.
 
 workflows:
-  # ---------------------------------------------------------------- iOS
   ios:
     name: Ya Spa — iOS (App Store / TestFlight)
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
-      app_store_connect: Ya Spa CI   # <- matches the Developer Portal key name in Codemagic
+      app_store_connect: Ya Spa CI
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "massage-only-ios-app"
+          include: true
     environment:
       vars:
         BUNDLE_ID: "sa.yaspa.app"
         XCODE_SCHEME: "App"
-      node: 20
       xcode: latest
-      cocoapods: default
     scripts:
-      - name: Install JS deps
-        script: cd app && npm install
-      - name: Copy web + scaffold iOS project
-        script: |
-          cd app
-          npm run copy:web
-          npx cap add ios || npx cap sync ios
-      - name: Generate icons & splash (from app/assets/icon.png)
-        script: cd app && npm run assets || echo "no app/assets/icon.png yet — using default"
-      - name: Set Info.plist keys (encryption compliance)
-        script: |
-          PLIST=app/ios/App/App/Info.plist
-          # Declares the app uses only exempt (standard HTTPS) encryption, so TestFlight
-          # doesn't hold the build asking for export-compliance answers.
-          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" "$PLIST" 2>/dev/null \
-            || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" "$PLIST"
+      - name: Install XcodeGen
+        script: brew install xcodegen
+      - name: Generate Xcode project
+        script: cd YaSpa && xcodegen generate
       - name: Set up code signing (create cert + profile via the API key)
         script: |
           keychain initialize
-          # Register the App ID (no-op if it already exists)
           app-store-connect bundle-ids create "$BUNDLE_ID" --platform IOS --name "Ya Spa" 2>/dev/null \
             || echo "bundle id already registered — continuing"
-          # A private key is required so the distribution certificate can be created and saved.
           openssl genrsa 2048 > /tmp/yaspa_cert_key.pem 2>/dev/null
-          # Creates the distribution certificate (from that key) + the App Store provisioning profile.
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --certificate-key=@file:/tmp/yaspa_cert_key.pem \
             --create
           keychain add-certificates
-          cd app/ios/App
-          xcode-project use-profiles
-      - name: CocoaPods install
-        script: cd app/ios/App && pod install
+          cd YaSpa && xcode-project use-profiles
       - name: Bump build number to next TestFlight number
         script: |
-          cd app/ios/App
+          cd YaSpa
           LATEST=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" 2>/dev/null || echo 0)
           agvtool new-version -all $((LATEST + 1))
       - name: Build .ipa
         script: |
-          cd app/ios/App
-          xcode-project build-ipa --workspace "App.xcworkspace" --scheme "$XCODE_SCHEME"
+          cd YaSpa
+          xcode-project build-ipa --project "YaSpa.xcodeproj" --scheme "$XCODE_SCHEME"
     artifacts:
-      - app/ios/App/build/ios/ipa/*.ipa
+      - YaSpa/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        # submit_to_app_store: false   # flip to true once you're ready for review
