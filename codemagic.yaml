@@ -35,6 +35,13 @@ workflows:
           npx cap add ios || npx cap sync ios
       - name: Generate icons & splash (from app/assets/icon.png)
         script: cd app && npm run assets || echo "no app/assets/icon.png yet — using default"
+      - name: Set Info.plist keys (encryption compliance)
+        script: |
+          PLIST=app/ios/App/App/Info.plist
+          # Declares the app uses only exempt (standard HTTPS) encryption, so TestFlight
+          # doesn't hold the build asking for export-compliance answers.
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" "$PLIST" 2>/dev/null \
+            || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" "$PLIST"
       - name: Set up code signing (create cert + profile via the API key)
         script: |
           keychain initialize
