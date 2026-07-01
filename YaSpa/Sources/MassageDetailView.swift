@@ -31,10 +31,19 @@ struct MassageDetailView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    infoRow(app.t("نساء فقط، معالِجات معتمدات", "Women only, certified therapists"))
-                    infoRow(app.t("أدوات وأغطية معقّمة تُفتح أمامكِ", "Sealed tools & linens, opened before you"))
-                    infoRow(app.t("السعر يشمل المواصلات والضريبة", "Price includes transport & VAT"))
+                    Text(app.t("ما يشمله", "What's included"))
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(Brand.ink)
+                    infoRow(app.t("معالِجة معتمدة — نساء فقط", "A certified woman therapist — women only"))
+                    infoRow(app.t("أدوات معقّمة لمرّة واحدة، تُفتح أمامكِ", "Sealed, single-use tools opened before you"))
+                    infoRow(app.t("أغطية نظيفة وزيوت معتمدة من الهيئة", "Fresh linens & SFDA-approved oils"))
+                    infoRow(app.t("أغطية تحفظ خصوصيتكِ طوال الجلسة", "Draping that protects your privacy"))
+                    infoRow(app.t("السعر يشمل المواصلات وضريبة ١٥٪", "Price includes transport & 15% VAT"))
                 }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .padding(.top, 4)
             }
             .padding(16)
