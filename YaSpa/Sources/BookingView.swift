@@ -8,6 +8,7 @@ struct BookingView: View {
 
     @State private var selectedDay: Date = Calendar.current.startOfDay(for: Date())
     @State private var selectedTime: String?
+    @State private var selectedTherapist: Therapist?
     @State private var name = ""
     @State private var district = ""
     @State private var notes = ""
@@ -18,6 +19,7 @@ struct BookingView: View {
 
     private var canBook: Bool {
         selectedTime != nil
+            && selectedTherapist != nil
             && !name.trimmingCharacters(in: .whitespaces).isEmpty
             && !district.trimmingCharacters(in: .whitespaces).isEmpty
     }
@@ -28,6 +30,7 @@ struct BookingView: View {
                 header
                 daySelector
                 timeGrid
+                therapistSection
                 detailsForm
                 priceSummary
             }
@@ -138,6 +141,47 @@ struct BookingView: View {
         }
     }
 
+    private var therapistSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(app.t("اختاري معالِجتكِ", "Choose your therapist"), systemImage: "person.crop.circle")
+                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+            ForEach(Therapists.all) { th in
+                let selected = selectedTherapist?.id == th.id
+                let rating = String(format: "%.2f", th.rating)
+                Button {
+                    Haptics.tap()
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) { selectedTherapist = th }
+                } label: {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle().fill(Brand.bg2)
+                            Image(systemName: "person.fill").foregroundStyle(Brand.pinkDeep)
+                        }
+                        .frame(width: 44, height: 44)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(app.t(th.nameAr, th.nameEn))
+                                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+                            Text(app.t("★ \(rating) · \(th.years) سنوات خبرة", "★ \(rating) · \(th.years) yrs"))
+                                .font(.caption2).foregroundStyle(Brand.muted)
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(selected ? Brand.pinkDeep : Brand.muted.opacity(0.4))
+                    }
+                    .padding(12)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(selected ? Brand.pink : Brand.bg2, lineWidth: selected ? 2 : 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("therapist-\(th.id)")
+            }
+        }
+    }
+
     private var detailsForm: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(app.t("بياناتكِ", "Your details"), systemImage: "person")
@@ -202,7 +246,7 @@ struct BookingView: View {
     }
 
     private func book() {
-        guard let time = selectedTime else { return }
+        guard let time = selectedTime, let therapist = selectedTherapist else { return }
         let b = Booking(massageId: massage.id,
                         massageNameAr: massage.nameAr,
                         massageNameEn: massage.nameEn,
@@ -210,6 +254,7 @@ struct BookingView: View {
                         price: massage.price,
                         dateISO: Scheduling.iso(selectedDay),
                         time: time,
+                        therapistName: app.t(therapist.nameAr, therapist.nameEn),
                         name: name.trimmingCharacters(in: .whitespaces),
                         district: district.trimmingCharacters(in: .whitespaces),
                         notes: notes.trimmingCharacters(in: .whitespaces))

@@ -116,6 +116,24 @@ enum Catalog {
     ]
 }
 
+// MARK: - Therapists
+
+struct Therapist: Identifiable, Hashable {
+    let id: String
+    let nameAr: String
+    let nameEn: String
+    let rating: Double
+    let years: Int
+}
+
+enum Therapists {
+    static let all: [Therapist] = [
+        Therapist(id: "reem", nameAr: "ريم الغامدي", nameEn: "Reem G.", rating: 4.97, years: 7),
+        Therapist(id: "hind", nameAr: "هند العتيبي", nameEn: "Hind A.", rating: 4.92, years: 5),
+        Therapist(id: "sara", nameAr: "سارة القحطاني", nameEn: "Sara Q.", rating: 4.89, years: 4),
+    ]
+}
+
 // MARK: - Pricing
 
 enum Pricing {
@@ -171,6 +189,7 @@ struct Booking: Identifiable, Codable, Hashable {
     var price: Int
     var dateISO: String
     var time: String
+    var therapistName: String
     var name: String
     var district: String
     var notes: String

@@ -33,13 +33,21 @@ final class BookingUITests: XCTestCase {
         slot.tap()
         shot(app, "03-SlotPicked")
 
+        // 3b) Choose a therapist
+        let therapist = app.buttons["therapist-reem"]
+        XCTAssertTrue(therapist.waitForExistence(timeout: 10), "Therapist list should be shown")
+        scrollUntilHittable(therapist, in: app)
+        therapist.tap()
+
         // 4) Enter details
         let name = app.textFields["field-name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5), "Name field should exist")
+        scrollUntilHittable(name, in: app)
         name.tap()
         name.typeText("Sara")
 
         let district = app.textFields["field-district"]
+        scrollUntilHittable(district, in: app)
         district.tap()
         district.typeText("Al Rawdah")
 
@@ -96,6 +104,14 @@ final class BookingUITests: XCTestCase {
         app.buttons["ع"].tap()   // English mode shows the "switch to Arabic" glyph
         XCTAssertTrue(app.staticTexts["المساج السويدي"].waitForExistence(timeout: 10),
                       "Massage names should switch to Arabic after tapping the language toggle")
+    }
+
+    private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 8) {
+        var swipes = 0
+        while !element.isHittable && swipes < maxSwipes {
+            app.swipeUp()
+            swipes += 1
+        }
     }
 
     private func shot(_ app: XCUIApplication, _ name: String) {

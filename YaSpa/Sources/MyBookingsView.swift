@@ -55,7 +55,7 @@ struct MyBookingsView: View {
                     .font(.headline).foregroundStyle(Brand.ink)
                 Text("\(b.dateISO) · \(b.time)")
                     .font(.caption).foregroundStyle(Brand.muted)
-                Text(b.district)
+                Text("\(b.therapistName) · \(b.district)")
                     .font(.caption2).foregroundStyle(Brand.muted)
             }
             Spacer(minLength: 0)

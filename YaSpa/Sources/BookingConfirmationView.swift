@@ -34,6 +34,7 @@ struct BookingConfirmationView: View {
                 detail(app.t("الخدمة", "Service"), app.t(booking.massageNameAr, booking.massageNameEn))
                 detail(app.t("التاريخ", "Date"), booking.dateISO)
                 detail(app.t("الوقت", "Time"), booking.time)
+                detail(app.t("المعالِجة", "Therapist"), booking.therapistName)
                 detail(app.t("الحي", "District"), booking.district)
                 detail(app.t("الإجمالي", "Total"), app.money(Pricing.total(booking.price)))
             }
@@ -80,8 +81,8 @@ struct BookingConfirmationView: View {
         let notesLine = booking.notes.isEmpty ? "" :
             (app.isAr ? "\nملاحظات: \(booking.notes)" : "\nNotes: \(booking.notes)")
         let msg = app.isAr
-            ? "مرحبًا يا سبا 🌸\nحجز مساج:\n• \(booking.massageNameAr) (\(booking.minutes) د)\n• التاريخ: \(booking.dateISO)\n• الوقت: \(booking.time)\n• الاسم: \(booking.name)\n• الحي: \(booking.district)\n• الإجمالي: \(app.money(Pricing.total(booking.price)))\(notesLine)"
-            : "Hello Ya Spa 🌸\nMassage booking:\n• \(booking.massageNameEn) (\(booking.minutes) min)\n• Date: \(booking.dateISO)\n• Time: \(booking.time)\n• Name: \(booking.name)\n• District: \(booking.district)\n• Total: \(app.money(Pricing.total(booking.price)))\(notesLine)"
+            ? "مرحبًا يا سبا 🌸\nحجز مساج:\n• \(booking.massageNameAr) (\(booking.minutes) د)\n• التاريخ: \(booking.dateISO)\n• الوقت: \(booking.time)\n• المعالِجة: \(booking.therapistName)\n• الاسم: \(booking.name)\n• الحي: \(booking.district)\n• الإجمالي: \(app.money(Pricing.total(booking.price)))\(notesLine)"
+            : "Hello Ya Spa 🌸\nMassage booking:\n• \(booking.massageNameEn) (\(booking.minutes) min)\n• Date: \(booking.dateISO)\n• Time: \(booking.time)\n• Therapist: \(booking.therapistName)\n• Name: \(booking.name)\n• District: \(booking.district)\n• Total: \(app.money(Pricing.total(booking.price)))\(notesLine)"
         let encoded = msg.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         return URL(string: "https://wa.me/966565722923?text=\(encoded)")
             ?? URL(string: "https://wa.me/966565722923")!
