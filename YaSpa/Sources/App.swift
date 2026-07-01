@@ -45,6 +45,9 @@ struct RootView: View {
             MyBookingsView()
                 .tabItem { Label(app.t("حجوزاتي", "My bookings"), systemImage: "calendar") }
                 .tag(2)
+            ProfileView()
+                .tabItem { Label(app.t("حسابي", "Profile"), systemImage: "person.crop.circle") }
+                .tag(3)
         }
     }
 }
