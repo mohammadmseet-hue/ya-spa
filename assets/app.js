@@ -27,7 +27,8 @@
     pickFirst:   { ar: 'اختاري خدمة واحدة على الأقل أولًا 🌸', en: 'Pick at least one service first 🌸' },
   };
 
-  /* Services (massage first, then beauty) */
+  /* Services — MASSAGE ONLY for launch. The beauty items are kept below (commented)
+     so the Beauty section can be re-enabled later without re-authoring them. */
   const SERVICES = [
     { id:'m_swedish', cat:'massage', ar:'المساج السويدي',        en:'Swedish Massage',    sub_ar:'٦٠ د', sub_en:'60 min', price:199 },
     { id:'m_deep',    cat:'massage', ar:'مساج الأنسجة العميقة',   en:'Deep Tissue',        sub_ar:'٦٠ د', sub_en:'60 min', price:249 },
@@ -35,10 +36,12 @@
     { id:'m_thai',    cat:'massage', ar:'المساج التايلندي',       en:'Thai Massage',       sub_ar:'٩٠ د', sub_en:'90 min', price:289 },
     { id:'m_aroma',   cat:'massage', ar:'العلاج بالزيوت العطرية', en:'Aromatherapy',       sub_ar:'٦٠ د', sub_en:'60 min', price:219 },
     { id:'m_foot',    cat:'massage', ar:'مساج القدمين الانعكاسي', en:'Foot Reflexology',   sub_ar:'٤٥ د', sub_en:'45 min', price:149 },
+    /* --- Beauty (hidden for massage-only launch; re-enable together with the #beauty section) ---
     { id:'b_mani',    cat:'beauty',  ar:'مانيكير وباديكير',       en:'Mani-Pedi',          sub_ar:'٦٠ د', sub_en:'60 min', price:119 },
     { id:'b_thread',  cat:'beauty',  ar:'إزالة الشعر والخيط',     en:'Threading & Waxing', sub_ar:'٣٠ د', sub_en:'30 min', price:49 },
     { id:'b_hair',    cat:'beauty',  ar:'تصفيف الشعر والسشوار',   en:'Hair & Blow-dry',    sub_ar:'٤٥ د', sub_en:'45 min', price:99 },
     { id:'b_facial',  cat:'beauty',  ar:'العناية بالبشرة',        en:'Facials & Skincare', sub_ar:'٦٠ د', sub_en:'60 min', price:149 },
+    --- */
   ];
   const byId = (id) => SERVICES.find(s => s.id === id);
   const CAT = { massage:{ar:'المساج',en:'Massage'}, beauty:{ar:'التجميل والعناية',en:'Beauty & care'} };
@@ -146,7 +149,7 @@
     $('#langLabel').textContent = lang === 'ar' ? 'EN' : 'ع';
     $$('[data-ar]').forEach(el => { const v = el.getAttribute(lang==='ar'?'data-ar':'data-en'); if (v!=null) el.textContent = v; });
     $$('[data-ph-ar]').forEach(el => { el.placeholder = el.getAttribute(lang==='ar'?'data-ph-ar':'data-ph-en'); });
-    document.title = lang==='ar' ? 'يا سبا · السبا والمساج يجيكِ البيت — Ya Spa' : 'Ya Spa · Massage & beauty at home in Jeddah';
+    document.title = lang==='ar' ? 'يا سبا · المساج يجيكِ البيت — Ya Spa' : 'Ya Spa · Massage at home in Jeddah';
     localStorage.setItem('yaspa-lang', lang);
     sync();
   }
@@ -177,8 +180,8 @@
 
   $('#joinBtn') && $('#joinBtn').addEventListener('click', () => {
     openWA(lang==='ar'
-      ? 'مرحبًا يا سبا 🌸\nأنا معالِجة مساج/أخصائية تجميل وأرغب بالانضمام للعمل معكم في جدة.\n\nالاسم:\nالتخصص:\nسنوات الخبرة:'
-      : 'Hello Ya Spa 🌸\nI\'m a massage therapist / beauty pro and I\'d like to join you in Jeddah.\n\nName:\nSpeciality:\nYears of experience:');
+      ? 'مرحبًا يا سبا 🌸\nأنا معالِجة مساج وأرغب بالانضمام للعمل معكم في جدة.\n\nالاسم:\nالتخصص:\nسنوات الخبرة:'
+      : 'Hello Ya Spa 🌸\nI\'m a massage therapist and I\'d like to join you in Jeddah.\n\nName:\nSpeciality:\nYears of experience:');
   });
 
   $('#waDirect') && $('#waDirect').addEventListener('click', () => {
