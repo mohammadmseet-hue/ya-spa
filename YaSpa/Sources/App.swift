@@ -9,14 +9,13 @@ struct YaSpaApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                if auth.checking {
+                if Config.requireAuth && auth.checking {
                     ZStack {
                         Brand.heroGradient.ignoresSafeArea()
                         ProgressView().tint(Brand.pinkDeep)
                     }
-                } else if !Config.isConfigured || auth.isAuthenticated {
-                    // Backend not connected yet → app works as-is (no login wall).
-                    // Once Supabase keys are set, phone-auth is enforced.
+                } else if !Config.requireAuth || auth.isAuthenticated {
+                    // Login is enforced only once an SMS provider is live (Config.requireAuth).
                     RootView()
                 } else {
                     AuthFlowView()
