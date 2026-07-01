@@ -1,0 +1,33 @@
+name: iOS build check
+
+on:
+  push:
+    branches: [ massage-only-ios-app ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: cd YaSpa && xcodegen generate
+
+      - name: Build (iOS Simulator, no signing)
+        run: |
+          set -o pipefail
+          cd YaSpa
+          xcodebuild build \
+            -project YaSpa.xcodeproj \
+            -scheme App \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
