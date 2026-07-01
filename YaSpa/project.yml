@@ -11,6 +11,10 @@ settings:
     VERSIONING_SYSTEM: "apple-generic"
     SWIFT_VERSION: "5.0"
     DEVELOPMENT_TEAM: "K645N4JENC"
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.0.0"
 targets:
   App:
     type: application
@@ -19,6 +23,9 @@ targets:
     sources:
       - Sources
       - Resources
+    dependencies:
+      - package: Supabase
+        product: Supabase
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: "sa.yaspa.app"
