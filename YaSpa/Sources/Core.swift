@@ -240,6 +240,18 @@ final class BookingStore: ObservableObject {
     func add(_ b: Booking) { bookings.insert(b, at: 0); save() }
     func remove(_ b: Booking) { bookings.removeAll { $0.id == b.id }; save() }
 
+    /// Merge cloud bookings into the on-device list, deduped by id. Bookings share
+    /// the same id on cloud and device, so this never creates duplicates.
+    func merge(_ incoming: [Booking]) {
+        guard !incoming.isEmpty else { return }
+        let existing = Set(bookings.map(\.id))
+        let fresh = incoming.filter { !existing.contains($0.id) }
+        guard !fresh.isEmpty else { return }
+        bookings.append(contentsOf: fresh)
+        bookings.sort { ($0.dateISO, $0.time) > ($1.dateISO, $1.time) }
+        save()
+    }
+
     private func load() {
         guard let data = UserDefaults.standard.data(forKey: key),
               let decoded = try? JSONDecoder().decode([Booking].self, from: data) else { return }

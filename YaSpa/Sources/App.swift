@@ -32,6 +32,7 @@ struct YaSpaApp: App {
 
 struct RootView: View {
     @EnvironmentObject var app: AppState
+    @EnvironmentObject var store: BookingStore
     @State private var tab = 0
 
     var body: some View {
@@ -48,6 +49,10 @@ struct RootView: View {
             ProfileView()
                 .tabItem { Label(app.t("حسابي", "Profile"), systemImage: "person.crop.circle") }
                 .tag(3)
+        }
+        .task {
+            // Pull this user's bookings from the cloud (no-op until signed in).
+            store.merge(await CloudBookings.list())
         }
     }
 }
