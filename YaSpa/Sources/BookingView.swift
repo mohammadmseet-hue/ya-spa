@@ -260,6 +260,7 @@ struct BookingView: View {
                         notes: notes.trimmingCharacters(in: .whitespaces))
         store.add(b)
         Haptics.success()
+        Task { await CloudBookings.save(b) }   // cloud persistence when backend is connected
         confirmed = b
     }
 }
