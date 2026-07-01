@@ -159,8 +159,9 @@ jobs:
         if: steps.guard.outputs.go == 'true'
         run: |
           cd YaSpa
-          LATEST=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" 2>/dev/null || echo 0)
-          agvtool new-version -all $((LATEST + 1))
+          # Unix timestamp = always unique and strictly increasing, so TestFlight never
+          # rejects a duplicate CFBundleVersion (build 1 already exists from the old build).
+          agvtool new-version -all "$(date +%s)"
       - name: Build signed .ipa
         if: steps.guard.outputs.go == 'true'
         run: cd YaSpa && xcode-project build-ipa --project YaSpa.xcodeproj --scheme App
