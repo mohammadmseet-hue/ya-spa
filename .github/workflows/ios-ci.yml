@@ -104,3 +104,66 @@ jobs:
           name: yaspa-evidence
           path: artifacts/
           if-no-files-found: warn
+
+  # Ships the SIGNED build to TestFlight automatically — but ONLY once the three
+  # App Store Connect API-key secrets exist. Until then this job self-skips cheaply.
+  release:
+    runs-on: macos-15
+    needs: build
+    timeout-minutes: 50
+    env:
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      BUNDLE_ID: sa.yaspa.app
+    steps:
+      - name: Are the signing secrets present?
+        id: guard
+        run: |
+          if [ -n "$APP_STORE_CONNECT_ISSUER_ID" ] && [ -n "$APP_STORE_CONNECT_KEY_IDENTIFIER" ] && [ -n "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            echo "Secrets present — delivering signed build to TestFlight."
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            echo "No App Store Connect secrets yet — skipping signed delivery."
+          fi
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.go == 'true'
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: steps.guard.outputs.go == 'true'
+        with:
+          xcode-version: latest-stable
+      - name: Install tools
+        if: steps.guard.outputs.go == 'true'
+        run: |
+          brew install xcodegen
+          python3 -m pip install --user --break-system-packages codemagic-cli-tools
+          echo "$(python3 -m site --user-base)/bin" >> "$GITHUB_PATH"
+      - name: Generate Xcode project
+        if: steps.guard.outputs.go == 'true'
+        run: cd YaSpa && xcodegen generate
+      - name: Sign (create cert + profile via the API key)
+        if: steps.guard.outputs.go == 'true'
+        run: |
+          keychain initialize
+          app-store-connect bundle-ids create "$BUNDLE_ID" --platform IOS --name "Ya Spa" 2>/dev/null \
+            || echo "bundle id already registered — continuing"
+          openssl genrsa 2048 > /tmp/yaspa_cert_key.pem 2>/dev/null
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --certificate-key=@file:/tmp/yaspa_cert_key.pem \
+            --create
+          keychain add-certificates
+          cd YaSpa && xcode-project use-profiles
+      - name: Bump build number
+        if: steps.guard.outputs.go == 'true'
+        run: |
+          cd YaSpa
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" 2>/dev/null || echo 0)
+          agvtool new-version -all $((LATEST + 1))
+      - name: Build signed .ipa
+        if: steps.guard.outputs.go == 'true'
+        run: cd YaSpa && xcode-project build-ipa --project YaSpa.xcodeproj --scheme App
+      - name: Upload to TestFlight
+        if: steps.guard.outputs.go == 'true'
+        run: app-store-connect publish --path "YaSpa/build/ios/ipa/*.ipa"
