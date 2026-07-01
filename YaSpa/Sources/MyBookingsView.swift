@@ -3,6 +3,7 @@ import SwiftUI
 struct MyBookingsView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
+    @State private var cancelTarget: Booking?
 
     var body: some View {
         NavigationStack {
@@ -29,6 +30,16 @@ struct MyBookingsView: View {
                         .font(.headline)
                         .foregroundStyle(Brand.pinkDeep)
                 }
+            }
+            .confirmationDialog(
+                app.t("إلغاء هذا الحجز؟", "Cancel this booking?"),
+                isPresented: Binding(get: { cancelTarget != nil }, set: { if !$0 { cancelTarget = nil } }),
+                presenting: cancelTarget
+            ) { b in
+                Button(app.t("إلغاء الحجز", "Cancel booking"), role: .destructive) {
+                    withAnimation { store.remove(b) }
+                }
+                Button(app.t("تراجع", "Keep it"), role: .cancel) {}
             }
         }
     }
@@ -59,9 +70,21 @@ struct MyBookingsView: View {
                     .font(.caption2).foregroundStyle(Brand.muted)
             }
             Spacer(minLength: 0)
-            Text(app.money(Pricing.total(b.price)))
-                .font(.system(.subheadline, design: .rounded).weight(.bold))
-                .foregroundStyle(Brand.pinkDeep)
+            VStack(alignment: .trailing, spacing: 8) {
+                Text(app.money(Pricing.total(b.price)))
+                    .font(.system(.subheadline, design: .rounded).weight(.bold))
+                    .foregroundStyle(Brand.pinkDeep)
+                Button {
+                    Haptics.tap()
+                    cancelTarget = b
+                } label: {
+                    Text(app.t("إلغاء", "Cancel"))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(Brand.muted)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("cancel-booking")
+            }
         }
         .padding(14)
         .background(Color.white)
