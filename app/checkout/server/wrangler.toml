@@ -1,0 +1,13 @@
+# Cloudflare Worker config for the Ya Spa payments backend.
+# Deploy:  npx wrangler deploy
+# Set secrets (do NOT put keys in this file):
+#   npx wrangler secret put MOYASAR_SECRET_KEY
+#   npx wrangler secret put WEBHOOK_TOKEN
+name = "yaspa-pay"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Free-tier friendly. Add a KV/D1 binding here when you start storing bookings:
+# [[kv_namespaces]]
+# binding = "BOOKINGS"
+# id = "xxxxxxxx"

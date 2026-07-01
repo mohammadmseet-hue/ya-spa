@@ -1,0 +1,63 @@
+# Codemagic CI/CD — builds the Ya Spa app on Codemagic's cloud Macs.
+# You do NOT need your own Mac. Connect this repo in Codemagic, add your Apple
+# App Store Connect API key in the Codemagic UI, then run the ios workflow.
+#
+# Setup once (after your Apple account activates):
+#   1. codemagic.io → add this repository.
+#   2. Codemagic → Teams/Integrations → Developer Portal → connect your
+#      App Store Connect API key (.p8 + Key ID + Issuer ID). Name it "Ya Spa ASC".
+#   3. First run the `ios` workflow to push a build to TestFlight.
+#
+# App identity (must match App Store Connect): appId = sa.yaspa.app, name = "Ya Spa".
+
+workflows:
+  # ---------------------------------------------------------------- iOS
+  ios:
+    name: Ya Spa — iOS (App Store / TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: Ya Spa ASC   # <- the API-key integration you name in the UI
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: sa.yaspa.app
+      vars:
+        BUNDLE_ID: "sa.yaspa.app"
+        XCODE_SCHEME: "App"
+      node: 20
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install JS deps
+        script: cd app && npm ci
+      - name: Copy web + scaffold iOS project
+        script: |
+          cd app
+          npm run copy:web
+          npx cap add ios || npx cap sync ios
+      - name: Generate icons & splash (from app/assets/icon.png)
+        script: cd app && npm run assets || echo "no app/assets/icon.png yet — using default"
+      - name: Set up code signing
+        script: |
+          cd app/ios/App
+          xcode-project use-profiles
+      - name: CocoaPods install
+        script: cd app/ios/App && pod install
+      - name: Bump build number to next TestFlight number
+        script: |
+          cd app/ios/App
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" 2>/dev/null || echo 0)
+          agvtool new-version -all $((LATEST + 1))
+      - name: Build .ipa
+        script: |
+          cd app/ios/App
+          xcode-project build-ipa --workspace "App.xcworkspace" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - app/ios/App/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # submit_to_app_store: false   # flip to true once you're ready for review

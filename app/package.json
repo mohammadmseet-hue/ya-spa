@@ -1,0 +1,27 @@
+{
+  "name": "yaspa-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ya Spa — at-home massage (Jeddah). Capacitor native wrapper around the Ya Spa web app.",
+  "type": "module",
+  "scripts": {
+    "copy:web": "node scripts/copy-web.mjs",
+    "sync": "npm run copy:web && cap sync ios",
+    "add:ios": "npm run copy:web && cap add ios",
+    "ios": "npm run sync && cap open ios",
+    "assets": "capacitor-assets generate --ios --iconBackgroundColor '#FBECF1' --splashBackgroundColor '#FBECF1'"
+  },
+  "dependencies": {
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/push-notifications": "^6.0.0",
+    "@capacitor/share": "^6.0.0",
+    "@capacitor/splash-screen": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.0.0"
+  }
+}

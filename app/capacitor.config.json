@@ -1,0 +1,14 @@
+{
+  "appId": "sa.yaspa.app",
+  "appName": "Ya Spa",
+  "webDir": "www",
+  "backgroundColor": "#FBECF1",
+  "loggingBehavior": "none",
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#FBECF1"
+  },
+  "server": {
+    "iosScheme": "https"
+  }
+}

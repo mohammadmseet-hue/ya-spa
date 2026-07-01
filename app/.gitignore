@@ -1,0 +1,17 @@
+# deps + generated web bundle
+node_modules/
+www/
+
+# The iOS project is generated fresh by CI (Codemagic runs `cap add ios` each build),
+# so it is not committed. If you later get a Mac and want to keep native tweaks,
+# delete the line below and commit ios/.
+ios/
+
+# payments — your real keys/URLs (create from config.example.js)
+checkout/config.js
+checkout/server/.wrangler/
+checkout/server/node_modules/
+
+# misc
+*.log
+.DS_Store

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>يا سبا · تأكيد الدفع — Ya Spa</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#9E2B52">
+<link rel="icon" href="assets/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --pink:#9E2B52; --pink-2:#E45C86; --ink:#3a2230; --muted:#7a5966; --bg1:#FFF5F7; --bg2:#FDE8EE; }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:24px;
+    font-family:"Tajawal","IBM Plex Sans",system-ui,sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+  html[dir=ltr] body{font-family:"IBM Plex Sans","Tajawal",system-ui,sans-serif}
+  .card{background:#fff;border-radius:26px;max-width:440px;width:100%;padding:40px 28px;text-align:center;
+    box-shadow:0 30px 80px rgba(158,43,82,.14)}
+  .badge{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;margin:0 auto 20px}
+  .ok{background:linear-gradient(160deg,#eafbf1,#d6f5e3)} .bad{background:#fdeef2}
+  .badge svg{width:44px;height:44px}
+  h1{font-size:1.5rem;margin:.1rem 0 .4rem}
+  p{color:var(--muted);line-height:1.7;margin:.3rem 0}
+  .ref{display:inline-block;margin-top:8px;font-size:.8rem;color:var(--muted);background:#f7eef2;
+    border-radius:999px;padding:5px 12px}
+  .btns{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+    padding:14px 18px;border-radius:14px;font-weight:700;font-size:1rem;border:0;cursor:pointer}
+  .btn-primary{background:linear-gradient(160deg,var(--pink-2),var(--pink));color:#fff}
+  .btn-wa{background:#25D366;color:#fff}
+  .lang{position:fixed;inset-block-start:16px;inset-inline-end:16px;background:#fff;border:1px solid #f0d9e2;
+    border-radius:999px;padding:6px 12px;font-weight:700;color:var(--pink);cursor:pointer}
+  .logo{width:52px;height:52px;margin:0 auto 14px;display:block}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<button class="lang" id="lang">EN</button>
+<div class="card">
+  <img class="logo" src="assets/logo.svg" alt="Ya Spa">
+
+  <!-- SUCCESS -->
+  <div id="okView" hidden>
+    <div class="badge ok"><svg viewBox="0 0 24 24" fill="none" stroke="#1a9f5a" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h1 data-ar="تم الدفع بنجاح 🌸" data-en="Payment successful 🌸">تم الدفع بنجاح 🌸</h1>
+    <p data-ar="شكرًا لكِ! استلمنا طلبكِ، وسنؤكّد معالِجتكِ وموعدكِ عبر واتساب خلال دقائق."
+       data-en="Thank you! We've received your booking and will confirm your therapist and time on WhatsApp within minutes.">شكرًا لكِ! استلمنا طلبكِ، وسنؤكّد معالِجتكِ وموعدكِ عبر واتساب خلال دقائق.</p>
+    <span class="ref" id="refOk"></span>
+    <div class="btns">
+      <a class="btn btn-wa" href="https://wa.me/966565722923" data-ar="تواصلي معنا واتساب" data-en="Chat with us on WhatsApp">تواصلي معنا واتساب</a>
+      <a class="btn btn-primary" href="index.html" data-ar="العودة للرئيسية" data-en="Back to home">العودة للرئيسية</a>
+    </div>
+  </div>
+
+  <!-- FAILED / PENDING -->
+  <div id="badView" hidden>
+    <div class="badge bad"><svg viewBox="0 0 24 24" fill="none" stroke="#9E2B52" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+    <h1 data-ar="لم يكتمل الدفع" data-en="Payment not completed">لم يكتمل الدفع</h1>
+    <p id="badMsg" data-ar="لم تتم عملية الدفع. لا تقلقي — لم يُخصم أي مبلغ. يمكنكِ المحاولة مرة أخرى أو الطلب عبر واتساب."
+       data-en="The payment didn't go through. Don't worry — nothing was charged. You can try again or order on WhatsApp.">لم تتم عملية الدفع. لا تقلقي — لم يُخصم أي مبلغ. يمكنكِ المحاولة مرة أخرى أو الطلب عبر واتساب.</p>
+    <div class="btns">
+      <a class="btn btn-primary" href="index.html#book" data-ar="حاولي مرة أخرى" data-en="Try again">حاولي مرة أخرى</a>
+      <a class="btn btn-wa" href="https://wa.me/966565722923" data-ar="اطلبي عبر واتساب" data-en="Order on WhatsApp">اطلبي عبر واتساب</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var q = new URLSearchParams(location.search);
+  var status = (q.get('status') || '').toLowerCase();   // Moyasar: paid | failed
+  var id = q.get('id') || '';
+  var paid = status === 'paid';
+
+  document.getElementById('okView').hidden = !paid;
+  document.getElementById('badView').hidden = paid;
+  if (id) document.getElementById('refOk').textContent = (localStorage.getItem('yaspa-lang')==='en'?'Ref: ':'رقم العملية: ') + id.slice(0,14);
+
+  // language (mirror the main site's stored preference)
+  var lang = localStorage.getItem('yaspa-lang') || 'ar';
+  function apply(){
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang==='ar' ? 'rtl' : 'ltr';
+    document.getElementById('lang').textContent = lang==='ar' ? 'EN' : 'ع';
+    document.querySelectorAll('[data-ar]').forEach(function(el){
+      var v = el.getAttribute(lang==='ar'?'data-ar':'data-en'); if(v!=null) el.textContent = v;
+    });
+    document.title = lang==='ar' ? 'يا سبا · تأكيد الدفع' : 'Ya Spa · Payment confirmation';
+  }
+  document.getElementById('lang').addEventListener('click', function(){
+    lang = lang==='ar' ? 'en' : 'ar'; localStorage.setItem('yaspa-lang', lang); apply();
+  });
+  apply();
+})();
+</script>
+</body>
+</html>
