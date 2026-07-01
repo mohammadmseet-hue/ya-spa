@@ -4,8 +4,8 @@
 #
 # Setup once (after your Apple account activates):
 #   1. codemagic.io → add this repository.
-#   2. Codemagic → Teams/Integrations → Developer Portal → connect your
-#      App Store Connect API key (.p8 + Key ID + Issuer ID). Name it "Ya Spa ASC".
+#   2. Codemagic → Settings → Team integrations → Developer Portal → connect your
+#      App Store Connect API key (.p8 + Key ID + Issuer ID). Name it "Ya Spa CI".
 #   3. First run the `ios` workflow to push a build to TestFlight.
 #
 # App identity (must match App Store Connect): appId = sa.yaspa.app, name = "Ya Spa".
@@ -17,7 +17,7 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
-      app_store_connect: Ya Spa ASC   # <- the API-key integration you name in the UI
+      app_store_connect: Ya Spa CI   # <- matches the Developer Portal key name in Codemagic
     environment:
       vars:
         BUNDLE_ID: "sa.yaspa.app"
