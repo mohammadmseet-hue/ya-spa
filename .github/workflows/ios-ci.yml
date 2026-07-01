@@ -64,6 +64,14 @@ jobs:
             -resultBundlePath "$GITHUB_WORKSPACE/artifacts/TestResults.xcresult" \
             CODE_SIGNING_ALLOWED=NO
 
+      - name: Extract booking-flow screenshots
+        if: always()
+        run: |
+          brew install chargepoint/xcparse/xcparse 2>/dev/null || brew install xcparse 2>/dev/null || true
+          mkdir -p "$GITHUB_WORKSPACE/artifacts/flow"
+          xcparse screenshots "$GITHUB_WORKSPACE/artifacts/TestResults.xcresult" "$GITHUB_WORKSPACE/artifacts/flow" || true
+          ls -la "$GITHUB_WORKSPACE/artifacts/flow" || true
+
       - name: Screenshot the running app
         if: always()
         run: |
