@@ -178,6 +178,40 @@ enum Scheduling {
     }
 }
 
+// MARK: - Payment
+
+enum PaymentMethod: String, Codable, Hashable, CaseIterable, Identifiable {
+    case onArrival
+    case applePay
+    case card
+
+    var id: String { rawValue }
+
+    func label(ar: Bool) -> String {
+        switch self {
+        case .onArrival: return ar ? "الدفع عند الوصول" : "Pay on arrival"
+        case .applePay:  return "Apple Pay"
+        case .card:      return ar ? "بطاقة / مدى" : "Card / mada"
+        }
+    }
+
+    func note(ar: Bool) -> String {
+        switch self {
+        case .onArrival: return ar ? "نقدًا أو بالبطاقة مع المعالِجة" : "Cash or card with your therapist"
+        case .applePay:  return ar ? "دفع فوري وآمن" : "Instant, secure payment"
+        case .card:      return ar ? "فيزا · ماستر · مدى" : "Visa · Mastercard · mada"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .onArrival: return "banknote"
+        case .applePay:  return "apple.logo"
+        case .card:      return "creditcard"
+        }
+    }
+}
+
 // MARK: - Booking + store
 
 struct Booking: Identifiable, Codable, Hashable {
@@ -193,6 +227,7 @@ struct Booking: Identifiable, Codable, Hashable {
     var name: String
     var district: String
     var notes: String
+    var paymentMethod: PaymentMethod? = .onArrival
     var createdAt = Date()
 }
 

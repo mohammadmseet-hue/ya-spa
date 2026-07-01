@@ -12,6 +12,7 @@ struct BookingView: View {
     @State private var name = ""
     @State private var district = ""
     @State private var notes = ""
+    @State private var payment: PaymentMethod = .onArrival
     @State private var confirmed: Booking?
 
     private let days = Scheduling.upcomingDays(14)
@@ -32,6 +33,7 @@ struct BookingView: View {
                 timeGrid
                 therapistSection
                 detailsForm
+                paymentSection
                 priceSummary
             }
             .padding(16)
@@ -204,6 +206,58 @@ struct BookingView: View {
             )
     }
 
+    private var paymentSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(app.t("طريقة الدفع", "Payment method"), systemImage: "creditcard")
+                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+            paymentOption(.onArrival, enabled: true)
+            paymentOption(.applePay, enabled: Config.paymentsEnabled)
+            paymentOption(.card, enabled: Config.paymentsEnabled)
+        }
+    }
+
+    private func paymentOption(_ method: PaymentMethod, enabled: Bool) -> some View {
+        let selected = payment == method
+        return Button {
+            guard enabled else { return }
+            Haptics.tap()
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) { payment = method }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: method.symbol)
+                    .font(.title3).foregroundStyle(enabled ? Brand.pinkDeep : Brand.muted.opacity(0.5))
+                    .frame(width: 30)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(method.label(ar: app.isAr))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(enabled ? Brand.ink : Brand.muted)
+                    Text(method.note(ar: app.isAr)).font(.caption2).foregroundStyle(Brand.muted)
+                }
+                Spacer(minLength: 0)
+                if enabled {
+                    Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(selected ? Brand.pinkDeep : Brand.muted.opacity(0.4))
+                } else {
+                    Text(app.t("قريبًا", "Soon"))
+                        .font(.caption2.weight(.semibold)).foregroundStyle(Brand.pinkDeep)
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(Brand.bg2).clipShape(Capsule())
+                }
+            }
+            .padding(12)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(selected ? Brand.pink : Brand.bg2, lineWidth: selected ? 2 : 1)
+            )
+            .opacity(enabled ? 1 : 0.6)
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
+        .accessibilityIdentifier("pay-\(method.rawValue)")
+    }
+
     private var priceSummary: some View {
         VStack(spacing: 8) {
             row(app.t("الجلسة", "Session"), massage.price)
@@ -257,7 +311,8 @@ struct BookingView: View {
                         therapistName: app.t(therapist.nameAr, therapist.nameEn),
                         name: name.trimmingCharacters(in: .whitespaces),
                         district: district.trimmingCharacters(in: .whitespaces),
-                        notes: notes.trimmingCharacters(in: .whitespaces))
+                        notes: notes.trimmingCharacters(in: .whitespaces),
+                        paymentMethod: payment)
         store.add(b)
         Haptics.success()
         Task { await CloudBookings.save(b) }   // cloud persistence when backend is connected

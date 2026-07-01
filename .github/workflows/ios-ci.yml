@@ -5,6 +5,13 @@ on:
     branches: [ massage-only-ios-app ]
   workflow_dispatch:
 
+# Only one build/release at a time on this branch. A new push cancels the
+# in-flight run, which prevents two release jobs racing on the distribution
+# signing certificate (revoke/create) and keeps iteration fast.
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-15

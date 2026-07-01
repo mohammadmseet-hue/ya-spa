@@ -15,4 +15,9 @@ enum Config {
     /// Supabase Auth, so the app is never stuck at a login it can't complete. Flip to
     /// true the moment SMS OTP works.
     static let requireAuth = false
+
+    /// In-app card / Apple Pay charging. Kept OFF until a Moyasar merchant account is
+    /// connected. While off, "Pay on arrival" is the working payment path and the
+    /// online options are shown as coming soon. Flip to true once Moyasar is wired.
+    static let paymentsEnabled = false
 }

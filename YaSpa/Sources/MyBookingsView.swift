@@ -68,6 +68,10 @@ struct MyBookingsView: View {
                     .font(.caption).foregroundStyle(Brand.muted)
                 Text("\(b.therapistName) · \(b.district)")
                     .font(.caption2).foregroundStyle(Brand.muted)
+                if let pm = b.paymentMethod {
+                    Label(pm.label(ar: app.isAr), systemImage: pm.symbol)
+                        .font(.caption2.weight(.medium)).foregroundStyle(Brand.pinkDeep)
+                }
             }
             Spacer(minLength: 0)
             VStack(alignment: .trailing, spacing: 8) {

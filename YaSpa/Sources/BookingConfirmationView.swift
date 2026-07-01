@@ -36,6 +36,8 @@ struct BookingConfirmationView: View {
                 detail(app.t("الوقت", "Time"), booking.time)
                 detail(app.t("المعالِجة", "Therapist"), booking.therapistName)
                 detail(app.t("الحي", "District"), booking.district)
+                detail(app.t("الدفع", "Payment"),
+                       (booking.paymentMethod ?? .onArrival).label(ar: app.isAr))
                 detail(app.t("الإجمالي", "Total"), app.money(Pricing.total(booking.price)))
             }
             .padding(18)
@@ -80,9 +82,10 @@ struct BookingConfirmationView: View {
     private func whatsappURL() -> URL {
         let notesLine = booking.notes.isEmpty ? "" :
             (app.isAr ? "\nملاحظات: \(booking.notes)" : "\nNotes: \(booking.notes)")
+        let pay = (booking.paymentMethod ?? .onArrival).label(ar: app.isAr)
         let msg = app.isAr
-            ? "مرحبًا يا سبا 🌸\nحجز مساج:\n• \(booking.massageNameAr) (\(booking.minutes) د)\n• التاريخ: \(booking.dateISO)\n• الوقت: \(booking.time)\n• المعالِجة: \(booking.therapistName)\n• الاسم: \(booking.name)\n• الحي: \(booking.district)\n• الإجمالي: \(app.money(Pricing.total(booking.price)))\(notesLine)"
-            : "Hello Ya Spa 🌸\nMassage booking:\n• \(booking.massageNameEn) (\(booking.minutes) min)\n• Date: \(booking.dateISO)\n• Time: \(booking.time)\n• Therapist: \(booking.therapistName)\n• Name: \(booking.name)\n• District: \(booking.district)\n• Total: \(app.money(Pricing.total(booking.price)))\(notesLine)"
+            ? "مرحبًا يا سبا 🌸\nحجز مساج:\n• \(booking.massageNameAr) (\(booking.minutes) د)\n• التاريخ: \(booking.dateISO)\n• الوقت: \(booking.time)\n• المعالِجة: \(booking.therapistName)\n• الاسم: \(booking.name)\n• الحي: \(booking.district)\n• الدفع: \(pay)\n• الإجمالي: \(app.money(Pricing.total(booking.price)))\(notesLine)"
+            : "Hello Ya Spa 🌸\nMassage booking:\n• \(booking.massageNameEn) (\(booking.minutes) min)\n• Date: \(booking.dateISO)\n• Time: \(booking.time)\n• Therapist: \(booking.therapistName)\n• Name: \(booking.name)\n• District: \(booking.district)\n• Payment: \(pay)\n• Total: \(app.money(Pricing.total(booking.price)))\(notesLine)"
         let encoded = msg.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         return URL(string: "https://wa.me/966565722923?text=\(encoded)")
             ?? URL(string: "https://wa.me/966565722923")!
