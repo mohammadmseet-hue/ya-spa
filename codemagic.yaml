@@ -30,7 +30,7 @@ workflows:
       cocoapods: default
     scripts:
       - name: Install JS deps
-        script: cd app && npm ci
+        script: cd app && npm install
       - name: Copy web + scaffold iOS project
         script: |
           cd app

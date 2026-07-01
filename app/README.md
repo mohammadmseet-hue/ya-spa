@@ -72,7 +72,8 @@ Also: fill **App Privacy**, set age rating **4+**, and add the review note from
 
 - `capacitor.config.json` — app id, name, theme color, iOS settings.
 - `package.json` — Capacitor deps + `copy:web` / `sync` / `add:ios` / `ios` / `assets`.
-- `codemagic.yaml` — cloud iOS build → TestFlight (no Mac needed).
+- `../codemagic.yaml` — cloud iOS build → TestFlight (lives at the **repo root** so
+  Codemagic auto-detects it; its steps `cd app` into this folder).
 - `scripts/copy-web.mjs` — copies the site into `www/` and injects the app-only
   `native.js` (and payments, when configured).
 - `assets/` — `icon.png` (1024, App-Store ready), `logo.png` (source for `npm run
