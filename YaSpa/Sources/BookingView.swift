@@ -3,6 +3,7 @@ import SwiftUI
 struct BookingView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
+    @Environment(\.dismiss) private var dismiss
     let massage: Massage
 
     @State private var selectedDay: Date = Calendar.current.startOfDay(for: Date())
@@ -36,7 +37,7 @@ struct BookingView: View {
         .navigationTitle(app.t("احجزي موعدكِ", "Book your slot"))
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) { bookBar }
-        .fullScreenCover(item: $confirmed) { b in
+        .fullScreenCover(item: $confirmed, onDismiss: { dismiss() }) { b in
             BookingConfirmationView(booking: b)
         }
     }

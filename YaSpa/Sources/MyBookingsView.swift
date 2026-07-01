@@ -23,6 +23,13 @@ struct MyBookingsView: View {
             .background(Brand.bg.ignoresSafeArea())
             .navigationTitle(app.t("حجوزاتي", "My bookings"))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(app.isAr ? "EN" : "ع") { app.toggle() }
+                        .font(.headline)
+                        .foregroundStyle(Brand.pinkDeep)
+                }
+            }
         }
     }
 
