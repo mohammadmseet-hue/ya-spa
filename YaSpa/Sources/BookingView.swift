@@ -54,7 +54,7 @@ struct BookingView: View {
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) { bookBar }
         .fullScreenCover(item: $confirmed, onDismiss: { dismiss() }) { b in
-            BookingConfirmationView(booking: b)
+            BookingConfirmationView(booking: b).opaqueCover()
         }
     }
 

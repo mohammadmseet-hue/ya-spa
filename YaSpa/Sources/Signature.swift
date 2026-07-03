@@ -47,6 +47,18 @@ struct ArchMedallion: View {
     }
 }
 
+// MARK: - Opaque presentation floor (fullScreenCover never flashes black)
+
+extension View {
+    @ViewBuilder func opaqueCover() -> some View {
+        if #available(iOS 16.4, *) {
+            self.presentationBackground(Brand.bg)
+        } else {
+            self   // content already carries an opaque AmbientBackground floor
+        }
+    }
+}
+
 // MARK: - Gold hairline frame
 
 extension View {

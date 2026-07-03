@@ -35,7 +35,7 @@ struct MassageCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(app.t(massage.nameAr, massage.nameEn))
                     .spaFont(.cardTitle, ar: app.isAr)
-                    .foregroundStyle(Brand.ink).lineLimit(1).minimumScaleFactor(0.7)
+                    .foregroundStyle(Brand.ink).lineLimit(1).minimumScaleFactor(0.8).allowsTightening(true)
                 Text(app.t(massage.benefitsAr.first ?? "", massage.benefitsEn.first ?? ""))
                     .font(.rubik(13))
                     .foregroundStyle(Brand.inkSoft).lineLimit(1)

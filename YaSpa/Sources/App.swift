@@ -9,19 +9,26 @@ struct YaSpaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if !onboarded && !Runtime.isUITest {
-                    OnboardingView { withAnimation(.easeInOut) { onboarded = true } }
-                } else if Config.requireAuth && auth.checking {
-                    ZStack {
-                        Brand.heroGradient.ignoresSafeArea()
-                        ProgressView().tint(Brand.pinkDeep)
+            ZStack {
+                // Root opaque floor: guarantees a warm brand backing behind every tab
+                // switch / cover / transition, so a "black frame" is structurally
+                // unreachable even if a screen's background is mid-layout.
+                Brand.bg.ignoresSafeArea()
+
+                Group {
+                    if !onboarded && !Runtime.isUITest {
+                        OnboardingView { withAnimation(.easeInOut) { onboarded = true } }
+                    } else if Config.requireAuth && auth.checking {
+                        ZStack {
+                            Brand.heroGradient.ignoresSafeArea()
+                            ProgressView().tint(Brand.pinkDeep)
+                        }
+                    } else if !Config.requireAuth || auth.isAuthenticated {
+                        // Login is enforced only once an SMS provider is live (Config.requireAuth).
+                        RootView()
+                    } else {
+                        AuthFlowView()
                     }
-                } else if !Config.requireAuth || auth.isAuthenticated {
-                    // Login is enforced only once an SMS provider is live (Config.requireAuth).
-                    RootView()
-                } else {
-                    AuthFlowView()
                 }
             }
             .environmentObject(app)
@@ -53,6 +60,9 @@ struct RootView: View {
                 .tabItem { Label(app.t("حسابي", "Profile"), systemImage: "person.crop.circle") }
                 .tag(3)
         }
+        // Never animate the tab container swap — TabView can't interpolate it and an
+        // animated swap flashes a black frame on device.
+        .animation(nil, value: tab)
         .task {
             // Pull this user's bookings from the cloud (no-op until signed in).
             store.merge(await CloudBookings.list())
