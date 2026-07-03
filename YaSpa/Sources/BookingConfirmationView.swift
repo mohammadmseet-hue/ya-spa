@@ -22,7 +22,7 @@ struct BookingConfirmationView: View {
 
                 Text(app.t("سنؤكّد معالِجتكِ عبر واتساب خلال دقائق.",
                            "We'll confirm your therapist on WhatsApp within minutes."))
-                    .font(.system(size: 14, design: .rounded))
+                    .font(.rubik(14))
                     .foregroundStyle(Brand.inkSoft)
                     .multilineTextAlignment(.center)
 
@@ -35,7 +35,7 @@ struct BookingConfirmationView: View {
                 .buttonStyle(PrimaryButtonStyle())
 
                 Button(app.t("تم", "Done")) { dismiss() }
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .font(.rubik(16, .semibold))
                     .foregroundStyle(Brand.inkSoft)
                     .padding(.top, 2)
                     .accessibilityIdentifier("confirmation-done")
@@ -56,7 +56,7 @@ struct BookingConfirmationView: View {
                     Text(app.t(booking.massageNameAr, booking.massageNameEn))
                         .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                     Text(booking.therapistName)
-                        .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
                 }
                 Spacer(minLength: 0)
             }
@@ -69,7 +69,7 @@ struct BookingConfirmationView: View {
             Divider()
             HStack {
                 Text(app.t("الإجمالي", "Total"))
-                    .font(.system(size: 17, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                    .font(.rubik(17, .semibold)).foregroundStyle(Brand.ink)
                 Spacer()
                 Text(app.money(Pricing.total(booking.price)))
                     .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
@@ -81,9 +81,9 @@ struct BookingConfirmationView: View {
 
     private func detail(_ key: String, _ value: String) -> some View {
         HStack {
-            Text(key).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+            Text(key).font(.rubik(15)).foregroundStyle(Brand.inkSoft)
             Spacer()
-            Text(value).font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+            Text(value).font(.rubik(15, .semibold)).foregroundStyle(Brand.ink)
         }
     }
 

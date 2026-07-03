@@ -85,7 +85,7 @@ struct MetadataChip: View {
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: icon).font(.system(size: 10, weight: .semibold))
-            Text(text).font(.system(size: 13, weight: .medium, design: .rounded))
+            Text(text).font(.rubik(13, .medium))
         }
         .foregroundStyle(Brand.inkSoft)
     }
@@ -95,7 +95,7 @@ struct BenefitChip: View {
     let text: String
     var body: some View {
         Text(text)
-            .font(.system(size: 13, weight: .medium, design: .rounded))
+            .font(.rubik(13, .medium))
             .foregroundStyle(Brand.pinkDeep)
             .padding(.vertical, 7).padding(.horizontal, 12)
             .background(Brand.bg2)
@@ -116,7 +116,7 @@ struct PressureIndicator: View {
                         .frame(width: 5, height: 9)
                 }
             }
-            Text(label).font(.system(size: 11, weight: .medium, design: .rounded))
+            Text(label).font(.rubik(11, .medium))
                 .foregroundStyle(Brand.inkSoft).lineLimit(1).fixedSize()
         }
     }
@@ -151,8 +151,8 @@ struct PromiseStrip: View {
     private func item(_ icon: String, _ title: String, _ sub: String) -> some View {
         VStack(spacing: 6) {
             Image(systemName: icon).font(.system(size: 16)).foregroundStyle(Brand.gold)
-            Text(title).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ivory)
-            Text(sub).font(.system(size: 10, weight: .medium, design: .rounded)).foregroundStyle(Brand.ivory.opacity(0.7))
+            Text(title).font(.rubik(12, .semibold)).foregroundStyle(Brand.ivory)
+            Text(sub).font(.rubik(10, .medium)).foregroundStyle(Brand.ivory.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
         .multilineTextAlignment(.center)
@@ -170,8 +170,8 @@ struct TrustPromiseCard: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon).font(.system(size: 16)).foregroundStyle(Brand.gold)
-            Text(title).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
-            Text(sub).font(.system(size: 10, weight: .medium, design: .rounded)).foregroundStyle(Brand.inkSoft)
+            Text(title).font(.rubik(12, .semibold)).foregroundStyle(Brand.ink)
+            Text(sub).font(.rubik(10, .medium)).foregroundStyle(Brand.inkSoft)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14).padding(.horizontal, 6)
@@ -268,16 +268,17 @@ struct RatingSummary: View {
         HStack(alignment: .center, spacing: Space.xl) {
             VStack(spacing: 4) {
                 Text(String(format: "%.1f", average))
-                    .font(.system(size: 40, weight: .bold, design: .serif))
+                    .font(SpaFont.of(app.isAr ? SpaFont.elMessiriBold : SpaFont.frauncesSemibold,
+                                     40, relativeTo: .largeTitle, fallback: .serif, weight: .bold))
                     .foregroundStyle(Brand.ink)
                 StarRow(rating: average, size: 12)
                 Text(app.t("\(count) تقييم", "\(count) reviews"))
-                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
             }
             VStack(spacing: 5) {
                 ForEach(0..<5, id: \.self) { i in
                     HStack(spacing: 6) {
-                        Text("\(5 - i)").font(.system(size: 11, design: .rounded))
+                        Text("\(5 - i)").font(.rubik(11))
                             .foregroundStyle(Brand.inkSoft).frame(width: 10)
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
@@ -310,13 +311,13 @@ struct ReviewCard: View {
                                        size: 34)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(app.t(review.nameAr, review.nameEn))
-                        .font(.system(size: 14, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                        .font(.rubik(14, .semibold)).foregroundStyle(Brand.ink)
                     StarRow(rating: Double(review.rating), size: 10)
                 }
                 Spacer(minLength: 0)
             }
             Text(app.t(review.textAr, review.textEn))
-                .font(.system(size: 14, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .font(.rubik(14)).foregroundStyle(Brand.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(Space.l)
@@ -341,7 +342,7 @@ struct DurationSegment: View {
                     withAnimation(Motion.spring) { selection = minutes }
                 } label: {
                     Text(app.t("\(minutes) د", "\(minutes) min"))
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .font(.rubik(14, .semibold))
                         .frame(maxWidth: .infinity).padding(.vertical, 10)
                         .background(sel ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
                         .foregroundStyle(sel ? Brand.paper : Brand.ink)

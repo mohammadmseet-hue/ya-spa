@@ -64,6 +64,20 @@ enum SpaFont {
     }
 }
 
+extension Font {
+    /// Rubik at a given size/weight (both scripts), with a rounded-system fallback.
+    /// The body-text counterpart to spaFont's display roles.
+    static func rubik(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
+        let name: String
+        switch weight {
+        case .semibold, .bold, .heavy, .black: name = SpaFont.rubikSemibold
+        case .medium:                          name = SpaFont.rubikMedium
+        default:                               name = SpaFont.rubik
+        }
+        return SpaFont.of(name, size, relativeTo: .body, fallback: .rounded, weight: weight)
+    }
+}
+
 enum Typo {
     case display, serviceName, price, section, cardTitle, body, subhead, caption, eyebrow, micro
 

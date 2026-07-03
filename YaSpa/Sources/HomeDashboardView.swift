@@ -44,13 +44,13 @@ struct HomeDashboardView: View {
         HStack(alignment: .center, spacing: Space.l) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(app.t("نساء فقط · بجدة", "WOMEN ONLY · JEDDAH"))
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .font(.rubik(12, .semibold))
                     .tracking(app.isAr ? 0 : 1.8).foregroundStyle(Brand.inkSoft)
                 Rectangle().fill(Brand.gold.opacity(0.6)).frame(width: 100, height: 1)
                 Text(app.t("أهلًا بكِ 🌸", "Welcome 🌸"))
                     .spaFont(.display, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("السبا يجيكِ البيت", "Your spa, at home"))
-                    .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(15)).foregroundStyle(Brand.inkSoft)
             }
             Spacer(minLength: 0)
             ArchMedallion(symbol: "sparkles", width: 56, height: 70)
@@ -74,9 +74,9 @@ struct HomeDashboardView: View {
                     Text(app.t(b.massageNameAr, b.massageNameEn))
                         .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                     Text("\(b.dateISO) · \(b.time)")
-                        .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
                     Text(b.therapistName)
-                        .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                 }
                 Spacer(minLength: 0)
                 Text(app.money(Pricing.total(b.price)))
@@ -94,7 +94,7 @@ struct HomeDashboardView: View {
                 .spaFont(.serviceName, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("احجزي أول جلسة مساج، وتجيكِ المعالِجة إلى البيت.",
                        "Book your first massage — your therapist comes to you."))
-                .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .font(.rubik(15)).foregroundStyle(Brand.inkSoft)
                 .multilineTextAlignment(.center)
             bookButton
         }
@@ -122,7 +122,7 @@ struct HomeDashboardView: View {
             HStack(spacing: 6) {
                 Image(systemName: "star.fill").foregroundStyle(Brand.gold).font(.system(size: 13))
                 Text(app.t("4.9 · أكثر من 12,000 جلسة", "4.9 ★ · 12,000+ sessions"))
-                    .font(.system(size: 13, weight: .medium, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(13, .medium)).foregroundStyle(Brand.inkSoft)
             }
         }
     }
@@ -144,13 +144,13 @@ struct HomeDashboardView: View {
         VStack(alignment: .leading, spacing: Space.s) {
             ArchMedallion(symbol: m.symbol, width: 44, height: 56)
             Text(app.t(m.nameAr, m.nameEn))
-                .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink).lineLimit(1)
+                .font(.rubik(15, .semibold)).foregroundStyle(Brand.ink).lineLimit(1)
             HStack {
                 Text(app.t("\(m.minutes) د", "\(m.minutes) min"))
-                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                 Spacer()
                 Text(app.money(m.price))
-                    .font(.system(size: 14, weight: .bold, design: .rounded)).foregroundStyle(Brand.pinkDeep)
+                    .font(.rubik(14, .bold)).foregroundStyle(Brand.pinkDeep)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

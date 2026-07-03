@@ -33,10 +33,10 @@ struct MassageDetailView: View {
             HStack(spacing: 6) {
                 StarRow(rating: 4.9, size: 12)
                 Text(app.t("4.9 · 128 تقييم", "4.9 · 128 reviews"))
-                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
             }
             Text(app.t(massage.descAr, massage.descEn))
-                .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .font(.rubik(15)).foregroundStyle(Brand.inkSoft)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: Space.l) {
@@ -92,7 +92,7 @@ struct MassageDetailView: View {
     private func infoRow(_ text: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill").foregroundStyle(Brand.pink)
-            Text(text).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.ink)
+            Text(text).font(.rubik(15)).foregroundStyle(Brand.ink)
             Spacer(minLength: 0)
         }
     }
@@ -112,15 +112,15 @@ struct MassageDetailView: View {
                                                    size: 46, verified: true)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(app.t(th.nameAr, th.nameEn))
-                                    .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                                    .font(.rubik(15, .semibold)).foregroundStyle(Brand.ink)
                                 Text(app.t(th.specialtyAr, th.specialtyEn))
-                                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                             }
                             Spacer(minLength: 0)
                             HStack(spacing: 3) {
                                 Image(systemName: "star.fill").font(.system(size: 11)).foregroundStyle(Brand.gold)
                                 Text(String(format: "%.2f", th.rating))
-                                    .font(.system(size: 13, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                                    .font(.rubik(13, .semibold)).foregroundStyle(Brand.ink)
                             }
                             Image(systemName: "chevron.forward").font(.caption2).foregroundStyle(Brand.inkSoft)
                         }
@@ -158,7 +158,7 @@ struct MassageDetailView: View {
             HStack(spacing: Space.l) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(app.t("الإجمالي", "Total"))
-                        .font(.system(size: 11, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(11)).foregroundStyle(Brand.inkSoft)
                     Text(app.money(Pricing.total(massage.price)))
                         .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
                 }

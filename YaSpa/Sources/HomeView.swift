@@ -47,7 +47,7 @@ struct HomeView: View {
                 .foregroundStyle(Brand.ink)
             Text(app.t("اختاري جلستكِ · نساء فقط · بجدة",
                        "Choose your session · women only · Jeddah"))
-                .font(.system(size: 14, design: .rounded))
+                .font(.rubik(14))
                 .foregroundStyle(Brand.inkSoft)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -31,7 +31,7 @@ struct TherapistProfileView: View {
             HStack(spacing: 6) {
                 StarRow(rating: therapist.rating, size: 13)
                 Text("\(String(format: "%.2f", therapist.rating)) · \(therapist.reviews) \(app.t("تقييم", "reviews"))")
-                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
             }
             HStack(spacing: Space.s) {
                 badge("checkmark.seal.fill", app.t("موثّقة · أنثى", "Verified · Female"))
@@ -45,7 +45,7 @@ struct TherapistProfileView: View {
     private func badge(_ icon: String, _ text: String) -> some View {
         HStack(spacing: 5) {
             Image(systemName: icon).font(.system(size: 11))
-            Text(text).font(.system(size: 12, weight: .semibold, design: .rounded))
+            Text(text).font(.rubik(12, .semibold))
         }
         .foregroundStyle(Brand.pinkDeep)
         .padding(.vertical, 7).padding(.horizontal, 12)
@@ -68,7 +68,7 @@ struct TherapistProfileView: View {
             Text(app.t("نبذة", "About"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t(therapist.bioAr, therapist.bioEn))
-                .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .font(.rubik(15)).foregroundStyle(Brand.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -3,7 +3,7 @@ import SwiftUI
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .semibold, design: .rounded))
+            .font(.rubik(16, .semibold))
             .foregroundStyle(Brand.ivory)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 17)
@@ -37,7 +37,7 @@ struct MassageCard: View {
                     .spaFont(.cardTitle, ar: app.isAr)
                     .foregroundStyle(Brand.ink).lineLimit(1)
                 Text(app.t(massage.benefitsAr.first ?? "", massage.benefitsEn.first ?? ""))
-                    .font(.system(size: 13, design: .rounded))
+                    .font(.rubik(13))
                     .foregroundStyle(Brand.inkSoft).lineLimit(1)
                 HStack(spacing: Space.s) {
                     MetadataChip(icon: "clock", text: app.t("\(massage.minutes) د", "\(massage.minutes) min"))

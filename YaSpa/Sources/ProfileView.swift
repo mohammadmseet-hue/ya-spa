@@ -32,11 +32,11 @@ struct ProfileView: View {
             if auth.isAuthenticated && !auth.e164Phone.isEmpty {
                 Text(auth.e164Phone).spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("مسجّلة الدخول", "Signed in"))
-                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
             } else {
                 Text(app.t("زائرة", "Guest")).spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("حجوزاتكِ محفوظة على هذا الجهاز", "Your bookings are saved on this device"))
-                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
                     .multilineTextAlignment(.center)
             }
 
@@ -57,8 +57,8 @@ struct ProfileView: View {
 
     private func stat(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(Brand.pinkDeep)
-            Text(label).font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(Brand.inkSoft)
+            Text(value).font(.rubik(22, .bold)).foregroundStyle(Brand.pinkDeep)
+            Text(label).font(.rubik(11, .medium)).foregroundStyle(Brand.inkSoft)
         }
     }
 
@@ -81,9 +81,9 @@ struct ProfileView: View {
         Button { Haptics.tap(); action() } label: {
             HStack(spacing: Space.m) {
                 Image(systemName: icon).foregroundStyle(Brand.pinkDeep).frame(width: 26)
-                Text(title).font(.system(size: 16, design: .rounded)).foregroundStyle(Brand.ink)
+                Text(title).font(.rubik(16)).foregroundStyle(Brand.ink)
                 Spacer()
-                Text(value).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                Text(value).font(.rubik(15)).foregroundStyle(Brand.inkSoft)
                 Image(systemName: "chevron.forward").font(.caption).foregroundStyle(Brand.inkSoft.opacity(0.5))
             }
             .padding(Space.l)
@@ -98,7 +98,7 @@ struct ProfileView: View {
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("مساج احترافي للنساء فقط، يجيكِ البيت في جدة. معالِجات معتمدات وأدوات معقّمة.",
                        "Professional women-only massage, brought to your home in Jeddah. Certified therapists and sealed, sanitized tools."))
-                .font(.system(size: 14, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .font(.rubik(14)).foregroundStyle(Brand.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -108,7 +108,7 @@ struct ProfileView: View {
 
     private var footer: some View {
         Text("Ya Spa · v1.0")
-            .font(.system(size: 11, design: .rounded)).foregroundStyle(Brand.inkSoft.opacity(0.7))
+            .font(.rubik(11)).foregroundStyle(Brand.inkSoft.opacity(0.7))
             .padding(.top, Space.xs)
     }
 }

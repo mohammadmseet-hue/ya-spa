@@ -99,7 +99,7 @@ struct YaSpaWordmark: View {
             .frame(width: 44)
             if !compact {
                 Text(app.t("نساء فقط · جدة", "WOMEN ONLY · JEDDAH"))
-                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .font(.rubik(10, .medium))
                     .tracking(app.isAr ? 0 : 2)
                     .foregroundStyle(onDark ? Brand.ivory.opacity(0.8) : Brand.muted)
             }

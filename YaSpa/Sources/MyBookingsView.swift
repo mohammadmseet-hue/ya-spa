@@ -50,7 +50,7 @@ struct MyBookingsView: View {
             Text(app.t("لا توجد حجوزات بعد", "No bookings yet"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("اختاري مساجكِ من صفحة المساج", "Pick your massage from the Massage tab"))
-                .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .font(.rubik(15)).foregroundStyle(Brand.inkSoft)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -67,12 +67,12 @@ struct MyBookingsView: View {
                     Text(app.t(b.massageNameAr, b.massageNameEn))
                         .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                     Text("\(b.dateISO) · \(b.time)")
-                        .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
                     Text("\(b.therapistName) · \(b.district)")
-                        .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                     if let pm = b.paymentMethod {
                         Label(pm.label(ar: app.isAr), systemImage: pm.symbol)
-                            .font(.system(size: 12, weight: .medium, design: .rounded)).foregroundStyle(Brand.pinkDeep)
+                            .font(.rubik(12, .medium)).foregroundStyle(Brand.pinkDeep)
                     }
                 }
                 Spacer(minLength: 0)
@@ -83,7 +83,7 @@ struct MyBookingsView: View {
                 if let m = Catalog.all.first(where: { $0.id == b.massageId }) {
                     NavigationLink(value: m) {
                         Label(app.t("احجزي مجددًا", "Rebook"), systemImage: "arrow.clockwise")
-                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .font(.rubik(13, .semibold))
                             .foregroundStyle(Brand.pinkDeep)
                             .frame(maxWidth: .infinity).padding(.vertical, 9)
                             .background(Brand.bg2).clipShape(Capsule())
@@ -94,7 +94,7 @@ struct MyBookingsView: View {
                     Haptics.tap(); cancelTarget = b
                 } label: {
                     Text(app.t("إلغاء", "Cancel"))
-                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .font(.rubik(13, .semibold))
                         .foregroundStyle(Brand.inkSoft)
                         .frame(maxWidth: .infinity).padding(.vertical, 9)
                         .overlay(Capsule().stroke(Brand.bg2, lineWidth: 1))

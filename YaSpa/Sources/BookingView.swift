@@ -65,7 +65,7 @@ struct BookingView: View {
                     .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("\(massage.minutes) دقيقة · \(app.money(massage.price))",
                            "\(massage.minutes) min · \(app.money(massage.price))"))
-                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
             }
             Spacer(minLength: 0)
         }
@@ -91,8 +91,8 @@ struct BookingView: View {
                             withAnimation(Motion.spring) { selectedDay = day; selectedTime = nil }
                         } label: {
                             VStack(spacing: 4) {
-                                Text(Scheduling.weekday(day, ar: app.isAr)).font(.system(size: 12, design: .rounded))
-                                Text(Scheduling.dayNumber(day)).font(.system(size: 18, weight: .semibold, design: .rounded))
+                                Text(Scheduling.weekday(day, ar: app.isAr)).font(.rubik(12))
+                                Text(Scheduling.dayNumber(day)).font(.rubik(18, .semibold))
                             }
                             .frame(width: 54, height: 68)
                             .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
@@ -119,7 +119,7 @@ struct BookingView: View {
                 sectionTitle("اختاري الوقت", "Choose a time", "clock")
                 Spacer()
                 Text(Scheduling.longDate(selectedDay, ar: app.isAr))
-                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
             }
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(Scheduling.slots(), id: \.self) { time in
@@ -131,7 +131,7 @@ struct BookingView: View {
                         withAnimation(Motion.press) { selectedTime = time }
                     } label: {
                         Text(time)
-                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                            .font(.rubik(15, .medium))
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
                             .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
                             .foregroundStyle(selected ? Brand.paper
@@ -165,13 +165,13 @@ struct BookingView: View {
                                                size: 46, verified: true)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(app.t(th.nameAr, th.nameEn))
-                                .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                                .font(.rubik(15, .semibold)).foregroundStyle(Brand.ink)
                             HStack(spacing: 6) {
                                 Image(systemName: "star.fill").font(.system(size: 10)).foregroundStyle(Brand.gold)
                                 Text("\(String(format: "%.2f", th.rating)) · \(th.reviews)")
-                                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                                 Text("· \(app.t(th.specialtyAr, th.specialtyEn))")
-                                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft).lineLimit(1)
+                                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft).lineLimit(1)
                             }
                         }
                         Spacer(minLength: 0)
@@ -198,7 +198,7 @@ struct BookingView: View {
 
     private func field(_ placeholder: String, id: String, text: Binding<String>) -> some View {
         TextField(placeholder, text: text)
-            .font(.system(size: 16, design: .rounded))
+            .font(.rubik(16))
             .accessibilityIdentifier(id)
             .padding(Space.l)
             .background(Brand.paper)
@@ -231,9 +231,9 @@ struct BookingView: View {
                     .frame(width: 30)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(method.label(ar: app.isAr))
-                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .font(.rubik(15, .semibold))
                         .foregroundStyle(enabled ? Brand.ink : Brand.inkSoft)
-                    Text(method.note(ar: app.isAr)).font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    Text(method.note(ar: app.isAr)).font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                 }
                 Spacer(minLength: 0)
                 if enabled {
@@ -241,7 +241,7 @@ struct BookingView: View {
                         .foregroundStyle(selected ? Brand.pinkDeep : Brand.inkSoft.opacity(0.4))
                 } else {
                     Text(app.t("قريبًا", "Soon"))
-                        .font(.system(size: 11, weight: .semibold, design: .rounded)).foregroundStyle(Brand.pinkDeep)
+                        .font(.rubik(11, .semibold)).foregroundStyle(Brand.pinkDeep)
                         .padding(.horizontal, 8).padding(.vertical, 4)
                         .background(Brand.bg2).clipShape(Capsule())
                 }
@@ -269,13 +269,13 @@ struct BookingView: View {
 
     private func row(_ label: String, _ amount: Int, bold: Bool = false) -> some View {
         HStack {
-            Text(label).font(.system(size: bold ? 17 : 15, weight: bold ? .semibold : .regular, design: .rounded))
+            Text(label).font(.rubik(bold ? 17 : 15, bold ? .semibold : .regular))
                 .foregroundStyle(bold ? Brand.ink : Brand.inkSoft)
             Spacer()
             if bold {
                 Text(app.money(amount)).spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
             } else {
-                Text(app.money(amount)).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.ink)
+                Text(app.money(amount)).font(.rubik(15)).foregroundStyle(Brand.ink)
             }
         }
     }
@@ -285,7 +285,7 @@ struct BookingView: View {
             HStack(spacing: Space.l) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(app.t("الإجمالي", "Total"))
-                        .font(.system(size: 11, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        .font(.rubik(11)).foregroundStyle(Brand.inkSoft)
                     Text(app.money(Pricing.total(massage.price)))
                         .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
                 }
