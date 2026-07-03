@@ -18,6 +18,7 @@ struct HomeDashboardView: View {
                     greeting
                     if let next = store.bookings.first { upcomingCard(next) } else { firstBookCTA }
                     promiseSection
+                    JasmineDivider().padding(.vertical, Space.xs)
                     servicesGrid
                     reviewsRail
                 }
@@ -28,13 +29,11 @@ struct HomeDashboardView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text(app.t("يا سبا", "Ya Spa"))
-                        .font(.system(size: 20, weight: .semibold, design: app.isAr ? .rounded : .serif))
-                        .foregroundStyle(Brand.pinkDeep)
+                    YaSpaWordmark(compact: true)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(app.isAr ? "EN" : "ع") { app.toggle() }
-                        .font(.headline).foregroundStyle(Brand.pinkDeep)
+                        .font(.headline).foregroundStyle(Brand.accent)
                         .accessibilityIdentifier("lang-home")
                 }
             }
@@ -43,17 +42,18 @@ struct HomeDashboardView: View {
 
     private var greeting: some View {
         HStack(alignment: .center, spacing: Space.l) {
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(app.t("نساء فقط · بجدة", "WOMEN ONLY · JEDDAH"))
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .tracking(app.isAr ? 0 : 1.5).foregroundStyle(Brand.inkSoft)
+                    .tracking(app.isAr ? 0 : 1.8).foregroundStyle(Brand.inkSoft)
+                Rectangle().fill(Brand.gold.opacity(0.6)).frame(width: 100, height: 1)
                 Text(app.t("أهلًا بكِ 🌸", "Welcome 🌸"))
                     .spaFont(.display, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("السبا يجيكِ البيت", "Your spa, at home"))
                     .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
             }
             Spacer(minLength: 0)
-            SFSymbolMedallion(symbol: "sparkles", size: 64)
+            ArchMedallion(symbol: "sparkles", width: 56, height: 70)
                 .scaleEffect(breathe ? 1.04 : 1)
                 .animation((reduceMotion || Runtime.isUITest) ? nil
                            : .easeInOut(duration: 4).repeatForever(autoreverses: true), value: breathe)
@@ -89,7 +89,7 @@ struct HomeDashboardView: View {
 
     private var firstBookCTA: some View {
         VStack(spacing: Space.l) {
-            SFSymbolMedallion(symbol: "sparkles", size: 72)
+            ArchMedallion(symbol: "sparkles", width: 70, height: 88)
             Text(app.t("جاهزة للاسترخاء؟", "Ready to relax?"))
                 .spaFont(.serviceName, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("احجزي أول جلسة مساج، وتجيكِ المعالِجة إلى البيت.",
@@ -142,7 +142,7 @@ struct HomeDashboardView: View {
 
     private func serviceTile(_ m: Massage) -> some View {
         VStack(alignment: .leading, spacing: Space.s) {
-            SFSymbolMedallion(symbol: m.symbol, size: 46, rounded: true)
+            ArchMedallion(symbol: m.symbol, width: 44, height: 56)
             Text(app.t(m.nameAr, m.nameEn))
                 .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink).lineLimit(1)
             HStack {

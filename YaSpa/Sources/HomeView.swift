@@ -22,14 +22,12 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text(app.t("يا سبا", "Ya Spa"))
-                        .font(.system(size: 20, weight: .semibold, design: app.isAr ? .rounded : .serif))
-                        .foregroundStyle(Brand.pinkDeep)
+                    YaSpaWordmark(compact: true)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(app.isAr ? "EN" : "ع") { app.toggle() }
                         .font(.headline)
-                        .foregroundStyle(Brand.pinkDeep)
+                        .foregroundStyle(Brand.accent)
                         .accessibilityIdentifier("lang-massage")
                 }
             }

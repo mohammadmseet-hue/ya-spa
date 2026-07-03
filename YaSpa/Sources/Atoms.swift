@@ -132,17 +132,34 @@ struct PressureIndicator: View {
 
 // MARK: - Trust (KSA conversion engine)
 
+/// The single dark "ink" anchor per screen — an espresso card with gold icons + ivory text.
 struct PromiseStrip: View {
     @EnvironmentObject var app: AppState
     var body: some View {
-        HStack(spacing: Space.m) {
-            TrustPromiseCard(icon: "checkmark.seal.fill",
-                             title: app.t("موثّقات", "Verified"), sub: app.t("نساء فقط", "Women only"))
-            TrustPromiseCard(icon: "lock.shield.fill",
-                             title: app.t("خصوصية", "Privacy"), sub: app.t("بيتكِ فقط", "Your home"))
-            TrustPromiseCard(icon: "drop.fill",
-                             title: app.t("زيوت فاخرة", "Premium oils"), sub: app.t("معتمدة", "SFDA"))
+        HStack(spacing: 0) {
+            item("checkmark.seal.fill", app.t("موثّقات", "Verified"), app.t("نساء فقط", "Women only"))
+            divider
+            item("lock.shield.fill", app.t("خصوصية", "Privacy"), app.t("بيتكِ فقط", "Your home"))
+            divider
+            item("drop.fill", app.t("زيوت فاخرة", "Premium oils"), app.t("معتمدة", "SFDA"))
         }
+        .padding(.vertical, Space.l).padding(.horizontal, Space.s)
+        .background(Brand.ink)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+    }
+
+    private func item(_ icon: String, _ title: String, _ sub: String) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon).font(.system(size: 16)).foregroundStyle(Brand.gold)
+            Text(title).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ivory)
+            Text(sub).font(.system(size: 10, weight: .medium, design: .rounded)).foregroundStyle(Brand.ivory.opacity(0.7))
+        }
+        .frame(maxWidth: .infinity)
+        .multilineTextAlignment(.center)
+    }
+
+    private var divider: some View {
+        Rectangle().fill(Brand.gold.opacity(0.25)).frame(width: 1, height: 34)
     }
 }
 

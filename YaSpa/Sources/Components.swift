@@ -30,7 +30,7 @@ struct MassageCard: View {
 
     var body: some View {
         HStack(spacing: Space.m) {
-            SFSymbolMedallion(symbol: massage.symbol, size: 54, rounded: true)
+            ArchMedallion(symbol: massage.symbol, width: 50, height: 62)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(app.t(massage.nameAr, massage.nameEn))

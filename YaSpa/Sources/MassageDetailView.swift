@@ -25,7 +25,7 @@ struct MassageDetailView: View {
 
     private var heroBand: some View {
         VStack(spacing: Space.m) {
-            SFSymbolMedallion(symbol: massage.symbol, size: 92).padding(.top, Space.s)
+            ArchMedallion(symbol: massage.symbol, width: 84, height: 104).padding(.top, Space.s)
             Text(app.t(massage.nameAr, massage.nameEn))
                 .spaFont(.serviceName, ar: app.isAr)
                 .foregroundStyle(Brand.ink)

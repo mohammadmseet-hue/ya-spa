@@ -87,12 +87,8 @@ struct OnboardingView: View {
     private func slideView(_ s: Slide) -> some View {
         VStack(spacing: 22) {
             Spacer()
-            ZStack {
-                Circle().fill(Brand.paper).frame(width: 150, height: 150)
-                    .shadow(color: Brand.shadowBloom.opacity(0.18), radius: 26, y: 14)
-                Image(systemName: s.symbol)
-                    .font(.system(size: 60, weight: .medium)).foregroundStyle(Brand.brandGradient)
-            }
+            ArchMedallion(symbol: s.symbol, width: 132, height: 164)
+                .shadow(color: Brand.shadowRose.opacity(0.12), radius: 22, y: 12)
             VStack(spacing: 12) {
                 Text(app.t(s.titleAr, s.titleEn))
                     .spaFont(.display, ar: app.isAr)

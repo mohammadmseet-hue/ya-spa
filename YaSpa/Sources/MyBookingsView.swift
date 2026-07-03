@@ -46,7 +46,7 @@ struct MyBookingsView: View {
 
     private var empty: some View {
         VStack(spacing: Space.l) {
-            SFSymbolMedallion(symbol: "calendar.badge.plus", size: 92)
+            ArchMedallion(symbol: "calendar.badge.plus", width: 80, height: 100)
             Text(app.t("لا توجد حجوزات بعد", "No bookings yet"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("اختاري مساجكِ من صفحة المساج", "Pick your massage from the Massage tab"))

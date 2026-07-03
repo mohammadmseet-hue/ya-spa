@@ -9,7 +9,8 @@ struct BookingConfirmationView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Space.xl) {
-                AnimatedCheckmark().padding(.top, Space.hero)
+                YaSpaWordmark(compact: true).padding(.top, Space.xxl)
+                AnimatedCheckmark().padding(.top, Space.s)
 
                 Text(app.t("تم تأكيد حجزكِ 🌸", "You're booked 🌸"))
                     .spaFont(.serviceName, ar: app.isAr)
