@@ -163,31 +163,24 @@ final class BookingUITests: XCTestCase {
     }
 
     /// Reliably enter text into a scrollable field: bring it on-screen, focus it, type.
+    /// Reliably enter text: clear any stale keyboard, scroll the field into view + lift it
+    /// clear of the sticky bar, tap, and only type once the field actually holds keyboard
+    /// focus — retrying if a tap missed. Robust to XCUITest's flaky frame/isHittable here.
     private func fillField(_ app: XCUIApplication, _ id: String, _ text: String) {
-        // Clear any keyboard a previous field left up so this tap is a clean focus
-        // (the ScrollView's scrollDismissesKeyboard(.immediately) drops it on the swipe).
-        if app.keyboards.element.exists { app.swipeUp() }
         let field = app.textFields[id]
-        bringIntoReach(field, in: app)
-        field.tap()
-        field.typeText(text)
-    }
-
-    /// Scroll a control into the comfortable middle band — clear of the nav bar (top)
-    /// and the sticky book bar / keyboard (bottom) — so taps land on it, not the chrome.
-    /// `isHittable` alone is unreliable here (it returns true for controls whose centre
-    /// sits under the sticky bar), so we position by frame instead.
-    private func bringIntoReach(_ el: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 16) {
-        XCTAssertTrue(el.waitForExistence(timeout: 8), "element should exist")
-        let h = app.frame.height
-        var swipes = 0
-        while el.frame.midY > h * 0.6 && swipes < maxSwipes {   // too low → scroll up
-            app.swipeUp(); swipes += 1
+        XCTAssertTrue(field.waitForExistence(timeout: 8), "\(id) should exist")
+        for _ in 0..<4 {
+            if app.keyboards.element.exists { app.swipeUp() }     // clear a prior field's keyboard
+            var n = 0
+            while !field.isHittable && n < 10 { app.swipeUp(); n += 1 }
+            app.swipeUp()                                         // lift clear of the sticky bar
+            field.tap()
+            if app.keyboards.element.waitForExistence(timeout: 2) {  // this field now focused
+                field.typeText(text)
+                return
+            }
         }
-        swipes = 0
-        while el.frame.midY < h * 0.15 && swipes < 6 {          // too high → nudge down
-            app.swipeDown(); swipes += 1
-        }
+        XCTFail("Could not focus field \(id)")
     }
 
     private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 12) {
