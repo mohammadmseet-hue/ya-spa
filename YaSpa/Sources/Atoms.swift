@@ -326,6 +326,58 @@ struct ReviewCard: View {
     }
 }
 
+// MARK: - Reviews section (summary + star filter + filtered rail)
+
+struct ReviewsSection: View {
+    @EnvironmentObject var app: AppState
+    let average: Double
+    let count: Int
+    let distribution: [Int]
+    let reviews: [Review]
+    @State private var filter: Int = 0   // 0 = all, else exact star
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            Text(app.t("التقييمات", "Reviews"))
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
+            RatingSummary(average: average, count: count, distribution: distribution)
+                .padding(Space.l).softCard()
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Space.s) {
+                    chip(0, app.t("الكل", "All"))
+                    chip(5, "5 ★"); chip(4, "4 ★"); chip(3, "3 ★")
+                }
+            }
+
+            let shown = filter == 0 ? reviews : reviews.filter { $0.rating == filter }
+            if shown.isEmpty {
+                Text(app.t("لا توجد تقييمات بهذا التصنيف بعد", "No reviews with this rating yet"))
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
+                    .frame(maxWidth: .infinity, alignment: .center).padding(.vertical, Space.l)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Space.m) { ForEach(shown) { ReviewCard(review: $0) } }
+                }
+            }
+        }
+    }
+
+    private func chip(_ value: Int, _ label: String) -> some View {
+        let sel = filter == value
+        return Button {
+            Haptics.tap(); withAnimation(Motion.spring) { filter = value }
+        } label: {
+            Text(label).font(.rubik(13, .semibold))
+                .foregroundStyle(sel ? Brand.ivory : Brand.pinkDeep)
+                .padding(.vertical, 7).padding(.horizontal, 14)
+                .background(sel ? AnyShapeStyle(Brand.accent) : AnyShapeStyle(Brand.bg2))
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Duration segmented control
 
 struct DurationSegment: View {

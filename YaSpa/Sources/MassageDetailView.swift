@@ -138,17 +138,7 @@ struct MassageDetailView: View {
     // MARK: Reviews
 
     private var reviewsBlock: some View {
-        VStack(alignment: .leading, spacing: Space.m) {
-            Text(app.t("التقييمات", "Reviews"))
-                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
-            RatingSummary(average: 4.9, count: 128, distribution: [112, 12, 3, 1, 0])
-                .padding(Space.l).softCard()
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: Space.m) {
-                    ForEach(Reviews.all) { ReviewCard(review: $0) }
-                }
-            }
-        }
+        ReviewsSection(average: 4.9, count: 128, distribution: [112, 12, 3, 1, 0], reviews: Reviews.all)
     }
 
     // MARK: Book bar

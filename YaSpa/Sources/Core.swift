@@ -204,6 +204,12 @@ enum Reviews {
         Review(nameAr: "دانة", nameEn: "Dana", rating: 5,
                textAr: "الأحجار الساخنة كانت خيالية، أنصح فيها.",
                textEn: "The hot stone was amazing, highly recommend."),
+        Review(nameAr: "ريم", nameEn: "Reem", rating: 4,
+               textAr: "نظافة وأدوات معقّمة، حسّيت بأمان. تأخرت شوي بس التجربة ممتازة.",
+               textEn: "Clean, sealed tools — I felt safe. A little late but a great experience."),
+        Review(nameAr: "شهد", nameEn: "Shahad", rating: 4,
+               textAr: "مساج مريح وخصوصية عالية، بس ودّي بضغط أقوى شوي.",
+               textEn: "Relaxing and private — I'd just like slightly firmer pressure."),
     ]
 }
 

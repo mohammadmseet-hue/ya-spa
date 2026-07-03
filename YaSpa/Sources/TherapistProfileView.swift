@@ -77,20 +77,11 @@ struct TherapistProfileView: View {
     }
 
     private var reviewsBlock: some View {
-        VStack(alignment: .leading, spacing: Space.m) {
-            Text(app.t("التقييمات", "Reviews"))
-                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
-            RatingSummary(average: therapist.rating, count: therapist.reviews,
-                          distribution: [therapist.reviews * 88 / 100,
-                                         therapist.reviews * 9 / 100,
-                                         therapist.reviews * 2 / 100,
-                                         therapist.reviews * 1 / 100, 0])
-                .padding(Space.l).softCard()
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: Space.m) {
-                    ForEach(Reviews.all) { ReviewCard(review: $0) }
-                }
-            }
-        }
+        ReviewsSection(average: therapist.rating, count: therapist.reviews,
+                       distribution: [therapist.reviews * 88 / 100,
+                                      therapist.reviews * 9 / 100,
+                                      therapist.reviews * 2 / 100,
+                                      therapist.reviews * 1 / 100, 0],
+                       reviews: Reviews.all)
     }
 }

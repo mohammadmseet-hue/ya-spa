@@ -106,8 +106,9 @@ struct HomeDashboardView: View {
     private var bookButton: some View {
         Button {
             Haptics.tap()
-            // One finite, owned spring for the switch — nothing to leak into.
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) { goToMassage() }
+            // Instant tab switch — TabView selection must NOT be animated (animating it
+            // glitches and can flash a black frame on device).
+            goToMassage()
         } label: {
             Label(app.t("احجزي جلسة مساج", "Book a massage"), systemImage: "plus.circle.fill")
         }
@@ -149,7 +150,8 @@ struct HomeDashboardView: View {
                 Text(app.t("الأكثر طلبًا", "MOST LOVED"))
                     .font(.rubik(11, .semibold)).tracking(app.isAr ? 0 : 1.2).foregroundStyle(Brand.gold)
                 Text(app.t(m.nameAr, m.nameEn))
-                    .spaFont(.serviceName, ar: app.isAr).foregroundStyle(Brand.ink).lineLimit(1)
+                    .spaFont(.serviceName, ar: app.isAr).foregroundStyle(Brand.ink)
+                    .lineLimit(1).minimumScaleFactor(0.55)
                 Text(app.t(m.benefitsAr.first ?? "", m.benefitsEn.first ?? ""))
                     .font(.rubik(13)).foregroundStyle(Brand.inkSoft).lineLimit(1)
             }
@@ -164,7 +166,8 @@ struct HomeDashboardView: View {
         HStack(spacing: Space.m) {
             ArchMedallion(symbol: m.symbol, width: 40, height: 50)
             Text(app.t(m.nameAr, m.nameEn))
-                .font(.rubik(16, .semibold)).foregroundStyle(Brand.ink).lineLimit(1)
+                .font(.rubik(16, .semibold)).foregroundStyle(Brand.ink)
+                .lineLimit(1).minimumScaleFactor(0.7)
             Spacer(minLength: 0)
             Text(app.money(m.price)).font(.rubik(15, .semibold)).foregroundStyle(Brand.pinkDeep)
             Image(systemName: "chevron.forward").font(.caption2).foregroundStyle(Brand.inkSoft)
