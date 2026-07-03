@@ -40,7 +40,7 @@ final class BookingUITests: XCTestCase {
         // 3b) Choose a therapist
         let therapist = app.buttons["therapist-reem"]
         XCTAssertTrue(therapist.waitForExistence(timeout: 10), "Therapist list should be shown")
-        scrollUntilHittable(therapist, in: app)
+        bringIntoReach(therapist, in: app)
         therapist.tap()
         shot(app, "03b-Therapist")
 
@@ -161,10 +161,26 @@ final class BookingUITests: XCTestCase {
     /// Reliably enter text into a scrollable field: bring it on-screen, focus it, type.
     private func fillField(_ app: XCUIApplication, _ id: String, _ text: String) {
         let field = app.textFields[id]
-        XCTAssertTrue(field.waitForExistence(timeout: 8), "\(id) should exist")
-        scrollUntilHittable(field, in: app, maxSwipes: 14)
+        bringIntoReach(field, in: app)
         field.tap()
         field.typeText(text)
+    }
+
+    /// Scroll a control into the comfortable middle band — clear of the nav bar (top)
+    /// and the sticky book bar / keyboard (bottom) — so taps land on it, not the chrome.
+    /// `isHittable` alone is unreliable here (it returns true for controls whose centre
+    /// sits under the sticky bar), so we position by frame instead.
+    private func bringIntoReach(_ el: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 16) {
+        XCTAssertTrue(el.waitForExistence(timeout: 8), "element should exist")
+        let h = app.frame.height
+        var swipes = 0
+        while el.frame.midY > h * 0.6 && swipes < maxSwipes {   // too low → scroll up
+            app.swipeUp(); swipes += 1
+        }
+        swipes = 0
+        while el.frame.midY < h * 0.15 && swipes < 6 {          // too high → nudge down
+            app.swipeDown(); swipes += 1
+        }
     }
 
     private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 12) {
