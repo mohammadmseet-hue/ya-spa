@@ -43,25 +43,19 @@ final class BookingUITests: XCTestCase {
         scrollUntilHittable(therapist, in: app)
         therapist.tap()
 
-        // 4) Enter details
-        let name = app.textFields["field-name"]
-        XCTAssertTrue(name.waitForExistence(timeout: 5), "Name field should exist")
-        scrollUntilHittable(name, in: app)
-        name.tap()
-        name.typeText("Sara")
+        // 4) Enter details (robust to keyboard overlap + font-metric height shifts)
+        fillField(app, "field-name", "Sara")
+        fillField(app, "field-district", "Al Rawdah")
 
-        let district = app.textFields["field-district"]
-        scrollUntilHittable(district, in: app)
-        district.tap()
-        district.typeText("Al Rawdah")
-
-        // dismiss keyboard so the bottom Confirm bar is fully hittable
+        // dismiss keyboard so the bottom Confirm bar is reachable
         app.swipeDown()
         shot(app, "04-Details")
 
-        // 5) Confirm
+        // 5) Confirm — only once the form is actually valid (all fields registered)
         let confirm = app.buttons["confirm-booking"]
         XCTAssertTrue(confirm.waitForExistence(timeout: 5), "Confirm button should exist")
+        wait(for: [expectation(for: NSPredicate(format: "isEnabled == true"), evaluatedWith: confirm)],
+             timeout: 12)
         confirm.tap()
 
         // 6) Confirmation appears
@@ -162,7 +156,16 @@ final class BookingUITests: XCTestCase {
                       "Therapist profile should show the About section")
     }
 
-    private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 8) {
+    /// Reliably enter text into a scrollable field: bring it on-screen, focus it, type.
+    private func fillField(_ app: XCUIApplication, _ id: String, _ text: String) {
+        let field = app.textFields[id]
+        XCTAssertTrue(field.waitForExistence(timeout: 8), "\(id) should exist")
+        scrollUntilHittable(field, in: app, maxSwipes: 14)
+        field.tap()
+        field.typeText(text)
+    }
+
+    private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 12) {
         var swipes = 0
         while !element.isHittable && swipes < maxSwipes {
             app.swipeUp()
