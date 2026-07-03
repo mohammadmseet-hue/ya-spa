@@ -9,7 +9,6 @@ struct HomeDashboardView: View {
     var goToMassage: () -> Void
 
     @State private var breathe = false
-    private let cols = [GridItem(.flexible(), spacing: Space.m), GridItem(.flexible(), spacing: Space.m)]
 
     var body: some View {
         NavigationStack {
@@ -131,30 +130,46 @@ struct HomeDashboardView: View {
         VStack(alignment: .leading, spacing: Space.m) {
             Text(app.t("خدماتنا", "Our services"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
-            LazyVGrid(columns: cols, spacing: Space.m) {
-                ForEach(Catalog.all) { m in
-                    Button { Haptics.tap(); goToMassage() } label: { serviceTile(m) }
-                        .buttonStyle(PressableCardStyle())
-                }
+            // Editorial asymmetry: one featured card, then slim rows (no symmetric grid).
+            if let first = Catalog.all.first {
+                Button { Haptics.tap(); goToMassage() } label: { featureCard(first) }
+                    .buttonStyle(PressableCardStyle())
+            }
+            ForEach(Catalog.all.dropFirst()) { m in
+                Button { Haptics.tap(); goToMassage() } label: { slimRow(m) }
+                    .buttonStyle(PressableCardStyle())
             }
         }
     }
 
-    private func serviceTile(_ m: Massage) -> some View {
-        VStack(alignment: .leading, spacing: Space.s) {
-            ArchMedallion(symbol: m.symbol, width: 44, height: 56)
-            Text(app.t(m.nameAr, m.nameEn))
-                .font(.rubik(15, .semibold)).foregroundStyle(Brand.ink).lineLimit(1)
-            HStack {
-                Text(app.t("\(m.minutes) د", "\(m.minutes) min"))
-                    .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
-                Spacer()
-                Text(app.money(m.price))
-                    .font(.rubik(14, .bold)).foregroundStyle(Brand.pinkDeep)
+    private func featureCard(_ m: Massage) -> some View {
+        HStack(spacing: Space.l) {
+            ArchMedallion(symbol: m.symbol, width: 60, height: 76)
+            VStack(alignment: .leading, spacing: 5) {
+                Text(app.t("الأكثر طلبًا", "MOST LOVED"))
+                    .font(.rubik(11, .semibold)).tracking(app.isAr ? 0 : 1.2).foregroundStyle(Brand.gold)
+                Text(app.t(m.nameAr, m.nameEn))
+                    .spaFont(.serviceName, ar: app.isAr).foregroundStyle(Brand.ink).lineLimit(1)
+                Text(app.t(m.benefitsAr.first ?? "", m.benefitsEn.first ?? ""))
+                    .font(.rubik(13)).foregroundStyle(Brand.inkSoft).lineLimit(1)
             }
+            Spacer(minLength: 0)
+            Text(app.money(m.price)).spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep).fixedSize()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Space.l)
+        .softCard().goldFrame()
+    }
+
+    private func slimRow(_ m: Massage) -> some View {
+        HStack(spacing: Space.m) {
+            ArchMedallion(symbol: m.symbol, width: 40, height: 50)
+            Text(app.t(m.nameAr, m.nameEn))
+                .font(.rubik(16, .semibold)).foregroundStyle(Brand.ink).lineLimit(1)
+            Spacer(minLength: 0)
+            Text(app.money(m.price)).font(.rubik(15, .semibold)).foregroundStyle(Brand.pinkDeep)
+            Image(systemName: "chevron.forward").font(.caption2).foregroundStyle(Brand.inkSoft)
+        }
+        .padding(.vertical, Space.m).padding(.horizontal, Space.l)
         .softCard()
     }
 
