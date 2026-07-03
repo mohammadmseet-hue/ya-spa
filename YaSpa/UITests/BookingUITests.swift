@@ -40,7 +40,11 @@ final class BookingUITests: XCTestCase {
         // 3b) Choose a therapist
         let therapist = app.buttons["therapist-reem"]
         XCTAssertTrue(therapist.waitForExistence(timeout: 10), "Therapist list should be shown")
-        bringIntoReach(therapist, in: app)
+        // isHittable reports true even when the card's centre is under the sticky bar,
+        // so scroll until hittable, then one EXTRA swipe to lift it clear before tapping.
+        var reveal = 0
+        while !therapist.isHittable && reveal < 8 { app.swipeUp(); reveal += 1 }
+        app.swipeUp()
         therapist.tap()
         shot(app, "03b-Therapist")
 
