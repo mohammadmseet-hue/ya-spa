@@ -46,6 +46,7 @@ struct BookingView: View {
                 priceSummary
             }
             .padding(Space.screen)
+            .padding(.bottom, 96)   // clearance so nothing sits under the sticky book bar
         }
         .background(AmbientBackground())
         .scrollDismissesKeyboard(.immediately)

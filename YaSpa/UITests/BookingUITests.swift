@@ -42,10 +42,12 @@ final class BookingUITests: XCTestCase {
         XCTAssertTrue(therapist.waitForExistence(timeout: 10), "Therapist list should be shown")
         scrollUntilHittable(therapist, in: app)
         therapist.tap()
+        shot(app, "03b-Therapist")
 
         // 4) Enter details (robust to keyboard overlap + font-metric height shifts)
         fillField(app, "field-name", "Sara")
         fillField(app, "field-district", "Al Rawdah")
+        shot(app, "03c-Fields")
 
         // dismiss keyboard so the bottom Confirm bar is reachable
         app.swipeDown()
