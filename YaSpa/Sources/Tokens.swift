@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Design tokens ("quiet luxury at-home hammam")
 // Additive layer on top of Brand. Screens consume these instead of ad-hoc values.
@@ -41,23 +42,54 @@ enum Motion {
     static let press  = Animation.spring(response: 0.3, dampingFraction: 0.6)
 }
 
-// MARK: - Typography (serif for brand moments, rounded for functional UI; Arabic never serif)
+// MARK: - Typography (bundled: Fraunces + El Messiri for Arabic display, Rubik for body)
+
+/// Bundled font PostScript names (verified from the instanced .ttf name tables) with a
+/// runtime fallback so text NEVER disappears if a name is wrong or a font fails to load.
+enum SpaFont {
+    static let frauncesRegular  = "Fraunces-72ptNonWonky"
+    static let frauncesSemibold = "Fraunces-72ptSemiBoldNonWonky"
+    static let elMessiriSemibold = "ElMessiri-SemiBold"
+    static let elMessiriBold     = "ElMessiri-Bold"
+    static let rubik         = "Rubik-Regular"
+    static let rubikMedium   = "Rubik-Medium"
+    static let rubikSemibold = "Rubik-SemiBold"
+
+    static func of(_ name: String, _ size: CGFloat, relativeTo style: Font.TextStyle,
+                   fallback: Font.Design = .default, weight: Font.Weight = .regular) -> Font {
+        if UIFont(name: name, size: size) != nil {
+            return .custom(name, size: size, relativeTo: style)
+        }
+        return .system(size: size, weight: weight, design: fallback)   // safe fallback
+    }
+}
 
 enum Typo {
     case display, serviceName, price, section, cardTitle, body, subhead, caption, eyebrow, micro
 
     func font(ar: Bool) -> Font {
         switch self {
-        case .display:     return .system(size: 30, weight: .semibold, design: ar ? .rounded : .serif)
-        case .serviceName: return .system(size: 24, weight: .semibold, design: ar ? .rounded : .serif)
-        case .price:       return .system(size: 22, weight: .bold,     design: ar ? .rounded : .serif)
-        case .section:     return .system(size: 20, weight: .semibold, design: .rounded)
-        case .cardTitle:   return .system(size: 17, weight: .semibold, design: .rounded)
-        case .body:        return .system(size: 16, weight: .regular,  design: .rounded)
-        case .subhead:     return .system(size: 15, weight: .regular,  design: .rounded)
-        case .caption:     return .system(size: 13, weight: .medium,   design: .rounded)
-        case .eyebrow:     return .system(size: 12, weight: .semibold, design: .rounded)
-        case .micro:       return .system(size: 11, weight: .medium,   design: .rounded)
+        case .display:     return SpaFont.of(ar ? SpaFont.elMessiriBold : SpaFont.frauncesSemibold,
+                                              ar ? 30 : 32, relativeTo: .largeTitle,
+                                              fallback: ar ? .rounded : .serif, weight: .semibold)
+        case .serviceName: return SpaFont.of(ar ? SpaFont.elMessiriBold : SpaFont.frauncesSemibold,
+                                              24, relativeTo: .title,
+                                              fallback: ar ? .rounded : .serif, weight: .semibold)
+        case .price:       return SpaFont.of(ar ? SpaFont.elMessiriSemibold : SpaFont.frauncesSemibold,
+                                              22, relativeTo: .title2,
+                                              fallback: ar ? .rounded : .serif, weight: .bold)
+        case .section:     return SpaFont.of(SpaFont.rubikSemibold, 20, relativeTo: .title3,
+                                              fallback: .rounded, weight: .semibold)
+        case .cardTitle:   return SpaFont.of(SpaFont.rubikSemibold, 17, relativeTo: .headline,
+                                              fallback: .rounded, weight: .semibold)
+        case .body:        return SpaFont.of(SpaFont.rubik, 16, relativeTo: .body, fallback: .rounded)
+        case .subhead:     return SpaFont.of(SpaFont.rubik, 15, relativeTo: .subheadline, fallback: .rounded)
+        case .caption:     return SpaFont.of(SpaFont.rubikMedium, 13, relativeTo: .caption,
+                                              fallback: .rounded, weight: .medium)
+        case .eyebrow:     return SpaFont.of(SpaFont.rubikSemibold, 12, relativeTo: .caption,
+                                              fallback: .rounded, weight: .semibold)
+        case .micro:       return SpaFont.of(SpaFont.rubikMedium, 11, relativeTo: .caption2,
+                                              fallback: .rounded, weight: .medium)
         }
     }
 }

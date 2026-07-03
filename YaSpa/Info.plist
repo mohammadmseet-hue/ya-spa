@@ -42,5 +42,15 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fraunces-Regular.ttf</string>
+		<string>Fraunces-SemiBold.ttf</string>
+		<string>ElMessiri-SemiBold.ttf</string>
+		<string>ElMessiri-Bold.ttf</string>
+		<string>Rubik-Regular.ttf</string>
+		<string>Rubik-Medium.ttf</string>
+		<string>Rubik-SemiBold.ttf</string>
+	</array>
 </dict>
 </plist>
