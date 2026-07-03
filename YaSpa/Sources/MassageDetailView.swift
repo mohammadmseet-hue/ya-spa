@@ -103,25 +103,30 @@ struct MassageDetailView: View {
         VStack(alignment: .leading, spacing: Space.m) {
             Text(app.t("معالِجاتكِ", "Meet your therapists"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
-            VStack(spacing: Space.m) {
+            VStack(spacing: Space.s) {
                 ForEach(Therapists.all.prefix(2)) { th in
-                    HStack(spacing: Space.m) {
-                        GradientMonogramAvatar(seed: th.id,
-                                               initials: String(app.t(th.nameAr, th.nameEn).prefix(1)),
-                                               size: 46, verified: true)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(app.t(th.nameAr, th.nameEn))
-                                .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
-                            Text(app.t(th.specialtyAr, th.specialtyEn))
-                                .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    NavigationLink(value: th) {
+                        HStack(spacing: Space.m) {
+                            GradientMonogramAvatar(seed: th.id,
+                                                   initials: String(app.t(th.nameAr, th.nameEn).prefix(1)),
+                                                   size: 46, verified: true)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(app.t(th.nameAr, th.nameEn))
+                                    .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                                Text(app.t(th.specialtyAr, th.specialtyEn))
+                                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                            }
+                            Spacer(minLength: 0)
+                            HStack(spacing: 3) {
+                                Image(systemName: "star.fill").font(.system(size: 11)).foregroundStyle(Brand.gold)
+                                Text(String(format: "%.2f", th.rating))
+                                    .font(.system(size: 13, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                            }
+                            Image(systemName: "chevron.forward").font(.caption2).foregroundStyle(Brand.inkSoft)
                         }
-                        Spacer(minLength: 0)
-                        HStack(spacing: 3) {
-                            Image(systemName: "star.fill").font(.system(size: 11)).foregroundStyle(Brand.gold)
-                            Text(String(format: "%.2f", th.rating))
-                                .font(.system(size: 13, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
-                        }
+                        .padding(.vertical, 6)
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(Space.l)

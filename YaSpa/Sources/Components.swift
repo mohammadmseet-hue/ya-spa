@@ -23,33 +23,29 @@ struct MassageCard: View {
     let massage: Massage
 
     var body: some View {
-        HStack(spacing: Space.l) {
-            SFSymbolMedallion(symbol: massage.symbol, size: 58, rounded: true)
+        HStack(spacing: Space.m) {
+            SFSymbolMedallion(symbol: massage.symbol, size: 54, rounded: true)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(app.t(massage.nameAr, massage.nameEn))
                     .spaFont(.cardTitle, ar: app.isAr)
-                    .foregroundStyle(Brand.ink)
+                    .foregroundStyle(Brand.ink).lineLimit(1)
                 Text(app.t(massage.benefitsAr.first ?? "", massage.benefitsEn.first ?? ""))
                     .font(.system(size: 13, design: .rounded))
                     .foregroundStyle(Brand.inkSoft).lineLimit(1)
-                HStack(spacing: 10) {
+                HStack(spacing: Space.s) {
                     MetadataChip(icon: "clock", text: app.t("\(massage.minutes) د", "\(massage.minutes) min"))
-                    MetadataChip(icon: "star.fill", text: "4.9")
                     PressureIndicator(label: app.t(massage.pressureAr, massage.pressureEn),
                                       level: PressureIndicator.level(for: massage.pressureEn))
+                    Spacer(minLength: Space.xs)
+                    Text(app.money(massage.price))
+                        .font(.system(size: 16, weight: .bold, design: app.isAr ? .rounded : .serif))
+                        .foregroundStyle(Brand.pinkDeep).fixedSize()
                 }
             }
 
-            Spacer(minLength: Space.s)
-
-            VStack(alignment: .trailing, spacing: 8) {
-                Text(app.money(massage.price))
-                    .spaFont(.price, ar: app.isAr)
-                    .foregroundStyle(Brand.pinkDeep)
-                Image(systemName: "chevron.forward")
-                    .font(.caption2).foregroundStyle(Brand.inkSoft)
-            }
+            Image(systemName: "chevron.forward")
+                .font(.caption2).foregroundStyle(Brand.inkSoft)
         }
         .padding(Space.l)
         .softCard()

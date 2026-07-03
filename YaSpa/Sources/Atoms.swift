@@ -116,7 +116,8 @@ struct PressureIndicator: View {
                         .frame(width: 5, height: 9)
                 }
             }
-            Text(label).font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(Brand.inkSoft)
+            Text(label).font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundStyle(Brand.inkSoft).lineLimit(1).fixedSize()
         }
     }
 

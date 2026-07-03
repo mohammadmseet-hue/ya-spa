@@ -30,6 +30,7 @@ struct MyBookingsView: View {
                 }
             }
             .navigationDestination(for: Massage.self) { MassageDetailView(massage: $0) }
+            .navigationDestination(for: Therapist.self) { TherapistProfileView(therapist: $0) }
             .confirmationDialog(
                 app.t("إلغاء هذا الحجز؟", "Cancel this booking?"),
                 isPresented: Binding(get: { cancelTarget != nil }, set: { if !$0 { cancelTarget = nil } }),

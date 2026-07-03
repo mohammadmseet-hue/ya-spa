@@ -36,6 +36,9 @@ struct HomeView: View {
             .navigationDestination(for: Massage.self) { m in
                 MassageDetailView(massage: m)
             }
+            .navigationDestination(for: Therapist.self) { th in
+                TherapistProfileView(therapist: th)
+            }
         }
     }
 
