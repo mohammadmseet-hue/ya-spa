@@ -25,9 +25,18 @@ struct BookingView: View {
             && !district.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
+    private var currentStep: Int {
+        var s = 0
+        if selectedTime != nil { s = 1 }
+        if selectedTherapist != nil { s = 2 }
+        if canBook { s = 3 }
+        return s
+    }
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
+            VStack(alignment: .leading, spacing: Space.xxl) {
+                StepProgress(total: 4, current: currentStep).padding(.top, Space.s)
                 header
                 daySelector
                 timeGrid
@@ -36,9 +45,9 @@ struct BookingView: View {
                 paymentSection
                 priceSummary
             }
-            .padding(16)
+            .padding(Space.screen)
         }
-        .background(Brand.bg.ignoresSafeArea())
+        .background(AmbientBackground())
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle(app.t("احجزي موعدكِ", "Book your slot"))
         .navigationBarTitleDisplayMode(.inline)
@@ -49,49 +58,51 @@ struct BookingView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 12) {
-            Image(systemName: massage.symbol)
-                .font(.title2).foregroundStyle(Brand.pinkDeep)
-                .frame(width: 46, height: 46)
-                .background(Brand.bg2).clipShape(Circle())
+        HStack(spacing: Space.m) {
+            SFSymbolMedallion(symbol: massage.symbol, size: 50, rounded: true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(app.t(massage.nameAr, massage.nameEn))
-                    .font(.headline).foregroundStyle(Brand.ink)
+                    .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("\(massage.minutes) دقيقة · \(app.money(massage.price))",
                            "\(massage.minutes) min · \(app.money(massage.price))"))
-                    .font(.caption).foregroundStyle(Brand.muted)
+                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
             }
             Spacer(minLength: 0)
         }
+        .padding(Space.l)
+        .softCard()
+    }
+
+    private func sectionTitle(_ ar: String, _ en: String, _ icon: String) -> some View {
+        Label(app.t(ar, en), systemImage: icon)
+            .spaFont(.section, ar: app.isAr)
+            .foregroundStyle(Brand.ink)
     }
 
     private var daySelector: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(app.t("اختاري اليوم", "Choose a day"), systemImage: "calendar")
-                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+        VStack(alignment: .leading, spacing: Space.m) {
+            sectionTitle("اختاري اليوم", "Choose a day", "calendar")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(days, id: \.self) { day in
                         let selected = Calendar.current.isDate(day, inSameDayAs: selectedDay)
                         Button {
                             Haptics.tap()
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                selectedDay = day
-                                selectedTime = nil
-                            }
+                            withAnimation(Motion.spring) { selectedDay = day; selectedTime = nil }
                         } label: {
                             VStack(spacing: 4) {
-                                Text(Scheduling.weekday(day, ar: app.isAr)).font(.caption2)
-                                Text(Scheduling.dayNumber(day)).font(.headline)
+                                Text(Scheduling.weekday(day, ar: app.isAr)).font(.system(size: 12, design: .rounded))
+                                Text(Scheduling.dayNumber(day)).font(.system(size: 18, weight: .semibold, design: .rounded))
                             }
-                            .frame(width: 54, height: 66)
-                            .background(selected ? Brand.brandGradient : Brand.whiteGradient)
+                            .frame(width: 54, height: 68)
+                            .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Color.white))
                             .foregroundStyle(selected ? Color.white : Brand.ink)
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
                                     .stroke(Brand.bg2, lineWidth: selected ? 0 : 1)
                             )
+                            .shadow(color: Brand.shadowBloom.opacity(selected ? 0.25 : 0), radius: 10, y: 5)
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("day-\(Scheduling.iso(day))")
@@ -103,13 +114,12 @@ struct BookingView: View {
     }
 
     private var timeGrid: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: Space.m) {
             HStack {
-                Label(app.t("اختاري الوقت", "Choose a time"), systemImage: "clock")
-                    .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+                sectionTitle("اختاري الوقت", "Choose a time", "clock")
                 Spacer()
                 Text(Scheduling.longDate(selectedDay, ar: app.isAr))
-                    .font(.caption).foregroundStyle(Brand.muted)
+                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
             }
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(Scheduling.slots(), id: \.self) { time in
@@ -118,20 +128,17 @@ struct BookingView: View {
                     Button {
                         guard available else { return }
                         Haptics.tap()
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
-                            selectedTime = time
-                        }
+                        withAnimation(Motion.press) { selectedTime = time }
                     } label: {
                         Text(time)
-                            .font(.system(.subheadline, design: .rounded).weight(.medium))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(selected ? Brand.pinkDeep : Color.white)
+                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                            .frame(maxWidth: .infinity).padding(.vertical, 12)
+                            .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Color.white))
                             .foregroundStyle(selected ? Color.white
-                                             : (available ? Brand.ink : Brand.muted.opacity(0.35)))
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                             : (available ? Brand.ink : Brand.inkSoft.opacity(0.35)))
+                            .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
                                     .stroke(Brand.bg2, lineWidth: 1)
                             )
                     }
@@ -144,39 +151,35 @@ struct BookingView: View {
     }
 
     private var therapistSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(app.t("اختاري معالِجتكِ", "Choose your therapist"), systemImage: "person.crop.circle")
-                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+        VStack(alignment: .leading, spacing: Space.m) {
+            sectionTitle("اختاري معالِجتكِ", "Choose your therapist", "person.crop.circle")
             ForEach(Therapists.all) { th in
                 let selected = selectedTherapist?.id == th.id
-                let rating = String(format: "%.2f", th.rating)
                 Button {
                     Haptics.tap()
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) { selectedTherapist = th }
+                    withAnimation(Motion.spring) { selectedTherapist = th }
                 } label: {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            Circle().fill(Brand.bg2)
-                            Image(systemName: "person.fill").foregroundStyle(Brand.pinkDeep)
-                        }
-                        .frame(width: 44, height: 44)
+                    HStack(spacing: Space.m) {
+                        GradientMonogramAvatar(seed: th.id,
+                                               initials: String(app.t(th.nameAr, th.nameEn).prefix(1)),
+                                               size: 46, verified: true)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(app.t(th.nameAr, th.nameEn))
-                                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
-                            Text(app.t("★ \(rating) · \(th.years) سنوات خبرة", "★ \(rating) · \(th.years) yrs"))
-                                .font(.caption2).foregroundStyle(Brand.muted)
+                                .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                            HStack(spacing: 6) {
+                                Image(systemName: "star.fill").font(.system(size: 10)).foregroundStyle(Brand.gold)
+                                Text("\(String(format: "%.2f", th.rating)) · \(th.reviews)")
+                                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                                Text("· \(app.t(th.specialtyAr, th.specialtyEn))")
+                                    .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft).lineLimit(1)
+                            }
                         }
                         Spacer(minLength: 0)
                         Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(selected ? Brand.pinkDeep : Brand.muted.opacity(0.4))
+                            .foregroundStyle(selected ? Brand.pinkDeep : Brand.inkSoft.opacity(0.4))
                     }
-                    .padding(12)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(selected ? Brand.pink : Brand.bg2, lineWidth: selected ? 2 : 1)
-                    )
+                    .padding(Space.m)
+                    .softCard(selected: selected)
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("therapist-\(th.id)")
@@ -185,9 +188,8 @@ struct BookingView: View {
     }
 
     private var detailsForm: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(app.t("بياناتكِ", "Your details"), systemImage: "person")
-                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+        VStack(alignment: .leading, spacing: Space.m) {
+            sectionTitle("بياناتكِ", "Your details", "person")
             field(app.t("الاسم", "Name"), id: "field-name", text: $name)
             field(app.t("الحي في جدة", "District in Jeddah"), id: "field-district", text: $district)
             field(app.t("ملاحظات (اختياري)", "Notes (optional)"), id: "field-notes", text: $notes)
@@ -196,20 +198,20 @@ struct BookingView: View {
 
     private func field(_ placeholder: String, id: String, text: Binding<String>) -> some View {
         TextField(placeholder, text: text)
+            .font(.system(size: 16, design: .rounded))
             .accessibilityIdentifier(id)
-            .padding(14)
+            .padding(Space.l)
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Brand.bg2, lineWidth: 1)
+                RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
+                    .stroke(text.wrappedValue.isEmpty ? Brand.bg2 : Brand.pink.opacity(0.5), lineWidth: 1)
             )
     }
 
     private var paymentSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(app.t("طريقة الدفع", "Payment method"), systemImage: "creditcard")
-                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+        VStack(alignment: .leading, spacing: Space.m) {
+            sectionTitle("طريقة الدفع", "Payment method", "creditcard")
             paymentOption(.onArrival, enabled: true)
             paymentOption(.applePay, enabled: Config.paymentsEnabled)
             paymentOption(.card, enabled: Config.paymentsEnabled)
@@ -221,36 +223,31 @@ struct BookingView: View {
         return Button {
             guard enabled else { return }
             Haptics.tap()
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) { payment = method }
+            withAnimation(Motion.press) { payment = method }
         } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: Space.m) {
                 Image(systemName: method.symbol)
-                    .font(.title3).foregroundStyle(enabled ? Brand.pinkDeep : Brand.muted.opacity(0.5))
+                    .font(.title3).foregroundStyle(enabled ? Brand.pinkDeep : Brand.inkSoft.opacity(0.5))
                     .frame(width: 30)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(method.label(ar: app.isAr))
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(enabled ? Brand.ink : Brand.muted)
-                    Text(method.note(ar: app.isAr)).font(.caption2).foregroundStyle(Brand.muted)
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .foregroundStyle(enabled ? Brand.ink : Brand.inkSoft)
+                    Text(method.note(ar: app.isAr)).font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
                 }
                 Spacer(minLength: 0)
                 if enabled {
                     Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(selected ? Brand.pinkDeep : Brand.muted.opacity(0.4))
+                        .foregroundStyle(selected ? Brand.pinkDeep : Brand.inkSoft.opacity(0.4))
                 } else {
                     Text(app.t("قريبًا", "Soon"))
-                        .font(.caption2.weight(.semibold)).foregroundStyle(Brand.pinkDeep)
+                        .font(.system(size: 11, weight: .semibold, design: .rounded)).foregroundStyle(Brand.pinkDeep)
                         .padding(.horizontal, 8).padding(.vertical, 4)
                         .background(Brand.bg2).clipShape(Capsule())
                 }
             }
-            .padding(12)
-            .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(selected ? Brand.pink : Brand.bg2, lineWidth: selected ? 2 : 1)
-            )
+            .padding(Space.m)
+            .softCard(selected: selected && enabled)
             .opacity(enabled ? 1 : 0.6)
         }
         .buttonStyle(.plain)
@@ -259,44 +256,51 @@ struct BookingView: View {
     }
 
     private var priceSummary: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: Space.s) {
             row(app.t("الجلسة", "Session"), massage.price)
             row(app.t("المواصلات", "Transport"), Pricing.transport)
             row(app.t("ضريبة ١٥٪", "VAT 15%"), Pricing.vat(massage.price))
             Divider()
             row(app.t("الإجمالي", "Total"), Pricing.total(massage.price), bold: true)
         }
-        .padding(16)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(Space.l)
+        .softCard()
     }
 
     private func row(_ label: String, _ amount: Int, bold: Bool = false) -> some View {
         HStack {
-            Text(label).foregroundStyle(bold ? Brand.ink : Brand.muted)
+            Text(label).font(.system(size: bold ? 17 : 15, weight: bold ? .semibold : .regular, design: .rounded))
+                .foregroundStyle(bold ? Brand.ink : Brand.inkSoft)
             Spacer()
-            Text(app.money(amount))
-                .foregroundStyle(bold ? Brand.pinkDeep : Brand.ink)
-                .fontWeight(bold ? .bold : .regular)
+            if bold {
+                Text(app.money(amount)).spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
+            } else {
+                Text(app.money(amount)).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.ink)
+            }
         }
-        .font(bold ? .headline : .subheadline)
     }
 
     private var bookBar: some View {
-        Button {
-            book()
-        } label: {
-            Text(canBook
-                 ? app.t("تأكيد الحجز · \(app.money(Pricing.total(massage.price)))",
-                         "Confirm · \(app.money(Pricing.total(massage.price)))")
-                 : app.t("اختاري الوقت وأكملي بياناتكِ", "Pick a time & fill your details"))
+        StickyGlassBar {
+            HStack(spacing: Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(app.t("الإجمالي", "Total"))
+                        .font(.system(size: 11, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    Text(app.money(Pricing.total(massage.price)))
+                        .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
+                }
+                Button {
+                    book()
+                } label: {
+                    Text(canBook ? app.t("تأكيد الحجز", "Confirm booking")
+                                 : app.t("أكملي بياناتكِ", "Complete your details"))
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .accessibilityIdentifier("confirm-booking")
+                .disabled(!canBook)
+                .opacity(canBook ? 1 : 0.55)
+            }
         }
-        .buttonStyle(PrimaryButtonStyle())
-        .accessibilityIdentifier("confirm-booking")
-        .disabled(!canBook)
-        .opacity(canBook ? 1 : 0.6)
-        .padding(16)
-        .background(.ultraThinMaterial)
     }
 
     private func book() {
@@ -315,7 +319,7 @@ struct BookingView: View {
                         paymentMethod: payment)
         store.add(b)
         Haptics.success()
-        Task { await CloudBookings.save(b) }   // cloud persistence when backend is connected
+        Task { await CloudBookings.save(b) }
         confirmed = b
     }
 }

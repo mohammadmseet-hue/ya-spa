@@ -12,25 +12,24 @@ struct MyBookingsView: View {
                     empty
                 } else {
                     ScrollView {
-                        VStack(spacing: 12) {
-                            ForEach(store.bookings) { b in
-                                card(b)
-                            }
+                        VStack(spacing: Space.m) {
+                            ForEach(store.bookings) { b in card(b) }
                         }
-                        .padding(16)
+                        .padding(Space.screen)
+                        .padding(.bottom, Space.xl)
                     }
                 }
             }
-            .background(Brand.bg.ignoresSafeArea())
+            .background(AmbientBackground())
             .navigationTitle(app.t("حجوزاتي", "My bookings"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(app.isAr ? "EN" : "ع") { app.toggle() }
-                        .font(.headline)
-                        .foregroundStyle(Brand.pinkDeep)
+                        .font(.headline).foregroundStyle(Brand.pinkDeep)
                 }
             }
+            .navigationDestination(for: Massage.self) { MassageDetailView(massage: $0) }
             .confirmationDialog(
                 app.t("إلغاء هذا الحجز؟", "Cancel this booking?"),
                 isPresented: Binding(get: { cancelTarget != nil }, set: { if !$0 { cancelTarget = nil } }),
@@ -45,59 +44,69 @@ struct MyBookingsView: View {
     }
 
     private var empty: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "calendar.badge.plus")
-                .font(.system(size: 46))
-                .foregroundStyle(Brand.pinkSoft)
+        VStack(spacing: Space.l) {
+            SFSymbolMedallion(symbol: "calendar.badge.plus", size: 92)
             Text(app.t("لا توجد حجوزات بعد", "No bookings yet"))
-                .font(.headline).foregroundStyle(Brand.ink)
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("اختاري مساجكِ من صفحة المساج", "Pick your massage from the Massage tab"))
-                .font(.subheadline).foregroundStyle(Brand.muted)
+                .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(24)
+        .padding(Space.xxl)
     }
 
     private func card(_ b: Booking) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(app.t(b.massageNameAr, b.massageNameEn))
-                    .font(.headline).foregroundStyle(Brand.ink)
-                Text("\(b.dateISO) · \(b.time)")
-                    .font(.caption).foregroundStyle(Brand.muted)
-                Text("\(b.therapistName) · \(b.district)")
-                    .font(.caption2).foregroundStyle(Brand.muted)
-                if let pm = b.paymentMethod {
-                    Label(pm.label(ar: app.isAr), systemImage: pm.symbol)
-                        .font(.caption2.weight(.medium)).foregroundStyle(Brand.pinkDeep)
+        VStack(spacing: Space.m) {
+            HStack(spacing: Space.m) {
+                GradientMonogramAvatar(seed: b.therapistName,
+                                       initials: String(b.therapistName.prefix(1)),
+                                       size: 46, verified: true)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(app.t(b.massageNameAr, b.massageNameEn))
+                        .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
+                    Text("\(b.dateISO) · \(b.time)")
+                        .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    Text("\(b.therapistName) · \(b.district)")
+                        .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    if let pm = b.paymentMethod {
+                        Label(pm.label(ar: app.isAr), systemImage: pm.symbol)
+                            .font(.system(size: 12, weight: .medium, design: .rounded)).foregroundStyle(Brand.pinkDeep)
+                    }
                 }
-            }
-            Spacer(minLength: 0)
-            VStack(alignment: .trailing, spacing: 8) {
+                Spacer(minLength: 0)
                 Text(app.money(Pricing.total(b.price)))
-                    .font(.system(.subheadline, design: .rounded).weight(.bold))
-                    .foregroundStyle(Brand.pinkDeep)
+                    .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
+            }
+            HStack(spacing: Space.m) {
+                if let m = Catalog.all.first(where: { $0.id == b.massageId }) {
+                    NavigationLink(value: m) {
+                        Label(app.t("احجزي مجددًا", "Rebook"), systemImage: "arrow.clockwise")
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(Brand.pinkDeep)
+                            .frame(maxWidth: .infinity).padding(.vertical, 9)
+                            .background(Brand.bg2).clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
                 Button {
-                    Haptics.tap()
-                    cancelTarget = b
+                    Haptics.tap(); cancelTarget = b
                 } label: {
                     Text(app.t("إلغاء", "Cancel"))
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Brand.muted)
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Brand.inkSoft)
+                        .frame(maxWidth: .infinity).padding(.vertical, 9)
+                        .overlay(Capsule().stroke(Brand.bg2, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("cancel-booking")
             }
         }
-        .padding(14)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(Space.l)
+        .softCard()
         .accessibilityIdentifier("booking-row")
         .contextMenu {
-            Button(role: .destructive) {
-                store.remove(b)
-            } label: {
+            Button(role: .destructive) { store.remove(b) } label: {
                 Label(app.t("حذف", "Delete"), systemImage: "trash")
             }
         }

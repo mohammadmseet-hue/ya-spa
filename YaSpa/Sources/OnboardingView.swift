@@ -34,7 +34,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Brand.heroGradient.ignoresSafeArea()
+            AmbientBackground()
 
             VStack(spacing: 0) {
                 HStack {
@@ -82,13 +82,13 @@ struct OnboardingView: View {
             Spacer()
             ZStack {
                 Circle().fill(Color.white).frame(width: 150, height: 150)
-                    .shadow(color: Brand.pinkDeep.opacity(0.15), radius: 24, y: 12)
+                    .shadow(color: Brand.shadowBloom.opacity(0.18), radius: 26, y: 14)
                 Image(systemName: s.symbol)
-                    .font(.system(size: 62)).foregroundStyle(Brand.pinkDeep)
+                    .font(.system(size: 60, weight: .medium)).foregroundStyle(Brand.brandGradient)
             }
             VStack(spacing: 12) {
                 Text(app.t(s.titleAr, s.titleEn))
-                    .font(.system(.title, design: .rounded).weight(.bold))
+                    .spaFont(.display, ar: app.isAr)
                     .foregroundStyle(Brand.ink)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)

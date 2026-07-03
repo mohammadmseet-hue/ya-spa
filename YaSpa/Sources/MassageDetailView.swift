@@ -6,68 +6,164 @@ struct MassageDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(Brand.heroGradient)
-                        .frame(height: 180)
-                    Image(systemName: massage.symbol)
-                        .font(.system(size: 64))
-                        .foregroundStyle(Brand.pinkDeep)
-                }
-
-                Text(app.t(massage.nameAr, massage.nameEn))
-                    .font(.system(.title, design: .rounded).weight(.bold))
-                    .foregroundStyle(Brand.ink)
-
-                HStack(spacing: 10) {
-                    Pill(text: app.t("\(massage.minutes) دقيقة", "\(massage.minutes) min"), icon: "clock")
-                    Pill(text: app.money(massage.price), icon: "tag")
-                }
-
-                Text(app.t(massage.descAr, massage.descEn))
-                    .font(.body)
-                    .foregroundStyle(Brand.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(app.t("ما يشمله", "What's included"))
-                        .font(.system(.headline, design: .rounded))
-                        .foregroundStyle(Brand.ink)
-                    infoRow(app.t("معالِجة معتمدة — نساء فقط", "A certified woman therapist — women only"))
-                    infoRow(app.t("أدوات معقّمة لمرّة واحدة، تُفتح أمامكِ", "Sealed, single-use tools opened before you"))
-                    infoRow(app.t("أغطية نظيفة وزيوت معتمدة من الهيئة", "Fresh linens & SFDA-approved oils"))
-                    infoRow(app.t("أغطية تحفظ خصوصيتكِ طوال الجلسة", "Draping that protects your privacy"))
-                    infoRow(app.t("السعر يشمل المواصلات وضريبة ١٥٪", "Price includes transport & 15% VAT"))
-                }
-                .padding(16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                .padding(.top, 4)
+            VStack(alignment: .leading, spacing: Space.xl) {
+                heroBand
+                bestFor
+                includedCard
+                therapistPreview
+                reviewsBlock
             }
-            .padding(16)
+            .padding(Space.screen)
+            .padding(.bottom, Space.huge)
         }
-        .background(Brand.bg.ignoresSafeArea())
+        .background(AmbientBackground())
         .navigationBarTitleDisplayMode(.inline)
-        .safeAreaInset(edge: .bottom) {
-            NavigationLink {
-                BookingView(massage: massage)
-            } label: {
-                Text(app.t("احجزي هذه الجلسة", "Book this session"))
+        .safeAreaInset(edge: .bottom) { bookBar }
+    }
+
+    // MARK: Hero
+
+    private var heroBand: some View {
+        VStack(spacing: Space.m) {
+            SFSymbolMedallion(symbol: massage.symbol, size: 92).padding(.top, Space.s)
+            Text(app.t(massage.nameAr, massage.nameEn))
+                .spaFont(.serviceName, ar: app.isAr)
+                .foregroundStyle(Brand.ink)
+                .multilineTextAlignment(.center)
+            HStack(spacing: 6) {
+                StarRow(rating: 4.9, size: 12)
+                Text(app.t("4.9 · 128 تقييم", "4.9 · 128 reviews"))
+                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
             }
-            .buttonStyle(PrimaryButtonStyle())
-            .accessibilityIdentifier("book-session")
-            .padding(16)
-            .background(.ultraThinMaterial)
+            Text(app.t(massage.descAr, massage.descEn))
+                .font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: Space.l) {
+                MetadataChip(icon: "clock", text: app.t("\(massage.minutes) دقيقة", "\(massage.minutes) min"))
+                PressureIndicator(label: app.t(massage.pressureAr, massage.pressureEn),
+                                  level: PressureIndicator.level(for: massage.pressureEn))
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(Space.xl)
+        .background(
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Brand.heroGradient)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Color.white.opacity(0.5), lineWidth: 1)
+        )
+        .shadow(color: Brand.shadowBloom.opacity(0.1), radius: 24, y: 12)
+    }
+
+    // MARK: Best for
+
+    private var bestFor: some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            Text(app.t("مناسب لـ", "Best for"))
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Space.s) {
+                    ForEach(app.isAr ? massage.benefitsAr : massage.benefitsEn, id: \.self) { b in
+                        BenefitChip(text: b)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: Included
+
+    private var includedCard: some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            Text(app.t("ما تشمله الجلسة", "What's included"))
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
+            infoRow(app.t("معالِجة معتمدة — نساء فقط", "A certified woman therapist — women only"))
+            infoRow(app.t("أدوات معقّمة لمرّة واحدة، تُفتح أمامكِ", "Sealed, single-use tools opened before you"))
+            infoRow(app.t("أغطية نظيفة وزيوت معتمدة من الهيئة", "Fresh linens & SFDA-approved oils"))
+            infoRow(app.t("أغطية تحفظ خصوصيتكِ طوال الجلسة", "Draping that protects your privacy"))
+            infoRow(app.t("السعر يشمل المواصلات وضريبة ١٥٪", "Price includes transport & 15% VAT"))
+        }
+        .padding(Space.l)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .softCard()
     }
 
     private func infoRow(_ text: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill").foregroundStyle(Brand.pink)
-            Text(text).font(.subheadline).foregroundStyle(Brand.ink)
+            Text(text).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.ink)
             Spacer(minLength: 0)
+        }
+    }
+
+    // MARK: Therapists
+
+    private var therapistPreview: some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            Text(app.t("معالِجاتكِ", "Meet your therapists"))
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
+            VStack(spacing: Space.m) {
+                ForEach(Therapists.all.prefix(2)) { th in
+                    HStack(spacing: Space.m) {
+                        GradientMonogramAvatar(seed: th.id,
+                                               initials: String(app.t(th.nameAr, th.nameEn).prefix(1)),
+                                               size: 46, verified: true)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(app.t(th.nameAr, th.nameEn))
+                                .font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                            Text(app.t(th.specialtyAr, th.specialtyEn))
+                                .font(.system(size: 12, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                        }
+                        Spacer(minLength: 0)
+                        HStack(spacing: 3) {
+                            Image(systemName: "star.fill").font(.system(size: 11)).foregroundStyle(Brand.gold)
+                            Text(String(format: "%.2f", th.rating))
+                                .font(.system(size: 13, weight: .semibold, design: .rounded)).foregroundStyle(Brand.ink)
+                        }
+                    }
+                }
+            }
+            .padding(Space.l)
+            .softCard()
+        }
+    }
+
+    // MARK: Reviews
+
+    private var reviewsBlock: some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            Text(app.t("التقييمات", "Reviews"))
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
+            RatingSummary(average: 4.9, count: 128, distribution: [112, 12, 3, 1, 0])
+                .padding(Space.l).softCard()
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Space.m) {
+                    ForEach(Reviews.all) { ReviewCard(review: $0) }
+                }
+            }
+        }
+    }
+
+    // MARK: Book bar
+
+    private var bookBar: some View {
+        StickyGlassBar {
+            HStack(spacing: Space.l) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(app.t("الإجمالي", "Total"))
+                        .font(.system(size: 11, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    Text(app.money(Pricing.total(massage.price)))
+                        .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
+                }
+                NavigationLink {
+                    BookingView(massage: massage)
+                } label: {
+                    Text(app.t("احجزي الآن", "Book now"))
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .accessibilityIdentifier("book-session")
+            }
         }
     }
 }

@@ -1,117 +1,114 @@
 import SwiftUI
 
-/// Account / profile tab: who's signed in, quick stats, language preference,
-/// and about. Auth-aware — shows the phone + Sign out once phone login is live,
-/// a friendly guest state until then.
+/// Account / profile tab: who's signed in, quick stats, preferences, and about.
 struct ProfileView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
     @EnvironmentObject var auth: AuthStore
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: Space.l) {
                     accountCard
                     preferences
+                    PromiseStrip()
                     about
                     footer
                 }
-                .padding(16)
+                .padding(Space.screen)
+                .padding(.bottom, Space.xl)
             }
-            .background(Brand.bg.ignoresSafeArea())
+            .background(AmbientBackground())
             .navigationTitle(app.t("حسابي", "Profile"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 
     private var accountCard: some View {
-        VStack(spacing: 14) {
-            ZStack {
-                Circle().fill(Brand.heroGradient).frame(width: 74, height: 74)
-                Image(systemName: "person.fill").font(.title).foregroundStyle(Brand.pinkDeep)
-            }
+        VStack(spacing: Space.m) {
+            SFSymbolMedallion(symbol: "person.fill", size: 74)
             if auth.isAuthenticated && !auth.e164Phone.isEmpty {
-                Text(auth.e164Phone).font(.headline).foregroundStyle(Brand.ink)
+                Text(auth.e164Phone).spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
                 Text(app.t("مسجّلة الدخول", "Signed in"))
-                    .font(.caption).foregroundStyle(Brand.muted)
+                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
             } else {
-                Text(app.t("زائرة", "Guest")).font(.headline).foregroundStyle(Brand.ink)
-                Text(app.t("حجوزاتكِ محفوظة على هذا الجهاز",
-                           "Your bookings are saved on this device"))
-                    .font(.caption).foregroundStyle(Brand.muted).multilineTextAlignment(.center)
+                Text(app.t("زائرة", "Guest")).spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
+                Text(app.t("حجوزاتكِ محفوظة على هذا الجهاز", "Your bookings are saved on this device"))
+                    .font(.system(size: 13, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                    .multilineTextAlignment(.center)
             }
 
-            stat("\(store.bookings.count)", app.t("حجوزات", "Bookings"))
-                .padding(.top, 2)
+            stat("\(store.bookings.count)", app.t("حجوزات", "Bookings")).padding(.top, 2)
 
             if auth.isAuthenticated {
                 Button { Task { await auth.signOut() } } label: {
                     Text(app.t("تسجيل الخروج", "Sign out")).frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
-                .tint(Brand.pinkDeep)
+                .buttonStyle(.bordered).tint(Brand.pinkDeep)
                 .accessibilityIdentifier("sign-out")
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(20)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(Space.xl)
+        .softCard()
     }
 
     private func stat(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value).font(.system(.title3, design: .rounded).weight(.bold)).foregroundStyle(Brand.pinkDeep)
-            Text(label).font(.caption2).foregroundStyle(Brand.muted)
+            Text(value).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(Brand.pinkDeep)
+            Text(label).font(.system(size: 11, weight: .medium, design: .rounded)).foregroundStyle(Brand.inkSoft)
         }
     }
 
     private var preferences: some View {
-        row(icon: "globe", title: app.t("اللغة", "Language"),
-            value: app.isAr ? "العربية" : "English") { app.toggle() }
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        VStack(spacing: 0) {
+            row(icon: "globe", title: app.t("اللغة", "Language"),
+                value: app.isAr ? "العربية" : "English",
+                id: "profile-language") { app.toggle() }
+            Divider().padding(.leading, 52)
+            row(icon: "message.fill", title: app.t("تواصلي معنا", "Contact us"),
+                value: "WhatsApp", id: "profile-contact") {
+                openURL(URL(string: "https://wa.me/966565722923")!)
+            }
+        }
+        .softCard()
     }
 
     private func row(icon: String, title: String, value: String,
-                     action: @escaping () -> Void) -> some View {
+                     id: String, action: @escaping () -> Void) -> some View {
         Button { Haptics.tap(); action() } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: Space.m) {
                 Image(systemName: icon).foregroundStyle(Brand.pinkDeep).frame(width: 26)
-                Text(title).foregroundStyle(Brand.ink)
+                Text(title).font(.system(size: 16, design: .rounded)).foregroundStyle(Brand.ink)
                 Spacer()
-                Text(value).foregroundStyle(Brand.muted)
-                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Brand.muted.opacity(0.5))
+                Text(value).font(.system(size: 15, design: .rounded)).foregroundStyle(Brand.inkSoft)
+                Image(systemName: "chevron.forward").font(.caption).foregroundStyle(Brand.inkSoft.opacity(0.5))
             }
-            .padding(14)
+            .padding(Space.l)
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier("profile-language")
+        .accessibilityIdentifier(id)
     }
 
     private var about: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: Space.m) {
             Text(app.t("عن يا سبا", "About Ya Spa"))
-                .font(.subheadline.weight(.semibold)).foregroundStyle(Brand.ink)
+                .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("مساج احترافي للنساء فقط، يجيكِ البيت في جدة. معالِجات معتمدات وأدوات معقّمة.",
                        "Professional women-only massage, brought to your home in Jeddah. Certified therapists and sealed, sanitized tools."))
-                .font(.footnote).foregroundStyle(Brand.muted)
+                .font(.system(size: 14, design: .rounded)).foregroundStyle(Brand.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 10) {
-                TrustChip(icon: "person.fill", text: app.t("نساء فقط", "Women only"))
-                TrustChip(icon: "checkmark.seal.fill", text: app.t("معتمدة", "Certified"))
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(Space.l)
+        .softCard()
     }
 
     private var footer: some View {
         Text("Ya Spa · v1.0")
-            .font(.caption2).foregroundStyle(Brand.muted.opacity(0.7))
-            .padding(.top, 4)
+            .font(.system(size: 11, design: .rounded)).foregroundStyle(Brand.inkSoft.opacity(0.7))
+            .padding(.top, Space.xs)
     }
 }
