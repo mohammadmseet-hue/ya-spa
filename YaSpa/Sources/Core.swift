@@ -85,6 +85,10 @@ struct Massage: Identifiable, Hashable {
     let minutes: Int
     let price: Int
     let symbol: String
+    let pressureAr: String
+    let pressureEn: String
+    let benefitsAr: [String]
+    let benefitsEn: [String]
 }
 
 enum Catalog {
@@ -92,27 +96,45 @@ enum Catalog {
         Massage(id: "swedish", nameAr: "المساج السويدي", nameEn: "Swedish Massage",
                 descAr: "مساج استرخاء لطيف يحسّن الدورة الدموية ويذيب التوتر.",
                 descEn: "A gentle relaxation massage that boosts circulation and melts tension.",
-                minutes: 60, price: 199, symbol: "leaf.fill"),
+                minutes: 60, price: 199, symbol: "leaf.fill",
+                pressureAr: "لطيف", pressureEn: "Gentle",
+                benefitsAr: ["استرخاء عميق", "تحسين الدورة الدموية", "تخفيف التوتر"],
+                benefitsEn: ["Deep relaxation", "Better circulation", "Stress relief"]),
         Massage(id: "deep", nameAr: "مساج الأنسجة العميقة", nameEn: "Deep Tissue",
                 descAr: "ضغط أعمق يستهدف عقد العضلات والشدّ المزمن.",
                 descEn: "Deeper pressure targeting muscle knots and chronic tightness.",
-                minutes: 60, price: 249, symbol: "hand.raised.fill"),
+                minutes: 60, price: 249, symbol: "hand.raised.fill",
+                pressureAr: "قوي", pressureEn: "Firm",
+                benefitsAr: ["فكّ عقد العضلات", "تخفيف الألم المزمن", "تحسين الحركة"],
+                benefitsEn: ["Releases knots", "Chronic pain relief", "Better mobility"]),
         Massage(id: "stone", nameAr: "مساج الأحجار الساخنة", nameEn: "Hot Stone",
                 descAr: "أحجار بركانية دافئة ترخي العضلات بعمق وتهدّئ الحواس.",
                 descEn: "Warm volcanic stones deeply relax muscles and calm the senses.",
-                minutes: 75, price: 279, symbol: "flame.fill"),
+                minutes: 75, price: 279, symbol: "flame.fill",
+                pressureAr: "متوسط", pressureEn: "Medium",
+                benefitsAr: ["استرخاء عضلي عميق", "دفء يهدّئ الأعصاب", "تحسين النوم"],
+                benefitsEn: ["Deep muscle ease", "Soothing warmth", "Better sleep"]),
         Massage(id: "thai", nameAr: "المساج التايلندي", nameEn: "Thai Massage",
                 descAr: "تمدّد ومطّ لطيف يعيد المرونة والطاقة لجسمكِ.",
                 descEn: "Assisted stretching that restores flexibility and energy.",
-                minutes: 90, price: 289, symbol: "figure.cooldown"),
+                minutes: 90, price: 289, symbol: "figure.cooldown",
+                pressureAr: "متوسط", pressureEn: "Medium",
+                benefitsAr: ["زيادة المرونة", "تنشيط الطاقة", "إطالة العضلات"],
+                benefitsEn: ["More flexibility", "Energy boost", "Muscle stretch"]),
         Massage(id: "aroma", nameAr: "العلاج بالزيوت العطرية", nameEn: "Aromatherapy",
                 descAr: "زيوت عطرية مهدّئة لاسترخاءٍ عميق وصفاءٍ للذهن.",
                 descEn: "Calming essential oils for deep relaxation and a clear mind.",
-                minutes: 60, price: 219, symbol: "drop.fill"),
+                minutes: 60, price: 219, symbol: "drop.fill",
+                pressureAr: "لطيف", pressureEn: "Gentle",
+                benefitsAr: ["صفاء ذهني", "استرخاء عميق", "تحسين المزاج"],
+                benefitsEn: ["Clear mind", "Deep calm", "Mood lift"]),
         Massage(id: "foot", nameAr: "مساج القدمين الانعكاسي", nameEn: "Foot Reflexology",
                 descAr: "ضغط على نقاط القدم يريح كامل الجسم ويجدّد نشاطكِ.",
                 descEn: "Pressure-point foot work that relaxes the whole body.",
-                minutes: 45, price: 149, symbol: "figure.walk"),
+                minutes: 45, price: 149, symbol: "figure.walk",
+                pressureAr: "متوسط", pressureEn: "Medium",
+                benefitsAr: ["راحة كامل الجسم", "تنشيط الدورة", "تخفيف التعب"],
+                benefitsEn: ["Whole-body relief", "Circulation", "Less fatigue"]),
     ]
 }
 
@@ -124,13 +146,55 @@ struct Therapist: Identifiable, Hashable {
     let nameEn: String
     let rating: Double
     let years: Int
+    let reviews: Int
+    let specialtyAr: String
+    let specialtyEn: String
+    let bioAr: String
+    let bioEn: String
 }
 
 enum Therapists {
     static let all: [Therapist] = [
-        Therapist(id: "reem", nameAr: "ريم الغامدي", nameEn: "Reem G.", rating: 4.97, years: 7),
-        Therapist(id: "hind", nameAr: "هند العتيبي", nameEn: "Hind A.", rating: 4.92, years: 5),
-        Therapist(id: "sara", nameAr: "سارة القحطاني", nameEn: "Sara Q.", rating: 4.89, years: 4),
+        Therapist(id: "reem", nameAr: "ريم الغامدي", nameEn: "Reem G.", rating: 4.97, years: 7,
+                  reviews: 214, specialtyAr: "السويدي والعطري", specialtyEn: "Swedish & Aromatherapy",
+                  bioAr: "خبرة ٧ سنوات في المساج النسائي، تركّز على الاسترخاء العميق وراحتكِ التامة.",
+                  bioEn: "7 years in women's massage, focused on deep relaxation and your total comfort."),
+        Therapist(id: "hind", nameAr: "هند العتيبي", nameEn: "Hind A.", rating: 4.92, years: 5,
+                  reviews: 168, specialtyAr: "الأنسجة العميقة", specialtyEn: "Deep Tissue",
+                  bioAr: "متخصصة في علاج شدّ العضلات وآلام الظهر بلمسة احترافية.",
+                  bioEn: "Specializes in muscle tension and back-pain relief with a professional touch."),
+        Therapist(id: "sara", nameAr: "سارة القحطاني", nameEn: "Sara Q.", rating: 4.89, years: 4,
+                  reviews: 132, specialtyAr: "الأحجار الساخنة والتايلندي", specialtyEn: "Hot Stone & Thai",
+                  bioAr: "لمسة هادئة واحترافية تجدّد نشاطكِ وتمنحكِ صفاءً تامًا.",
+                  bioEn: "A calm, professional touch that restores your energy and clears your mind."),
+    ]
+}
+
+// MARK: - Social proof
+
+struct Review: Identifiable, Hashable {
+    let id = UUID()
+    let nameAr: String
+    let nameEn: String
+    let rating: Int
+    let textAr: String
+    let textEn: String
+}
+
+enum Reviews {
+    static let all: [Review] = [
+        Review(nameAr: "نورة", nameEn: "Noura", rating: 5,
+               textAr: "تجربة راقية وخصوصية تامة، المعالِجة محترفة جدًا.",
+               textEn: "An elegant experience with total privacy — very professional."),
+        Review(nameAr: "ليان", nameEn: "Layan", rating: 5,
+               textAr: "حجزت بسهولة وجت المعالِجة بالوقت بالضبط.",
+               textEn: "Booked in seconds and she arrived right on time."),
+        Review(nameAr: "أمل", nameEn: "Amal", rating: 5,
+               textAr: "أفضل مساج جربته بجدة، رجعت أحجز ثاني مرة.",
+               textEn: "Best massage I've had in Jeddah — already booked again."),
+        Review(nameAr: "دانة", nameEn: "Dana", rating: 5,
+               textAr: "الأحجار الساخنة كانت خيالية، أنصح فيها.",
+               textEn: "The hot stone was amazing, highly recommend."),
     ]
 }
 

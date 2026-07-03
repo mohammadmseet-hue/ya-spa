@@ -6,51 +6,53 @@ struct PrimaryButtonStyle: ButtonStyle {
             .font(.system(.headline, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, 17)
             .background(Brand.brandGradient)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .opacity(configuration.isPressed ? 0.85 : 1)
+            .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
+            .shadow(color: Brand.shadowBloom.opacity(0.28), radius: 14, y: 8)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(Motion.press, value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { pressed in if pressed { Haptics.tap() } }
     }
 }
 
+/// The rich catalog card carrying all four decision-drivers:
+/// medallion · serif name · benefit · (duration · rating · pressure) · price.
 struct MassageCard: View {
     @EnvironmentObject var app: AppState
     let massage: Massage
 
     var body: some View {
-        HStack(spacing: 14) {
-            ZStack {
-                Circle().fill(Brand.bg2)
-                Image(systemName: massage.symbol)
-                    .font(.title2)
-                    .foregroundStyle(Brand.pinkDeep)
-            }
-            .frame(width: 58, height: 58)
+        HStack(spacing: Space.l) {
+            SFSymbolMedallion(symbol: massage.symbol, size: 58, rounded: true)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(app.t(massage.nameAr, massage.nameEn))
-                    .font(.system(.headline, design: .rounded))
+                    .spaFont(.cardTitle, ar: app.isAr)
                     .foregroundStyle(Brand.ink)
-                Text(app.t("\(massage.minutes) دقيقة", "\(massage.minutes) min"))
-                    .font(.caption)
-                    .foregroundStyle(Brand.muted)
+                Text(app.t(massage.benefitsAr.first ?? "", massage.benefitsEn.first ?? ""))
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundStyle(Brand.inkSoft).lineLimit(1)
+                HStack(spacing: 10) {
+                    MetadataChip(icon: "clock", text: app.t("\(massage.minutes) د", "\(massage.minutes) min"))
+                    MetadataChip(icon: "star.fill", text: "4.9")
+                    PressureIndicator(label: app.t(massage.pressureAr, massage.pressureEn),
+                                      level: PressureIndicator.level(for: massage.pressureEn))
+                }
             }
 
-            Spacer(minLength: 8)
+            Spacer(minLength: Space.s)
 
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .trailing, spacing: 8) {
                 Text(app.money(massage.price))
-                    .font(.system(.subheadline, design: .rounded).weight(.bold))
+                    .spaFont(.price, ar: app.isAr)
                     .foregroundStyle(Brand.pinkDeep)
                 Image(systemName: "chevron.forward")
-                    .font(.caption2)
-                    .foregroundStyle(Brand.muted)
+                    .font(.caption2).foregroundStyle(Brand.inkSoft)
             }
         }
-        .padding(14)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .shadow(color: Brand.pinkDeep.opacity(0.06), radius: 10, y: 4)
+        .padding(Space.l)
+        .softCard()
     }
 }
 

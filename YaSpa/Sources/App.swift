@@ -5,11 +5,14 @@ struct YaSpaApp: App {
     @StateObject private var app = AppState()
     @StateObject private var store = BookingStore()
     @StateObject private var auth = AuthStore()
+    @AppStorage("yaspa.onboarded") private var onboarded = false
 
     var body: some Scene {
         WindowGroup {
             Group {
-                if Config.requireAuth && auth.checking {
+                if !onboarded && !Runtime.isUITest {
+                    OnboardingView { withAnimation(.easeInOut) { onboarded = true } }
+                } else if Config.requireAuth && auth.checking {
                     ZStack {
                         Brand.heroGradient.ignoresSafeArea()
                         ProgressView().tint(Brand.pinkDeep)
