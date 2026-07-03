@@ -164,6 +164,9 @@ final class BookingUITests: XCTestCase {
 
     /// Reliably enter text into a scrollable field: bring it on-screen, focus it, type.
     private func fillField(_ app: XCUIApplication, _ id: String, _ text: String) {
+        // Clear any keyboard a previous field left up so this tap is a clean focus
+        // (the ScrollView's scrollDismissesKeyboard(.immediately) drops it on the swipe).
+        if app.keyboards.element.exists { app.swipeUp() }
         let field = app.textFields[id]
         bringIntoReach(field, in: app)
         field.tap()
