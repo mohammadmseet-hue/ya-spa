@@ -176,6 +176,28 @@ extension View {
     }
 }
 
+// MARK: - Staggered entrance (premium list reveal; off in tests / Reduce Motion)
+
+struct StaggerAppear: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let index: Int
+    @State private var shown = false
+
+    func body(content: Content) -> some View {
+        let animate = !reduceMotion && !Runtime.isUITest
+        content
+            .opacity(animate ? (shown ? 1 : 0) : 1)
+            .offset(y: animate ? (shown ? 0 : 14) : 0)
+            .animation(animate ? .spring(response: 0.45, dampingFraction: 0.85)
+                        .delay(Double(index) * 0.05) : nil, value: shown)
+            .onAppear { if animate { shown = true } }
+    }
+}
+
+extension View {
+    func staggerAppear(_ index: Int) -> some View { modifier(StaggerAppear(index: index)) }
+}
+
 // MARK: - Press interaction for tappable cards/rows
 
 /// Subtle press-scale + light haptic, no visual chrome. NavigationLink and Button both

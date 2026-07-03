@@ -263,6 +263,7 @@ struct RatingSummary: View {
     let average: Double
     let count: Int
     let distribution: [Int]   // [5★, 4★, 3★, 2★, 1★]
+    var onSelectStar: ((Int) -> Void)? = nil
 
     var body: some View {
         HStack(alignment: .center, spacing: Space.xl) {
@@ -277,17 +278,23 @@ struct RatingSummary: View {
             }
             VStack(spacing: 5) {
                 ForEach(0..<5, id: \.self) { i in
-                    HStack(spacing: 6) {
-                        Text("\(5 - i)").font(.rubik(11))
-                            .foregroundStyle(Brand.inkSoft).frame(width: 10)
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Capsule().fill(Brand.bg2)
-                                Capsule().fill(Brand.accent.opacity(0.85)).frame(width: geo.size.width * fraction(i))
+                    let star = 5 - i
+                    Button { onSelectStar?(star) } label: {
+                        HStack(spacing: 6) {
+                            Text("\(star)").font(.rubik(11))
+                                .foregroundStyle(Brand.inkSoft).frame(width: 10)
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule().fill(Brand.bg2)
+                                    Capsule().fill(Brand.accent.opacity(0.85)).frame(width: geo.size.width * fraction(i))
+                                }
                             }
+                            .frame(height: 6)
                         }
-                        .frame(height: 6)
                     }
+                    .buttonStyle(.plain)
+                    .disabled(onSelectStar == nil)
+                    .accessibilityIdentifier("reviews-dist-\(star)")
                 }
             }
         }
@@ -340,7 +347,11 @@ struct ReviewsSection: View {
         VStack(alignment: .leading, spacing: Space.m) {
             Text(app.t("التقييمات", "Reviews"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
-            RatingSummary(average: average, count: count, distribution: distribution)
+            RatingSummary(average: average, count: count, distribution: distribution,
+                          onSelectStar: { star in
+                              Haptics.tap()
+                              withAnimation(Motion.spring) { filter = (filter == star ? 0 : star) }
+                          })
                 .padding(Space.l).softCard()
 
             ScrollView(.horizontal, showsIndicators: false) {
