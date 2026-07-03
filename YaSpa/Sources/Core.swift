@@ -33,22 +33,31 @@ extension Color {
 }
 
 enum Brand {
-    static let pinkDeep = Color(hex: 0x9E2B52)
-    static let pink     = Color(hex: 0xE45C86)
-    static let pinkSoft = Color(hex: 0xF7AEC4)
-    static let gold     = Color(hex: 0xC9A24B)
-    static let bg       = Color(hex: 0xFFF5F7)
-    static let bg2      = Color(hex: 0xFDE8EE)
-    static let ink      = Color(hex: 0x3A2230)
-    static let muted    = Color(hex: 0x7A5966)
+    // "Quiet luxury at-home hammam": oat/sand canvas, one flat bordeaux accent,
+    // dusty rose only as tint, antique gold only as hairline/ceremony.
+    static let pinkDeep = Color(hex: 0x6E1E2E)   // Bordeaux — THE accent (name kept for call-sites)
+    static let accent   = Color(hex: 0x6E1E2E)
+    static let accentPressed = Color(hex: 0x571623)
+    static let pink     = Color(hex: 0xD9B3AC)   // Clay Rose — tint only
+    static let pinkSoft = Color(hex: 0xE8CFC9)   // Dusty Rose — tint only
+    static let gold     = Color(hex: 0xA98545)   // Antique Gold — hairline/ceremony only
+    static let bg       = Color(hex: 0xF4EFE7)   // Alabaster canvas
+    static let bg2      = Color(hex: 0xECE4D8)   // Warm Greige wash
+    static let ink      = Color(hex: 0x2A2320)   // Espresso (text + ink cards)
+    static let muted    = Color(hex: 0x6B5F58)   // Taupe-Grey
+    static let paper    = Color(hex: 0xFFFDFB)   // Paper White (cards)
+    static let hairline = Color(hex: 0xDED5C8)   // Warm Sand hairline
+    static let ivory    = Color(hex: 0xFBF7F0)   // on-accent / on-dark text
 
     static let heroGradient = LinearGradient(
-        colors: [Color(hex: 0xFFF5F7), Color(hex: 0xFDE8EE)],
+        colors: [Color(hex: 0xF4EFE7), Color(hex: 0xEDE4D6)],
         startPoint: .top, endPoint: .bottom)
+    // "brandGradient" retained as a NEAR-FLAT bordeaux so every prior gradient
+    // call-site (CTA, selected chips, step progress) reads as one flat accent.
     static let brandGradient = LinearGradient(
-        colors: [pink, pinkDeep], startPoint: .top, endPoint: .bottom)
+        colors: [Color(hex: 0x6E1E2E), Color(hex: 0x571623)], startPoint: .top, endPoint: .bottom)
     static let whiteGradient = LinearGradient(
-        colors: [.white, .white], startPoint: .top, endPoint: .bottom)
+        colors: [paper, paper], startPoint: .top, endPoint: .bottom)
 }
 
 // MARK: - App state / localization

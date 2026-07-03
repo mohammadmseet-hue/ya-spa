@@ -3,14 +3,20 @@ import SwiftUI
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(.headline, design: .rounded))
-            .foregroundStyle(.white)
+            .font(.system(size: 16, weight: .semibold, design: .rounded))
+            .foregroundStyle(Brand.ivory)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 17)
-            .background(Brand.brandGradient)
+            .background(configuration.isPressed ? Brand.accentPressed : Brand.accent)
             .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
-            .shadow(color: Brand.shadowBloom.opacity(0.28), radius: 14, y: 8)
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            // Antique-gold inset hairline — foil-stamp feel, not a glossy pill.
+            .overlay(
+                RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
+                    .inset(by: 3)
+                    .stroke(Brand.gold.opacity(0.35), lineWidth: 0.75)
+            )
+            .shadow(color: Brand.shadowRose.opacity(0.18), radius: 10, y: 5)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(Motion.press, value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { pressed in if pressed { Haptics.tap() } }
     }
@@ -65,7 +71,7 @@ struct TrustChip: View {
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(Brand.paper)
         .clipShape(Capsule())
     }
 }

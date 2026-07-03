@@ -113,6 +113,55 @@ final class BookingUITests: XCTestCase {
                       "Massage names should switch to Arabic after tapping the language toggle")
     }
 
+    /// The dashboard "Book a massage" CTA opens the Massage catalog.
+    func testDashboardBookOpensMassage() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-uitest"]
+        app.launch()
+
+        let book = app.buttons["dashboard-book"]
+        XCTAssertTrue(book.waitForExistence(timeout: 15), "Dashboard book CTA should exist on Home")
+        book.tap()
+        XCTAssertTrue(app.buttons["massage-swedish"].waitForExistence(timeout: 10),
+                      "Booking CTA should open the Massage catalog")
+    }
+
+    /// All four tabs are reachable and show their content.
+    func testTabsNavigate() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-uitest"]
+        app.launch()
+
+        let tabs = app.tabBars.buttons
+        XCTAssertTrue(tabs.element(boundBy: 0).waitForExistence(timeout: 15))
+        tabs.element(boundBy: 1).tap()   // Massage
+        XCTAssertTrue(app.buttons["massage-swedish"].waitForExistence(timeout: 10))
+        tabs.element(boundBy: 2).tap()   // My bookings
+        tabs.element(boundBy: 3).tap()   // Profile
+        XCTAssertTrue(app.buttons["profile-language"].waitForExistence(timeout: 10))
+        tabs.element(boundBy: 0).tap()   // Home
+        XCTAssertTrue(app.buttons["dashboard-book"].waitForExistence(timeout: 10))
+    }
+
+    /// Tapping a therapist on a service detail opens their profile.
+    func testTherapistProfileOpens() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-uitest"]
+        app.launch()
+
+        app.tabBars.buttons.element(boundBy: 1).tap()   // Massage
+        let card = app.buttons["massage-swedish"]
+        XCTAssertTrue(card.waitForExistence(timeout: 15))
+        card.tap()
+
+        let therapist = app.buttons["therapist-profile-reem"]
+        XCTAssertTrue(therapist.waitForExistence(timeout: 10), "Therapist row should be on the detail screen")
+        scrollUntilHittable(therapist, in: app)
+        therapist.tap()
+        XCTAssertTrue(app.staticTexts["About"].waitForExistence(timeout: 10),
+                      "Therapist profile should show the About section")
+    }
+
     private func scrollUntilHittable(_ element: XCUIElement, in app: XCUIApplication, maxSwipes: Int = 8) {
         var swipes = 0
         while !element.isHittable && swipes < maxSwipes {

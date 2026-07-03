@@ -54,11 +54,10 @@ struct HomeDashboardView: View {
             }
             Spacer(minLength: 0)
             SFSymbolMedallion(symbol: "sparkles", size: 64)
-                .scaleEffect(breathe ? 1.06 : 1)
-                .onAppear {
-                    guard !reduceMotion, !Runtime.isUITest else { return }
-                    withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) { breathe = true }
-                }
+                .scaleEffect(breathe ? 1.04 : 1)
+                .animation((reduceMotion || Runtime.isUITest) ? nil
+                           : .easeInOut(duration: 4).repeatForever(autoreverses: true), value: breathe)
+                .onAppear { if !reduceMotion && !Runtime.isUITest { breathe = true } }
         }
         .padding(.top, Space.s)
     }
@@ -102,11 +101,15 @@ struct HomeDashboardView: View {
         .frame(maxWidth: .infinity)
         .padding(Space.xl)
         .background(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Brand.heroGradient))
-        .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Color.white.opacity(0.5), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Brand.paper.opacity(0.5), lineWidth: 1))
     }
 
     private var bookButton: some View {
-        Button { Haptics.tap(); goToMassage() } label: {
+        Button {
+            Haptics.tap()
+            // One finite, owned spring for the switch — nothing to leak into.
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) { goToMassage() }
+        } label: {
             Label(app.t("احجزي جلسة مساج", "Book a massage"), systemImage: "plus.circle.fill")
         }
         .buttonStyle(PrimaryButtonStyle())

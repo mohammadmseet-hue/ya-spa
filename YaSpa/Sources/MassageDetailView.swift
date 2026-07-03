@@ -51,7 +51,7 @@ struct MassageDetailView: View {
             RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Brand.heroGradient)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Color.white.opacity(0.5), lineWidth: 1)
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Brand.paper.opacity(0.5), lineWidth: 1)
         )
         .shadow(color: Brand.shadowBloom.opacity(0.1), radius: 24, y: 12)
     }
@@ -127,6 +127,7 @@ struct MassageDetailView: View {
                         .padding(.vertical, 6)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("therapist-profile-\(th.id)")
                 }
             }
             .padding(Space.l)

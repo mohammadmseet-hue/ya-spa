@@ -46,11 +46,18 @@ struct OnboardingView: View {
 
                 TabView(selection: $page) {
                     ForEach(slides.indices, id: \.self) { i in
-                        slideView(slides[i]).tag(i)
+                        slideView(slides[i])
+                            // Re-apply the real layout direction to each slide so Arabic
+                            // text stays RTL while the PAGER geometry below is forced LTR.
+                            .environment(\.layoutDirection, app.layout)
+                            .tag(i)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: page)
+                // Pager progresses left→right (slide 1 leftmost); text direction is
+                // restored per-slide above so this only affects paging geometry.
+                .environment(\.layoutDirection, .leftToRight)
 
                 dots.padding(.bottom, 20)
 
@@ -81,7 +88,7 @@ struct OnboardingView: View {
         VStack(spacing: 22) {
             Spacer()
             ZStack {
-                Circle().fill(Color.white).frame(width: 150, height: 150)
+                Circle().fill(Brand.paper).frame(width: 150, height: 150)
                     .shadow(color: Brand.shadowBloom.opacity(0.18), radius: 26, y: 14)
                 Image(systemName: s.symbol)
                     .font(.system(size: 60, weight: .medium)).foregroundStyle(Brand.brandGradient)
@@ -106,10 +113,11 @@ struct OnboardingView: View {
         HStack(spacing: 8) {
             ForEach(slides.indices, id: \.self) { i in
                 Capsule()
-                    .fill(i == page ? Brand.pinkDeep : Brand.pinkSoft)
+                    .fill(i == page ? Brand.accent : Brand.pinkSoft)
                     .frame(width: i == page ? 22 : 8, height: 8)
                     .animation(.spring(response: 0.3), value: page)
             }
         }
+        .environment(\.layoutDirection, .leftToRight)   // match the LTR pager order
     }
 }

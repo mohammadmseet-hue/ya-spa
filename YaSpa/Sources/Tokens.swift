@@ -4,16 +4,16 @@ import SwiftUI
 // Additive layer on top of Brand. Screens consume these instead of ad-hoc values.
 
 extension Brand {
-    static let inkSoft     = Color(hex: 0x7A5966)   // secondary text/icons
-    static let shadowRose  = Color(hex: 0x9E2B52)   // tight contact shadow tint
-    static let shadowBloom = Color(hex: 0xE45C86)   // wide ambient bloom tint
+    static let inkSoft     = Color(hex: 0x6B5F58)   // Taupe-Grey secondary text/icons
+    static let shadowRose  = Color(hex: 0x2A2320)   // warm-neutral tight contact shadow
+    static let shadowBloom = Color(hex: 0x6E1E2E)   // bordeaux wide ambient bloom (restrained)
 
-    /// Deterministic rose→gold gradient seeded from a string (photo-free identity).
+    /// Deterministic FLAT earth-tone fill seeded from a string (photo-free identity).
+    /// No pink→gold gradient — a quiet tonal disc with ivory initials.
     static func monogramGradient(seed: String) -> LinearGradient {
-        let h = abs(seed.hashValue)
-        let a = [pinkDeep, pink, Color(hex: 0xB8446B), Color(hex: 0xC96A8C)][h % 4]
-        let b = [pink, gold, pinkSoft, Color(hex: 0xD98BA6)][(h / 4) % 4]
-        return LinearGradient(colors: [a, b], startPoint: .topLeading, endPoint: .bottomTrailing)
+        let tones = [Color(hex: 0x6E1E2E), Color(hex: 0x2A2320), Color(hex: 0x8A5A3C), Color(hex: 0x6B5F58)]
+        let c = tones[abs(seed.hashValue) % tones.count]
+        return LinearGradient(colors: [c, c], startPoint: .top, endPoint: .bottom)
     }
 }
 
@@ -77,18 +77,21 @@ struct AmbientBackground: View {
     var body: some View {
         ZStack {
             Brand.bg
-            blob(Brand.pinkSoft.opacity(0.55), size: 320)
+            blob(Brand.pinkSoft.opacity(0.30), size: 320)
                 .offset(x: drift ? 120 : 150, y: -260)
-            blob(Brand.gold.opacity(0.16), size: 300)
+            blob(Brand.gold.opacity(0.10), size: 300)
                 .offset(x: -150, y: drift ? 340 : 300)
-            blob(Brand.pink.opacity(0.14), size: 360)
-                .offset(x: drift ? -40 : 0, y: 40)
         }
         .ignoresSafeArea()
-        .onAppear {
-            guard !reduceMotion, !Runtime.isUITest else { return }
-            withAnimation(.easeInOut(duration: 12).repeatForever(autoreverses: true)) { drift = true }
-        }
+        // Scope the repeating animation to `drift` ONLY so it never leaks into
+        // tab/navigation transitions (the cause of the "terrible" animation).
+        .animation(driftAnimation, value: drift)
+        .onAppear { if !reduceMotion && !Runtime.isUITest { drift = true } }
+    }
+
+    private var driftAnimation: Animation? {
+        (reduceMotion || Runtime.isUITest) ? nil
+            : .easeInOut(duration: 12).repeatForever(autoreverses: true)
     }
 
     private func blob(_ color: Color, size: CGFloat) -> some View {
@@ -108,16 +111,16 @@ struct SoftCard: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(Color.white)
+            .background(Brand.paper)
             .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .stroke(selected ? Brand.pink.opacity(0.6) : Color.white.opacity(0.6),
-                            lineWidth: selected ? 2 : 1)
+                    .stroke(selected ? Brand.accent.opacity(0.55) : Brand.hairline,
+                            lineWidth: selected ? 1.5 : 1)
             )
-            .shadow(color: Brand.shadowRose.opacity(0.08), radius: 8, y: 4)
-            .shadow(color: Brand.shadowBloom.opacity(selected ? 0.16 : 0.12),
-                    radius: selected ? 20 : 30, y: selected ? 8 : 16)
+            .shadow(color: Brand.shadowRose.opacity(0.07), radius: 7, y: 3)
+            .shadow(color: Brand.shadowBloom.opacity(selected ? 0.08 : 0.05),
+                    radius: selected ? 16 : 22, y: selected ? 7 : 12)
     }
 }
 

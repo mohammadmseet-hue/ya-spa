@@ -95,8 +95,8 @@ struct BookingView: View {
                                 Text(Scheduling.dayNumber(day)).font(.system(size: 18, weight: .semibold, design: .rounded))
                             }
                             .frame(width: 54, height: 68)
-                            .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Color.white))
-                            .foregroundStyle(selected ? Color.white : Brand.ink)
+                            .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
+                            .foregroundStyle(selected ? Brand.paper : Brand.ink)
                             .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
@@ -133,8 +133,8 @@ struct BookingView: View {
                         Text(time)
                             .font(.system(size: 15, weight: .medium, design: .rounded))
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Color.white))
-                            .foregroundStyle(selected ? Color.white
+                            .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
+                            .foregroundStyle(selected ? Brand.paper
                                              : (available ? Brand.ink : Brand.inkSoft.opacity(0.35)))
                             .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
                             .overlay(
@@ -201,7 +201,7 @@ struct BookingView: View {
             .font(.system(size: 16, design: .rounded))
             .accessibilityIdentifier(id)
             .padding(Space.l)
-            .background(Color.white)
+            .background(Brand.paper)
             .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)

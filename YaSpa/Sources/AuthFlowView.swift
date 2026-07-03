@@ -47,7 +47,7 @@ struct AuthFlowView: View {
                     .font(.headline)
             }
             .padding(16)
-            .background(Color.white)
+            .background(Brand.paper)
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
             Button {
@@ -70,7 +70,7 @@ struct AuthFlowView: View {
                 .multilineTextAlignment(.center)
                 .font(.system(.title3, design: .rounded))
                 .padding(16)
-                .background(Color.white)
+                .background(Brand.paper)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
             Button {

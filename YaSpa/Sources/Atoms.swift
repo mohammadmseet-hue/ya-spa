@@ -39,14 +39,14 @@ struct GradientMonogramAvatar: View {
             .overlay(
                 Text(initials)
                     .font(.system(size: size * 0.4, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Brand.ivory)
             )
             .overlay(alignment: .bottomTrailing) {
                 if verified {
                     Image(systemName: "checkmark.seal.fill")
                         .font(.system(size: size * 0.32))
                         .foregroundStyle(Brand.gold)
-                        .background(Circle().fill(.white).padding(-1))
+                        .background(Circle().fill(Brand.paper).padding(-1))
                         .offset(x: 2, y: 2)
                 }
             }
@@ -158,7 +158,7 @@ struct TrustPromiseCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14).padding(.horizontal, 6)
-        .background(Color.white)
+        .background(Brand.paper)
         .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
@@ -180,7 +180,7 @@ struct StickyGlassBar<Content: View>: View {
             .background(
                 ZStack(alignment: .top) {
                     Rectangle().fill(.ultraThinMaterial)
-                    Rectangle().fill(Color.white.opacity(0.4)).frame(height: 1)
+                    Rectangle().fill(Brand.gold.opacity(0.4)).frame(height: 1)
                 }
             )
     }
@@ -205,7 +205,7 @@ struct AnimatedCheckmark: View {
 
     var body: some View {
         ZStack {
-            Circle().fill(Color.white)
+            Circle().fill(Brand.paper)
                 .shadow(color: Brand.shadowBloom.opacity(0.18), radius: 24, y: 12)
             Circle().stroke(Brand.gold, lineWidth: 3)
             CheckmarkShape()
@@ -265,7 +265,7 @@ struct RatingSummary: View {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 Capsule().fill(Brand.bg2)
-                                Capsule().fill(Brand.gold).frame(width: geo.size.width * fraction(i))
+                                Capsule().fill(Brand.accent.opacity(0.85)).frame(width: geo.size.width * fraction(i))
                             }
                         }
                         .frame(height: 6)
@@ -326,8 +326,8 @@ struct DurationSegment: View {
                     Text(app.t("\(minutes) د", "\(minutes) min"))
                         .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .frame(maxWidth: .infinity).padding(.vertical, 10)
-                        .background(sel ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Color.white))
-                        .foregroundStyle(sel ? Color.white : Brand.ink)
+                        .background(sel ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
+                        .foregroundStyle(sel ? Brand.paper : Brand.ink)
                         .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
