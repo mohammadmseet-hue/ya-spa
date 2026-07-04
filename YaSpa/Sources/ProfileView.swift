@@ -6,17 +6,13 @@ struct ProfileView: View {
     @EnvironmentObject var store: BookingStore
     @EnvironmentObject var auth: AuthStore
     @Environment(\.openURL) private var openURL
-    @AppStorage("yaspa.theme") private var theme = "system"
+    @AppStorage("yaspa.theme") private var theme = "light"
 
     private var themeLabel: String {
-        switch theme {
-        case "light": return app.t("فاتح", "Light")
-        case "dusk":  return app.t("داكن", "Dusk")
-        default:      return app.t("تلقائي", "System")
-        }
+        theme == "dusk" ? app.t("داكن", "Dusk") : app.t("فاتح", "Light")
     }
     private func cycleTheme() {
-        theme = theme == "system" ? "light" : (theme == "light" ? "dusk" : "system")
+        theme = theme == "dusk" ? "light" : "dusk"
     }
 
     var body: some View {

@@ -6,10 +6,7 @@ struct HomeDashboardView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
     @EnvironmentObject var data: DataStore
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var goToMassage: () -> Void
-
-    @State private var breathe = false
 
     var body: some View {
         NavigationStack {
@@ -100,10 +97,6 @@ struct HomeDashboardView: View {
             }
             Spacer(minLength: 0)
             ArchMedallion(symbol: "sparkles", width: 56, height: 70)
-                .scaleEffect(breathe ? 1.04 : 1)
-                .animation((reduceMotion || Runtime.isUITest) ? nil
-                           : .easeInOut(duration: 4).repeatForever(autoreverses: true), value: breathe)
-                .onAppear { if !reduceMotion && !Runtime.isUITest { breathe = true } }
         }
         .padding(.top, Space.s)
     }

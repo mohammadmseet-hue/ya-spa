@@ -9,11 +9,10 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: Space.l) {
                     hero
-                    ForEach(Array(data.massages.enumerated()), id: \.element.id) { idx, m in
+                    ForEach(data.massages) { m in
                         NavigationLink(value: m) { MassageCard(massage: m) }
                             .buttonStyle(PressableCardStyle())
                             .accessibilityIdentifier("massage-\(m.id)")
-                            .staggerAppear(idx)
                     }
                     PromiseStrip().padding(.top, Space.s)
                 }

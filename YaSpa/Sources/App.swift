@@ -7,11 +7,11 @@ struct YaSpaApp: App {
     @StateObject private var auth = AuthStore()
     @StateObject private var data = DataStore()
     @AppStorage("yaspa.onboarded") private var onboarded = false
-    @AppStorage("yaspa.theme") private var theme = "system"   // system | light | dusk
+    @AppStorage("yaspa.theme") private var theme = "light"   // light (default) | dusk
 
     private var scheme: ColorScheme? {
-        if Runtime.isUITest { return .light }
-        switch theme { case "light": return .light; case "dusk": return .dark; default: return nil }
+        // Always light by default; dusk is an explicit opt-in (never follow the device).
+        return theme == "dusk" ? .dark : .light
     }
 
     var body: some Scene {

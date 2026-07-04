@@ -114,30 +114,16 @@ extension View {
 
 // MARK: - Ambient background (the #1 premium lever)
 
-/// Warm cream canvas + heavily-blurred rose/gold/deep-rose blobs that gently drift.
-/// Drop in behind screens instead of a flat fill. Drift is disabled in tests / reduce-motion.
+/// Warm canvas + two soft, STATIC blurred blobs. Static on purpose — a drifting blur
+/// read as a "black thing moving in the corner" in dusk mode, so nothing animates here.
 struct AmbientBackground: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var drift = false
-
     var body: some View {
         ZStack {
             Brand.bg
-            blob(Brand.pinkSoft.opacity(0.30), size: 320)
-                .offset(x: drift ? 120 : 150, y: -260)
-            blob(Brand.gold.opacity(0.10), size: 300)
-                .offset(x: -150, y: drift ? 340 : 300)
+            blob(Brand.pinkSoft.opacity(0.28), size: 320).offset(x: 150, y: -260)
+            blob(Brand.gold.opacity(0.09), size: 300).offset(x: -150, y: 300)
         }
         .ignoresSafeArea()
-        // Scope the repeating animation to `drift` ONLY so it never leaks into
-        // tab/navigation transitions (the cause of the "terrible" animation).
-        .animation(driftAnimation, value: drift)
-        .onAppear { if !reduceMotion && !Runtime.isUITest { drift = true } }
-    }
-
-    private var driftAnimation: Animation? {
-        (reduceMotion || Runtime.isUITest) ? nil
-            : .easeInOut(duration: 12).repeatForever(autoreverses: true)
     }
 
     private func blob(_ color: Color, size: CGFloat) -> some View {
