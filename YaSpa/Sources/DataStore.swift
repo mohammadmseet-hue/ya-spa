@@ -74,4 +74,19 @@ final class DataStore: ObservableObject {
         }
         loaded = true
     }
+
+    /// The real booked times for a therapist on a date (from the taken_slots RPC), so the
+    /// booking grid can grey out slots that are actually taken. Empty in tests / offline.
+    func takenSlots(therapist: String, date: String) async -> Set<String> {
+        guard Config.isConfigured, !Runtime.isUITest else { return [] }
+        struct Row: Decodable { let booking_time: String }
+        do {
+            let rows: [Row] = try await SB.client
+                .rpc("taken_slots", params: ["p_therapist": therapist, "p_date": date])
+                .execute().value
+            return Set(rows.map { $0.booking_time })
+        } catch {
+            return []
+        }
+    }
 }

@@ -15,6 +15,7 @@ struct BookingView: View {
     @State private var notes = ""
     @State private var payment: PaymentMethod = .onArrival
     @State private var confirmed: Booking?
+    @State private var taken: Set<String> = []   // real booked times for the chosen therapist/day
 
     private let days = Scheduling.upcomingDays(14)
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 3)
@@ -57,6 +58,15 @@ struct BookingView: View {
         .fullScreenCover(item: $confirmed, onDismiss: { dismiss() }) { b in
             BookingConfirmationView(booking: b).opaqueCover()
         }
+        .task(id: "\(Scheduling.iso(selectedDay))|\(selectedTherapist?.id ?? "")") {
+            await loadTaken()
+        }
+    }
+
+    private func loadTaken() async {
+        guard let th = selectedTherapist else { taken = []; return }
+        taken = await data.takenSlots(therapist: th.id, date: Scheduling.iso(selectedDay))
+        if let t = selectedTime, taken.contains(t) { selectedTime = nil }   // free a now-taken pick
     }
 
     private var header: some View {
@@ -125,7 +135,7 @@ struct BookingView: View {
             }
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(Scheduling.slots(), id: \.self) { time in
-                    let available = Scheduling.isAvailable(day: selectedDay, time: time)
+                    let available = Scheduling.isAvailable(day: selectedDay, time: time) && !taken.contains(time)
                     let selected = selectedTime == time
                     Button {
                         guard available else { return }
