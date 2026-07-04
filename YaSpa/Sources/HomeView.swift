@@ -21,6 +21,7 @@ struct HomeView: View {
                 .padding(.bottom, Space.huge)
             }
             .background(AmbientBackground())
+            .refreshable { await data.refresh() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {

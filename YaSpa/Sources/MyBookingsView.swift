@@ -19,6 +19,7 @@ struct MyBookingsView: View {
                         .padding(Space.screen)
                         .padding(.bottom, Space.xl)
                     }
+                    .refreshable { store.merge(await CloudBookings.list()) }
                 }
             }
             .background(AmbientBackground())

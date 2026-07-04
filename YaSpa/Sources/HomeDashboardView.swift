@@ -17,6 +17,7 @@ struct HomeDashboardView: View {
                 VStack(alignment: .leading, spacing: Space.xxl) {
                     greeting
                     if let next = store.bookings.first { upcomingCard(next) } else { firstBookCTA }
+                    rebookRail
                     promiseSection
                     JasmineDivider().padding(.vertical, Space.xs)
                     servicesGrid
@@ -26,7 +27,9 @@ struct HomeDashboardView: View {
                 .padding(.bottom, Space.huge)
             }
             .background(AmbientBackground())
+            .refreshable { await data.refresh(); store.merge(await CloudBookings.list()) }
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: Massage.self) { MassageDetailView(massage: $0) }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     YaSpaWordmark(compact: true)
@@ -35,6 +38,49 @@ struct HomeDashboardView: View {
                     Button(app.isAr ? "EN" : "ع") { app.toggle() }
                         .font(.headline).foregroundStyle(Brand.accent)
                         .accessibilityIdentifier("lang-home")
+                }
+            }
+        }
+    }
+
+    /// Recent distinct services the user has booked — one-tap to book again.
+    private var recentServices: [Massage] {
+        var seen = Set<String>(); var out: [Massage] = []
+        for b in store.bookings where !seen.contains(b.massageId) {
+            if let m = data.massages.first(where: { $0.id == b.massageId }) {
+                seen.insert(b.massageId); out.append(m)
+                if out.count == 5 { break }
+            }
+        }
+        return out
+    }
+
+    @ViewBuilder private var rebookRail: some View {
+        if !recentServices.isEmpty {
+            VStack(alignment: .leading, spacing: Space.m) {
+                Text(app.t("احجزي مجددًا", "Book again"))
+                    .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Space.m) {
+                        ForEach(recentServices) { m in
+                            NavigationLink(value: m) {
+                                HStack(spacing: Space.s) {
+                                    ArchMedallion(symbol: m.symbol, width: 34, height: 42)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(app.t(m.nameAr, m.nameEn))
+                                            .font(.rubik(14, .semibold)).foregroundStyle(Brand.ink)
+                                            .lineLimit(1).minimumScaleFactor(0.8)
+                                        Text(app.money(m.price))
+                                            .font(.rubik(12, .semibold)).foregroundStyle(Brand.pinkDeep)
+                                    }
+                                }
+                                .frame(width: 180, alignment: .leading)
+                                .padding(Space.m).softCard()
+                            }
+                            .buttonStyle(PressableCardStyle())
+                            .accessibilityIdentifier("rebook-\(m.id)")
+                        }
+                    }
                 }
             }
         }
