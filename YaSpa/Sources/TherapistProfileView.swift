@@ -4,6 +4,7 @@ import SwiftUI
 /// Purely additive — reached from the "Meet your therapists" rows on a service detail.
 struct TherapistProfileView: View {
     @EnvironmentObject var app: AppState
+    @EnvironmentObject var data: DataStore
     let therapist: Therapist
 
     var body: some View {
@@ -82,6 +83,6 @@ struct TherapistProfileView: View {
                                       therapist.reviews * 9 / 100,
                                       therapist.reviews * 2 / 100,
                                       therapist.reviews * 1 / 100, 0],
-                       reviews: Reviews.all)
+                       reviews: data.reviews)
     }
 }

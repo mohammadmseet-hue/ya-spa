@@ -2,13 +2,14 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var app: AppState
+    @EnvironmentObject var data: DataStore
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Space.l) {
                     hero
-                    ForEach(Array(Catalog.all.enumerated()), id: \.element.id) { idx, m in
+                    ForEach(Array(data.massages.enumerated()), id: \.element.id) { idx, m in
                         NavigationLink(value: m) { MassageCard(massage: m) }
                             .buttonStyle(PressableCardStyle())
                             .accessibilityIdentifier("massage-\(m.id)")

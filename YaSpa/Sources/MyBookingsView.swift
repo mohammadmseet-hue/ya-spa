@@ -3,6 +3,7 @@ import SwiftUI
 struct MyBookingsView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
+    @EnvironmentObject var data: DataStore
     @State private var cancelTarget: Booking?
 
     var body: some View {
@@ -80,7 +81,7 @@ struct MyBookingsView: View {
                     .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
             }
             HStack(spacing: Space.m) {
-                if let m = Catalog.all.first(where: { $0.id == b.massageId }) {
+                if let m = data.massages.first(where: { $0.id == b.massageId }) {
                     NavigationLink(value: m) {
                         Label(app.t("احجزي مجددًا", "Rebook"), systemImage: "arrow.clockwise")
                             .font(.rubik(13, .semibold))

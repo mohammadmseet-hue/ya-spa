@@ -5,6 +5,7 @@ struct YaSpaApp: App {
     @StateObject private var app = AppState()
     @StateObject private var store = BookingStore()
     @StateObject private var auth = AuthStore()
+    @StateObject private var data = DataStore()
     @AppStorage("yaspa.onboarded") private var onboarded = false
 
     var body: some Scene {
@@ -34,6 +35,7 @@ struct YaSpaApp: App {
             .environmentObject(app)
             .environmentObject(store)
             .environmentObject(auth)
+            .environmentObject(data)
             .environment(\.layoutDirection, app.layout)
             .tint(Brand.pinkDeep)
         }
@@ -43,6 +45,7 @@ struct YaSpaApp: App {
 struct RootView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
+    @EnvironmentObject var data: DataStore
     @State private var tab = 0
 
     var body: some View {
@@ -64,7 +67,9 @@ struct RootView: View {
         // animated swap flashes a black frame on device.
         .animation(nil, value: tab)
         .task {
-            // Pull this user's bookings from the cloud (no-op until signed in).
+            // Load the live catalog from Supabase (falls back to built-in data),
+            // then pull this user's bookings from the cloud (no-op until signed in).
+            await data.refresh()
             store.merge(await CloudBookings.list())
         }
     }

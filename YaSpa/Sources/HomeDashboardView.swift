@@ -5,6 +5,7 @@ import SwiftUI
 struct HomeDashboardView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
+    @EnvironmentObject var data: DataStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var goToMassage: () -> Void
 
@@ -132,11 +133,11 @@ struct HomeDashboardView: View {
             Text(app.t("خدماتنا", "Our services"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             // Editorial asymmetry: one featured card, then slim rows (no symmetric grid).
-            if let first = Catalog.all.first {
+            if let first = data.massages.first {
                 Button { Haptics.tap(); goToMassage() } label: { featureCard(first) }
                     .buttonStyle(PressableCardStyle())
             }
-            ForEach(Catalog.all.dropFirst()) { m in
+            ForEach(data.massages.dropFirst()) { m in
                 Button { Haptics.tap(); goToMassage() } label: { slimRow(m) }
                     .buttonStyle(PressableCardStyle())
             }

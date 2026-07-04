@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MassageDetailView: View {
     @EnvironmentObject var app: AppState
+    @EnvironmentObject var data: DataStore
     let massage: Massage
 
     var body: some View {
@@ -104,7 +105,7 @@ struct MassageDetailView: View {
             Text(app.t("معالِجاتكِ", "Meet your therapists"))
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             VStack(spacing: Space.s) {
-                ForEach(Therapists.all.prefix(2)) { th in
+                ForEach(data.therapists.prefix(2)) { th in
                     NavigationLink(value: th) {
                         HStack(spacing: Space.m) {
                             GradientMonogramAvatar(seed: th.id,
@@ -138,7 +139,7 @@ struct MassageDetailView: View {
     // MARK: Reviews
 
     private var reviewsBlock: some View {
-        ReviewsSection(average: 4.9, count: 128, distribution: [112, 12, 3, 1, 0], reviews: Reviews.all)
+        ReviewsSection(average: 4.9, count: 128, distribution: [112, 12, 3, 1, 0], reviews: data.reviews)
     }
 
     // MARK: Book bar

@@ -29,7 +29,20 @@ final class AuthStore: ObservableObject {
             _ = try await SB.client.auth.session
             isAuthenticated = true
         } catch {
-            isAuthenticated = false
+            // No existing session → sign in anonymously so every device gets a real,
+            // persistent identity and bookings actually persist under RLS. Requires
+            // "Anonymous Sign-Ins" enabled in Supabase; if it isn't, the cloud simply
+            // stays dormant and the app still works fully on-device.
+            if !Runtime.isUITest {
+                do {
+                    try await SB.client.auth.signInAnonymously()
+                    isAuthenticated = true
+                } catch {
+                    isAuthenticated = false
+                }
+            } else {
+                isAuthenticated = false
+            }
         }
         checking = false
     }

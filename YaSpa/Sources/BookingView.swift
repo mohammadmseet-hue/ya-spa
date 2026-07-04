@@ -3,6 +3,7 @@ import SwiftUI
 struct BookingView: View {
     @EnvironmentObject var app: AppState
     @EnvironmentObject var store: BookingStore
+    @EnvironmentObject var data: DataStore
     @Environment(\.dismiss) private var dismiss
     let massage: Massage
 
@@ -154,7 +155,7 @@ struct BookingView: View {
     private var therapistSection: some View {
         VStack(alignment: .leading, spacing: Space.m) {
             sectionTitle("اختاري معالِجتكِ", "Choose your therapist", "person.crop.circle")
-            ForEach(Therapists.all) { th in
+            ForEach(data.therapists) { th in
                 let selected = selectedTherapist?.id == th.id
                 Button {
                     Haptics.tap()
