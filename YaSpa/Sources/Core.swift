@@ -30,32 +30,42 @@ extension Color {
                   blue: Double(hex & 0xff) / 255,
                   opacity: 1)
     }
+    /// A dynamic color that adapts to light and dusk (dark) appearance.
+    init(light: UInt, dark: UInt) {
+        self = Color(UIColor { tc in
+            let hex = tc.userInterfaceStyle == .dark ? dark : light
+            return UIColor(red: CGFloat((hex >> 16) & 0xff) / 255,
+                           green: CGFloat((hex >> 8) & 0xff) / 255,
+                           blue: CGFloat(hex & 0xff) / 255, alpha: 1)
+        })
+    }
 }
 
 enum Brand {
-    // "Quiet luxury at-home hammam": oat/sand canvas, one flat bordeaux accent,
-    // dusty rose only as tint, antique gold only as hairline/ceremony.
-    static let pinkDeep = Color(hex: 0x6E1E2E)   // Bordeaux — THE accent (name kept for call-sites)
-    static let accent   = Color(hex: 0x6E1E2E)
-    static let accentPressed = Color(hex: 0x571623)
-    static let pink     = Color(hex: 0xD9B3AC)   // Clay Rose — tint only
-    static let pinkSoft = Color(hex: 0xE8CFC9)   // Dusty Rose — tint only
-    static let gold     = Color(hex: 0xA98545)   // Antique Gold — hairline/ceremony only
-    static let bg       = Color(hex: 0xF4EFE7)   // Alabaster canvas
-    static let bg2      = Color(hex: 0xECE4D8)   // Warm Greige wash
-    static let ink      = Color(hex: 0x2A2320)   // Espresso (text + ink cards)
-    static let muted    = Color(hex: 0x6B5F58)   // Taupe-Grey
-    static let paper    = Color(hex: 0xFFFDFB)   // Paper White (cards)
-    static let hairline = Color(hex: 0xDED5C8)   // Warm Sand hairline
-    static let ivory    = Color(hex: 0xFBF7F0)   // on-accent / on-dark text
+    // "Quiet luxury at-home hammam" — oat/bordeaux/gold by day, an espresso-black
+    // dusk palette by night. Every value adapts to the appearance, so dark mode
+    // cascades app-wide with zero view edits.
+    static let pinkDeep = Color(light: 0x6E1E2E, dark: 0x9A3B4E)   // Bordeaux accent (lifted in dusk for AA)
+    static let accent   = Color(light: 0x6E1E2E, dark: 0x9A3B4E)
+    static let accentPressed = Color(light: 0x571623, dark: 0x7C2C3C)
+    static let pink     = Color(light: 0xD9B3AC, dark: 0x855A5E)   // Clay Rose — tint only
+    static let pinkSoft = Color(light: 0xE8CFC9, dark: 0x4A3A38)   // Dusty Rose — tint only
+    static let gold     = Color(light: 0xA98545, dark: 0xC9A15E)   // Antique Gold (lifted in dusk)
+    static let bg       = Color(light: 0xF4EFE7, dark: 0x161210)   // canvas
+    static let bg2      = Color(light: 0xECE4D8, dark: 0x221C18)   // wash
+    static let ink      = Color(light: 0x2A2320, dark: 0xF3EEE6)   // primary text (inverts in dusk)
+    static let muted    = Color(light: 0x6B5F58, dark: 0xA99E94)   // secondary text
+    static let paper    = Color(light: 0xFFFDFB, dark: 0x2C2420)   // cards
+    static let hairline = Color(light: 0xDED5C8, dark: 0x3A322D)   // card edge
+    static let ivory    = Color(light: 0xFBF7F0, dark: 0xFBF7F0)   // on-accent text (both modes)
 
     static let heroGradient = LinearGradient(
-        colors: [Color(hex: 0xF4EFE7), Color(hex: 0xEDE4D6)],
+        colors: [Color(light: 0xF4EFE7, dark: 0x161210), Color(light: 0xEDE4D6, dark: 0x221C18)],
         startPoint: .top, endPoint: .bottom)
-    // "brandGradient" retained as a NEAR-FLAT bordeaux so every prior gradient
-    // call-site (CTA, selected chips, step progress) reads as one flat accent.
+    // Near-flat bordeaux so every prior gradient call-site reads as one flat accent.
     static let brandGradient = LinearGradient(
-        colors: [Color(hex: 0x6E1E2E), Color(hex: 0x571623)], startPoint: .top, endPoint: .bottom)
+        colors: [Color(light: 0x6E1E2E, dark: 0x9A3B4E), Color(light: 0x571623, dark: 0x7C2C3C)],
+        startPoint: .top, endPoint: .bottom)
     static let whiteGradient = LinearGradient(
         colors: [paper, paper], startPoint: .top, endPoint: .bottom)
 }

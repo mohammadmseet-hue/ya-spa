@@ -6,6 +6,18 @@ struct ProfileView: View {
     @EnvironmentObject var store: BookingStore
     @EnvironmentObject var auth: AuthStore
     @Environment(\.openURL) private var openURL
+    @AppStorage("yaspa.theme") private var theme = "system"
+
+    private var themeLabel: String {
+        switch theme {
+        case "light": return app.t("فاتح", "Light")
+        case "dusk":  return app.t("داكن", "Dusk")
+        default:      return app.t("تلقائي", "System")
+        }
+    }
+    private func cycleTheme() {
+        theme = theme == "system" ? "light" : (theme == "light" ? "dusk" : "system")
+    }
 
     var body: some View {
         NavigationStack {
@@ -67,6 +79,9 @@ struct ProfileView: View {
             row(icon: "globe", title: app.t("اللغة", "Language"),
                 value: app.isAr ? "العربية" : "English",
                 id: "profile-language") { app.toggle() }
+            Divider().padding(.leading, 52)
+            row(icon: "moon.stars.fill", title: app.t("المظهر", "Theme"),
+                value: themeLabel, id: "profile-theme") { cycleTheme() }
             Divider().padding(.leading, 52)
             row(icon: "message.fill", title: app.t("تواصلي معنا", "Contact us"),
                 value: "WhatsApp", id: "profile-contact") {

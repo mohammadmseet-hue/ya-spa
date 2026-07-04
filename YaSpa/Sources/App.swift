@@ -7,6 +7,12 @@ struct YaSpaApp: App {
     @StateObject private var auth = AuthStore()
     @StateObject private var data = DataStore()
     @AppStorage("yaspa.onboarded") private var onboarded = false
+    @AppStorage("yaspa.theme") private var theme = "system"   // system | light | dusk
+
+    private var scheme: ColorScheme? {
+        if Runtime.isUITest { return .light }
+        switch theme { case "light": return .light; case "dusk": return .dark; default: return nil }
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -38,6 +44,7 @@ struct YaSpaApp: App {
             .environmentObject(data)
             .environment(\.layoutDirection, app.layout)
             .tint(Brand.pinkDeep)
+            .preferredColorScheme(scheme)
         }
     }
 }

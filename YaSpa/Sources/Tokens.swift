@@ -5,9 +5,9 @@ import UIKit
 // Additive layer on top of Brand. Screens consume these instead of ad-hoc values.
 
 extension Brand {
-    static let inkSoft     = Color(hex: 0x6B5F58)   // Taupe-Grey secondary text/icons
-    static let shadowRose  = Color(hex: 0x2A2320)   // warm-neutral tight contact shadow
-    static let shadowBloom = Color(hex: 0x6E1E2E)   // bordeaux wide ambient bloom (restrained)
+    static let inkSoft     = Color(light: 0x6B5F58, dark: 0xA99E94)   // secondary text/icons
+    static let shadowRose  = Color(light: 0x2A2320, dark: 0x000000)   // tight contact shadow
+    static let shadowBloom = Color(light: 0x6E1E2E, dark: 0x000000)   // wide ambient bloom
 
     /// Deterministic FLAT earth-tone fill seeded from a string (photo-free identity).
     /// No pink→gold gradient — a quiet tonal disc with ivory initials.
