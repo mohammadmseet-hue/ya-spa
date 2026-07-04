@@ -256,6 +256,36 @@ struct StepProgress: View {
     }
 }
 
+// MARK: - Booking status timeline (server-driven lifecycle)
+
+struct StatusTimeline: View {
+    @EnvironmentObject var app: AppState
+    let status: BookingStatus
+    private let nodes: [(icon: String, ar: String, en: String)] = [
+        ("checkmark.seal.fill", "مؤكّد", "Confirmed"),
+        ("figure.walk", "في الطريق", "On the way"),
+        ("sparkles", "اكتمل", "Completed"),
+    ]
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<nodes.count, id: \.self) { i in
+                let done = status.timelineStep >= i
+                VStack(spacing: 3) {
+                    Image(systemName: nodes[i].icon).font(.system(size: 12))
+                        .foregroundStyle(done ? Brand.accent : Brand.inkSoft.opacity(0.4))
+                    Text(app.t(nodes[i].ar, nodes[i].en)).font(.rubik(9, .medium))
+                        .foregroundStyle(done ? Brand.ink : Brand.inkSoft)
+                }
+                if i < nodes.count - 1 {
+                    Rectangle().fill(status.timelineStep > i ? Brand.accent : Brand.hairline)
+                        .frame(height: 1.5).frame(maxWidth: .infinity)
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Reviews module
 
 struct RatingSummary: View {

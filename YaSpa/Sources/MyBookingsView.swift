@@ -39,6 +39,7 @@ struct MyBookingsView: View {
                 presenting: cancelTarget
             ) { b in
                 Button(app.t("إلغاء الحجز", "Cancel booking"), role: .destructive) {
+                    if !Runtime.isUITest { Task { await CloudBookings.cancel(b.id) } }   // server state-machine
                     withAnimation { store.remove(b) }
                 }
                 Button(app.t("تراجع", "Keep it"), role: .cancel) {}
@@ -80,6 +81,10 @@ struct MyBookingsView: View {
                 Spacer(minLength: 0)
                 Text(app.money(Pricing.total(b.price)))
                     .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
+            }
+            if (b.status ?? .confirmed) != .cancelled {
+                StatusTimeline(status: b.status ?? .confirmed)
+                    .padding(.top, Space.xs)
             }
             HStack(spacing: Space.m) {
                 if let m = data.massages.first(where: { $0.id == b.massageId }) {

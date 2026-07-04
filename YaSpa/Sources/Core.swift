@@ -247,10 +247,10 @@ enum Scheduling {
         if Runtime.isUITest { return true }
         let cal = Calendar.current
         let h = Int(time.prefix(2)) ?? 0
-        // A professional booking app never offers a time that has already passed today.
+        // Never offer a time that already passed today. Real bookings are subtracted
+        // separately by the taken_slots RPC (BookingView) — no more fake modulo.
         if cal.isDateInToday(day) && h <= cal.component(.hour, from: Date()) { return false }
-        let d = cal.ordinality(of: .day, in: .era, for: day) ?? 0
-        return (d + h) % 4 != 0
+        return true
     }
     static func longDate(_ date: Date, ar: Bool) -> String {
         fmt(ar ? "ar" : "en_US_POSIX", "EEEE، d MMM").string(from: date)
@@ -303,6 +303,35 @@ enum PaymentMethod: String, Codable, Hashable, CaseIterable, Identifiable {
 
 // MARK: - Booking + store
 
+/// Server-governed booking lifecycle (matches the Postgres booking_status enum exactly).
+enum BookingStatus: String, Codable, Hashable {
+    case pending, confirmed
+    case onTheWay = "on_the_way"
+    case completed, cancelled
+    case noShow = "no_show"
+
+    func label(ar: Bool) -> String {
+        switch self {
+        case .pending:   return ar ? "بانتظار التأكيد" : "Pending"
+        case .confirmed: return ar ? "مؤكّد" : "Confirmed"
+        case .onTheWay:  return ar ? "في الطريق إليكِ" : "On the way"
+        case .completed: return ar ? "اكتمل" : "Completed"
+        case .cancelled: return ar ? "ملغى" : "Cancelled"
+        case .noShow:    return ar ? "لم يحضر" : "No-show"
+        }
+    }
+    var isActive: Bool { self == .pending || self == .confirmed || self == .onTheWay }
+    /// Progress over [Confirmed, On the way, Completed]; -1 when cancelled/no-show.
+    var timelineStep: Int {
+        switch self {
+        case .pending, .confirmed: return 0
+        case .onTheWay:            return 1
+        case .completed:           return 2
+        default:                   return -1
+        }
+    }
+}
+
 struct Booking: Identifiable, Codable, Hashable {
     var id = UUID()
     var massageId: String
@@ -317,6 +346,7 @@ struct Booking: Identifiable, Codable, Hashable {
     var district: String
     var notes: String
     var paymentMethod: PaymentMethod? = .onArrival
+    var status: BookingStatus? = .confirmed
     var createdAt = Date()
 }
 

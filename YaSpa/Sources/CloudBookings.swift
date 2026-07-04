@@ -36,6 +36,7 @@ enum CloudBookings {
         let booking_time: String
         let district: String?
         let notes: String?
+        let status: String?
 
         func toBooking() -> Booking {
             Booking(
@@ -51,7 +52,8 @@ enum CloudBookings {
                 name: "",
                 district: district ?? "",
                 notes: notes ?? "",
-                paymentMethod: nil
+                paymentMethod: nil,
+                status: status.flatMap(BookingStatus.init(rawValue:)) ?? .confirmed
             )
         }
     }
@@ -91,13 +93,26 @@ enum CloudBookings {
             _ = try await SB.client.auth.session   // require a session
             let rows: [FetchRow] = try await SB.client
                 .from("bookings")
-                .select("id,service_id,service_name_ar,service_name_en,minutes,price,therapist_name,booking_date,booking_time,district,notes")
+                .select("id,service_id,service_name_ar,service_name_en,minutes,price,therapist_name,booking_date,booking_time,district,notes,status")
                 .order("booking_date", ascending: false)
                 .execute()
                 .value
             return rows.map { $0.toBooking() }
         } catch {
             return []
+        }
+    }
+
+    /// Cancel a booking server-side via the cancel_booking RPC (enforces the 3-hour
+    /// at-home cutoff + the status state-machine). Returns true on success.
+    @discardableResult
+    static func cancel(_ id: UUID) async -> Bool {
+        guard Config.isConfigured else { return false }
+        do {
+            _ = try await SB.client.rpc("cancel_booking", params: ["p_id": id.uuidString]).execute()
+            return true
+        } catch {
+            return false
         }
     }
 }
