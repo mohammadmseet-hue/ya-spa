@@ -64,37 +64,57 @@ struct RootView: View {
     @EnvironmentObject var store: BookingStore
     @EnvironmentObject var data: DataStore
     @State private var tab = 0
+    @State private var ready = false
 
     var body: some View {
-        TabView(selection: $tab) {
-            HomeDashboardView(goToMassage: { tab = 1 })
-                .tabItem { Label(app.t("الرئيسية", "Home"), systemImage: "house.fill") }
-                .tag(0)
-            HomeView()
-                .tabItem { Label(app.t("المساج", "Massage"), systemImage: "sparkles") }
-                .tag(1)
-            MyBookingsView()
-                .tabItem { Label(app.t("حجوزاتي", "My bookings"), systemImage: "calendar") }
-                .tag(2)
-            ProfileView()
-                .tabItem { Label(app.t("حسابي", "Profile"), systemImage: "person.crop.circle") }
-                .tag(3)
-            if data.isAdmin {
-                OwnerConsoleView()
-                    .tabItem { Label(app.t("الطلبات", "Orders"), systemImage: "tray.full.fill") }
-                    .tag(4)
+        Group {
+            if ready {
+                // Built ONCE, after admin status is known, so the set of .tag()'d tabs
+                // is fixed at first render. Mutating a live selection-bound TabView's tab
+                // set at runtime crashes on device — this makes that structurally impossible.
+                TabView(selection: $tab) {
+                    HomeDashboardView(goToMassage: { tab = 1 })
+                        .tabItem { Label(app.t("الرئيسية", "Home"), systemImage: "house.fill") }
+                        .tag(0)
+                    HomeView()
+                        .tabItem { Label(app.t("المساج", "Massage"), systemImage: "sparkles") }
+                        .tag(1)
+                    MyBookingsView()
+                        .tabItem { Label(app.t("حجوزاتي", "My bookings"), systemImage: "calendar") }
+                        .tag(2)
+                    ProfileView()
+                        .tabItem { Label(app.t("حسابي", "Profile"), systemImage: "person.crop.circle") }
+                        .tag(3)
+                    if data.isAdmin {
+                        OwnerConsoleView()
+                            .tabItem { Label(app.t("الطلبات", "Orders"), systemImage: "tray.full.fill") }
+                            .tag(4)
+                    }
+                }
+                .animation(nil, value: tab)
+                // Any later admin-status change rebuilds a fresh TabView rather than
+                // mutating the live one's children in place (belt-and-suspenders).
+                .id(data.isAdmin)
+            } else {
+                // Brief branded floor while admin status resolves — the launch splash
+                // covers this, so it's normally invisible.
+                Brand.bg.ignoresSafeArea()
             }
         }
-        // Never animate the tab container swap — TabView can't interpolate it and an
-        // animated swap flashes a black frame on device.
-        .animation(nil, value: tab)
         .task {
-            // Load the live catalog from Supabase (falls back to built-in data),
-            // then pull this user's bookings from the cloud (no-op until signed in),
-            // and check whether this device is an operator (shows the Orders tab).
-            await data.refresh()
+            // Resolve operator status FIRST so the tab set is finalized before the
+            // TabView is ever built, then load the catalog + bookings.
             await data.checkAdmin()
+            ready = true
+            await data.refresh()
             store.merge(await CloudBookings.list())
+        }
+        .task {
+            // Safety: never trap the user on the loading floor if the admin check is
+            // slow. After the cap we reveal the app; a later isAdmin flip is absorbed
+            // by .id(data.isAdmin) (a clean rebuild, never a live-tab mutation).
+            try? await Task.sleep(nanoseconds: 2_500_000_000)
+            if !ready { ready = true }
         }
     }
 }
