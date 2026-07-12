@@ -245,8 +245,18 @@ enum Pricing {
 // MARK: - Scheduling
 
 enum Scheduling {
+    /// Everything scheduling-related is computed in the salon's own timezone (Riyadh, +03:00)
+    /// so "today", available slots, and the stored dateISO always match the server — regardless
+    /// of the device's timezone (a traveller, or a CI machine running in UTC).
+    static let riyadh = TimeZone(identifier: "Asia/Riyadh") ?? .current
+    static var cal: Calendar {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = riyadh
+        return c
+    }
+    static func startOfToday() -> Date { cal.startOfDay(for: Date()) }
+
     static func upcomingDays(_ count: Int = 14) -> [Date] {
-        let cal = Calendar.current
         let start = cal.startOfDay(for: Date())
         return (0..<count).compactMap { cal.date(byAdding: .day, value: $0, to: start) }
     }
@@ -255,23 +265,35 @@ enum Scheduling {
 
     static func isAvailable(day: Date, time: String) -> Bool {
         if Runtime.isUITest { return true }
-        let cal = Calendar.current
         let h = Int(time.prefix(2)) ?? 0
-        // Never offer a time that already passed today. Real bookings are subtracted
-        // separately by the taken_slots RPC (BookingView) — no more fake modulo.
+        // Never offer a time that already passed today (Riyadh clock). Real bookings are
+        // subtracted separately by the taken_slots RPC (BookingView) — no more fake modulo.
         if cal.isDateInToday(day) && h <= cal.component(.hour, from: Date()) { return false }
         return true
     }
     static func longDate(_ date: Date, ar: Bool) -> String {
-        fmt(ar ? "ar" : "en_US_POSIX", "EEEE، d MMM").string(from: date)
+        // Locale-aware separator: Arabic comma for ar, Latin comma for en.
+        fmt(ar ? "ar" : "en_US_POSIX", ar ? "EEEE، d MMM" : "EEEE, d MMM").string(from: date)
     }
     static func iso(_ date: Date) -> String { fmt("en_US_POSIX", "yyyy-MM-dd").string(from: date) }
     static func weekday(_ date: Date, ar: Bool) -> String { fmt(ar ? "ar" : "en", "EEE").string(from: date) }
     static func dayNumber(_ date: Date) -> String { fmt("en_US_POSIX", "d").string(from: date) }
+
+    /// Parse a stored "yyyy-MM-dd" back to a Date (Riyadh midnight).
+    static func parse(_ iso: String) -> Date? { fmt("en_US_POSIX", "yyyy-MM-dd").date(from: iso) }
+
+    /// Human-readable "Monday, 15 Jul · 14:00" from the stored dateISO + "HH:00" slot —
+    /// what the customer and operator should see instead of the raw machine date.
+    static func display(iso: String, time: String, ar: Bool) -> String {
+        guard let d = parse(iso) else { return "\(iso) · \(time)" }
+        return "\(longDate(d, ar: ar)) · \(time)"
+    }
+
     private static func fmt(_ locale: String, _ format: String) -> DateFormatter {
         let f = DateFormatter()
         f.locale = Locale(identifier: locale)
         f.calendar = Calendar(identifier: .gregorian)
+        f.timeZone = riyadh
         f.dateFormat = format
         return f
     }

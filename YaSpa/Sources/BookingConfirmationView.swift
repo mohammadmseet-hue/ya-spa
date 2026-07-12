@@ -62,7 +62,8 @@ struct BookingConfirmationView: View {
             }
             Divider()
             detail(app.t("المدة", "Duration"), app.t("\(booking.durationMin) دقيقة", "\(booking.durationMin) min"))
-            detail(app.t("التاريخ", "Date"), booking.dateISO)
+            detail(app.t("التاريخ", "Date"),
+                   Scheduling.longDate(Scheduling.parse(booking.dateISO) ?? Date(), ar: app.isAr))
             detail(app.t("الوقت", "Time"), booking.time)
             detail(app.t("الحي", "District"), booking.district)
             detail(app.t("الدفع", "Payment"),

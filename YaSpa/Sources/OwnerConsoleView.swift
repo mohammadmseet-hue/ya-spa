@@ -116,7 +116,7 @@ struct OwnerConsoleView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(app.t(b.massageNameAr, b.massageNameEn))
                         .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
-                    Text("\(b.durationMin) \(app.t("د", "min")) · \(b.dateISO) · \(b.time)")
+                    Text("\(b.durationMin) \(app.t("د", "min")) · \(Scheduling.display(iso: b.dateISO, time: b.time, ar: app.isAr))")
                         .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
                 }
                 Spacer(minLength: 0)
@@ -126,6 +126,9 @@ struct OwnerConsoleView: View {
             infoRow("person.fill", b.name.isEmpty ? "—" : b.name)
             if !b.contactPhone.isEmpty { infoRow("phone.fill", b.contactPhone) }
             infoRow("mappin.circle.fill", addressText(b))
+            // The customer's access notes / requests — safety-critical for an at-home visit,
+            // so the operator and therapist must actually see them.
+            if !b.notes.isEmpty { infoRow("text.bubble.fill", b.notes) }
             infoRow("banknote", "\(app.money(Pricing.total(b.price))) · \(b.therapistName)")
 
             HStack(spacing: Space.s) {
@@ -238,7 +241,9 @@ struct OwnerConsoleView: View {
 
     private func call(_ b: Booking) {
         let digits = b.contactPhone.filter { $0.isNumber || $0 == "+" }
-        if let url = URL(string: "tel://\(digits)") { openURL(url) }
+        // RFC 3966 "tel:" (single colon, no //) so the leading '+' of a Saudi E.164 number
+        // (+9665…) survives — "tel://+966…" drops the '+' and fails to dial.
+        if let url = URL(string: "tel:\(digits)") { openURL(url) }
     }
 
     private func navigate(_ b: Booking) {

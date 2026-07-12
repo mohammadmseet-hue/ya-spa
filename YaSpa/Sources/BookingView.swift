@@ -7,7 +7,7 @@ struct BookingView: View {
     @Environment(\.dismiss) private var dismiss
     let massage: Massage
 
-    @State private var selectedDay: Date = Calendar.current.startOfDay(for: Date())
+    @State private var selectedDay: Date = Scheduling.startOfToday()
     @State private var selectedTime: String?
     @State private var selectedTherapist: Therapist?
     @State private var selectedDuration = 60
@@ -23,6 +23,7 @@ struct BookingView: View {
     @State private var submitting = false
     @State private var bookingFailed = false
     @State private var taken: Set<String> = []   // real booked times for the chosen therapist/day
+    @State private var didPrefill = false
     @StateObject private var location = LocationManager()
 
     private let days = Scheduling.upcomingDays(14)
@@ -85,6 +86,20 @@ struct BookingView: View {
         }
         .task(id: "\(Scheduling.iso(selectedDay))|\(selectedTherapist?.id ?? "")") {
             await loadTaken()
+        }
+        .task {
+            // A returning customer shouldn't re-type her name/phone/address every time —
+            // seed the form from her most recent booking. Never touches the GPS pin (physical,
+            // she re-confirms it) and never runs in UI tests (they assert on empty fields).
+            guard !Runtime.isUITest, !didPrefill else { return }
+            didPrefill = true
+            guard let last = store.bookings.max(by: { $0.createdAt < $1.createdAt }) else { return }
+            if name.isEmpty        { name        = last.name }
+            if phone.isEmpty       { phone       = last.contactPhone }
+            if addressLine.isEmpty { addressLine = last.addressLine }
+            if building.isEmpty    { building    = last.building }
+            if apartment.isEmpty   { apartment   = last.apartment }
+            if district.isEmpty    { district    = last.district }
         }
     }
 
@@ -153,7 +168,7 @@ struct BookingView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(days, id: \.self) { day in
-                        let selected = Calendar.current.isDate(day, inSameDayAs: selectedDay)
+                        let selected = Scheduling.cal.isDate(day, inSameDayAs: selectedDay)
                         Button {
                             Haptics.tap()
                             withAnimation(Motion.spring) { selectedDay = day; selectedTime = nil }

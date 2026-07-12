@@ -13,7 +13,7 @@ struct HomeDashboardView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Space.xxl) {
                     greeting
-                    if let next = store.bookings.first { upcomingCard(next) } else { firstBookCTA }
+                    if let next = nextBooking { upcomingCard(next) } else { firstBookCTA }
                     rebookRail
                     promiseSection
                     JasmineDivider().padding(.vertical, Space.xs)
@@ -52,6 +52,22 @@ struct HomeDashboardView: View {
         return out
     }
 
+    /// The genuinely next visit: soonest still-active booking whose slot hasn't passed yet
+    /// (Riyadh clock). `store.bookings.first` is wrong — after merge()'s descending sort it's
+    /// the furthest-future / a cancelled / a past booking, which is what the user saw before.
+    private var nextBooking: Booking? {
+        let today = Scheduling.iso(Date())
+        let nowHour = Scheduling.cal.component(.hour, from: Date())
+        return store.bookings
+            .filter { b in
+                guard (b.status ?? .confirmed).isActive else { return false }
+                if b.dateISO > today { return true }
+                if b.dateISO < today { return false }
+                return (Int(b.time.prefix(2)) ?? 0) >= nowHour   // keep an in-progress session visible
+            }
+            .min { ($0.dateISO, $0.time) < ($1.dateISO, $1.time) }
+    }
+
     @ViewBuilder private var rebookRail: some View {
         if !recentServices.isEmpty {
             VStack(alignment: .leading, spacing: Space.m) {
@@ -67,7 +83,7 @@ struct HomeDashboardView: View {
                                         Text(app.t(m.nameAr, m.nameEn))
                                             .font(.rubik(14, .semibold)).foregroundStyle(Brand.ink)
                                             .lineLimit(1).minimumScaleFactor(0.8)
-                                        Text(app.money(m.price))
+                                        Text(app.t("احجزي مرة أخرى", "Rebook"))
                                             .font(.rubik(12, .semibold)).foregroundStyle(Brand.pinkDeep)
                                     }
                                 }
@@ -112,7 +128,7 @@ struct HomeDashboardView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(app.t(b.massageNameAr, b.massageNameEn))
                         .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
-                    Text("\(b.dateISO) · \(b.time)")
+                    Text(Scheduling.display(iso: b.dateISO, time: b.time, ar: app.isAr))
                         .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
                     Text(b.therapistName)
                         .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
@@ -198,7 +214,8 @@ struct HomeDashboardView: View {
                     .font(.rubik(13)).foregroundStyle(Brand.inkSoft).lineLimit(1)
             }
             Spacer(minLength: 0)
-            Text(app.money(m.price)).spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep).fixedSize()
+            Text(app.t("من \(app.money(m.price))", "from \(app.money(m.price))"))
+                .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep).fixedSize()
         }
         .padding(Space.l)
         .softCard().goldFrame()
@@ -211,7 +228,8 @@ struct HomeDashboardView: View {
                 .font(.rubik(16, .semibold)).foregroundStyle(Brand.ink)
                 .lineLimit(1).minimumScaleFactor(0.8).allowsTightening(true)
             Spacer(minLength: 0)
-            Text(app.money(m.price)).font(.rubik(15, .semibold)).foregroundStyle(Brand.pinkDeep)
+            Text(app.t("من \(app.money(m.price))", "from \(app.money(m.price))"))
+                .font(.rubik(15, .semibold)).foregroundStyle(Brand.pinkDeep)
             Image(systemName: "chevron.forward").font(.caption2).foregroundStyle(Brand.inkSoft)
         }
         .padding(.vertical, Space.m).padding(.horizontal, Space.l)
@@ -224,7 +242,7 @@ struct HomeDashboardView: View {
                 .spaFont(.section, ar: app.isAr).foregroundStyle(Brand.ink)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Space.m) {
-                    ForEach(Reviews.all) { ReviewCard(review: $0) }
+                    ForEach(data.reviews) { ReviewCard(review: $0) }
                 }
             }
         }

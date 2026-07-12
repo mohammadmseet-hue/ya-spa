@@ -77,7 +77,7 @@ struct MyBookingsView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(app.t(b.massageNameAr, b.massageNameEn))
                         .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
-                    Text("\(b.dateISO) · \(b.time)")
+                    Text(Scheduling.display(iso: b.dateISO, time: b.time, ar: app.isAr))
                         .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
                     Text("\(b.therapistName) · \(b.district)")
                         .font(.rubik(12)).foregroundStyle(Brand.inkSoft)

@@ -44,7 +44,7 @@ struct MassageCard: View {
                     PressureIndicator(label: app.t(massage.pressureAr, massage.pressureEn),
                                       level: PressureIndicator.level(for: massage.pressureEn))
                     Spacer(minLength: Space.xs)
-                    Text(app.money(massage.price))
+                    Text(app.t("من \(app.money(massage.price))", "from \(app.money(massage.price))"))
                         .font(.system(size: 16, weight: .bold, design: app.isAr ? .rounded : .serif))
                         .foregroundStyle(Brand.pinkDeep).fixedSize()
                 }

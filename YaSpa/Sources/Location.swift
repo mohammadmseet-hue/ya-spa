@@ -23,6 +23,7 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     var hasPin: Bool { coordinate != nil }
 
     func request() {
+        geocoder.cancelGeocode()   // drop any pending geocode from a prior tap
         isResolving = true
         denied = false
         switch manager.authorizationStatus {
@@ -42,6 +43,7 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     func locationManagerDidChangeAuthorization(_ m: CLLocationManager) {
         switch m.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
+            denied = false   // reset a stale "denied" hint once access is granted
             if isResolving { m.requestLocation() }
         case .denied, .restricted:
             denied = true; isResolving = false
@@ -53,12 +55,14 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     func locationManager(_ m: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let loc = locations.last else { isResolving = false; return }
         coordinate = loc.coordinate
+        // The pin is what matters — stop the spinner the moment we have a fix. The reverse
+        // geocode is best-effort enrichment that only fills resolvedAddress, so a slow or
+        // failed geocode can never strand the spinner.
+        isResolving = false
         geocoder.reverseGeocodeLocation(loc) { [weak self] placemarks, _ in
-            if let p = placemarks?.first {
-                let parts = [p.subThoroughfare, p.thoroughfare, p.subLocality, p.locality].compactMap { $0 }
-                self?.resolvedAddress = parts.joined(separator: ", ")
-            }
-            self?.isResolving = false
+            guard let p = placemarks?.first else { return }
+            let parts = [p.subThoroughfare, p.thoroughfare, p.subLocality, p.locality].compactMap { $0 }
+            self?.resolvedAddress = parts.joined(separator: ", ")
         }
     }
 
