@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Launch/loading screen: the mark centered on the sugar off-white ground, with
-/// a soft scale + fade in and a quiet gold halo. Shown briefly at cold start.
+/// Launch/loading screen: the logo (a bundled image — cannot fail to render)
+/// centered on the sugar off-white ground with a soft gold halo and a gentle
+/// scale/fade in. Shown briefly at cold start.
 struct SplashView: View {
     @State private var appear = false
     @State private var halo = false
@@ -10,7 +11,6 @@ struct SplashView: View {
         ZStack {
             Logo.sugar.ignoresSafeArea()
 
-            // faint gold halo behind the mark
             Circle()
                 .fill(RadialGradient(colors: [Logo.gold.opacity(0.16), .clear],
                                      center: .center, startRadius: 4, endRadius: 220))
@@ -19,7 +19,10 @@ struct SplashView: View {
                 .opacity(halo ? 1 : 0)
 
             VStack(spacing: 22) {
-                YaSpaLogoMark(height: 132)
+                Image("SplashLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 132, height: 150)
                     .scaleEffect(appear ? 1 : 0.86)
                     .opacity(appear ? 1 : 0)
 

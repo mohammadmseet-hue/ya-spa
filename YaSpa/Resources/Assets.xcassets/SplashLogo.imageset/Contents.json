@@ -1,0 +1,6 @@
+{
+  "images" : [
+    { "idiom" : "universal", "filename" : "SplashLogo.png" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}
