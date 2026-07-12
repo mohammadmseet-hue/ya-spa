@@ -8,6 +8,7 @@ struct YaSpaApp: App {
     @StateObject private var data = DataStore()
     @AppStorage("yaspa.onboarded") private var onboarded = false
     @AppStorage("yaspa.theme") private var theme = "light"   // light (default) | dusk
+    @State private var showSplash = !Runtime.isUITest
 
     private var scheme: ColorScheme? {
         // Always light by default; dusk is an explicit opt-in (never follow the device).
@@ -37,6 +38,10 @@ struct YaSpaApp: App {
                         AuthFlowView()
                     }
                 }
+
+                if showSplash {
+                    SplashView().transition(.opacity).zIndex(2)
+                }
             }
             .environmentObject(app)
             .environmentObject(store)
@@ -45,6 +50,11 @@ struct YaSpaApp: App {
             .environment(\.layoutDirection, app.layout)
             .tint(Brand.pinkDeep)
             .preferredColorScheme(scheme)
+            .task {
+                guard showSplash else { return }
+                try? await Task.sleep(nanoseconds: 1_600_000_000)
+                withAnimation(.easeOut(duration: 0.55)) { showSplash = false }
+            }
         }
     }
 }
