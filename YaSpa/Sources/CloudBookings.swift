@@ -27,6 +27,7 @@ enum CloudBookings {
     }
     private struct CancelParams: Encodable { let p_id: String }
     private struct StatusParams: Encodable { let p_id: String; let p_status: String }
+    private struct RescheduleParams: Encodable { let p_id: String; let p_scheduled_at: String }
     private struct NoArgs: Encodable {}
 
     /// Guarantee a session exists before any authed call, so a booking never
@@ -133,6 +134,22 @@ enum CloudBookings {
                 .execute().value
             return rows.map { $0.toBooking() }
         } catch { return [] }
+    }
+
+    /// Move an existing pending/confirmed order to a new slot via the RPC (enforces ownership,
+    /// future-time, and the anti-double-booking index). Returns the updated row on success, or
+    /// nil on conflict/offline — the caller keeps the old slot and surfaces the failure.
+    static func reschedule(_ id: UUID, dateISO: String, time: String) async -> Booking? {
+        guard Config.isConfigured else { return nil }
+        do {
+            await ensureSession()
+            let scheduled = "\(dateISO)T\(time):00+03:00"   // Riyadh local, same format as create()
+            let row: OrderRow = try await SB.client
+                .rpc("reschedule_booking",
+                     params: RescheduleParams(p_id: id.uuidString, p_scheduled_at: scheduled))
+                .execute().value
+            return row.toBooking()
+        } catch { return nil }
     }
 
     /// Cancel via the RPC (enforces ownership + the 3-hour cutoff + state machine).

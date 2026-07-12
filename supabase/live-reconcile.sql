@@ -147,3 +147,29 @@ grant execute on function public.create_booking(text,int,text,timestamptz,text,t
 grant execute on function public.admin_set_status(uuid,text) to authenticated;
 grant execute on function public.cancel_booking(uuid) to authenticated;
 grant execute on function public.taken_slots(text,date) to anon, authenticated;
+
+-- 9) customer self-service reschedule (move an existing pending/confirmed order to a new
+--    slot). Enum-correct for the LIVE schema: bookings.status is a booking_status enum, so
+--    the booking_events.status (text) insert casts v_row.status::text — unlike the committed
+--    0002 which runs in a text-status world. security definer bypasses the direct-write revoke;
+--    the trigger is a no-op because status is unchanged; a slot collision → 'slot_taken'.
+create or replace function public.reschedule_booking(p_id uuid, p_scheduled_at timestamptz)
+returns public.bookings language plpgsql security definer set search_path=public as $$
+declare v_uid uuid := auth.uid(); v_row public.bookings%rowtype;
+begin
+  if p_scheduled_at is null or p_scheduled_at < now() then raise exception 'invalid_time' using errcode='22023'; end if;
+  begin
+    update public.bookings
+       set scheduled_at = p_scheduled_at,
+           booking_date = (p_scheduled_at at time zone 'Asia/Riyadh')::date,
+           booking_time = to_char(p_scheduled_at at time zone 'Asia/Riyadh','HH24:00')
+     where id = p_id and user_id = v_uid and status in ('pending','confirmed')
+    returning * into v_row;
+  exception when unique_violation then raise exception 'slot_taken' using errcode='23505'; end;
+  if not found then raise exception 'reschedule_not_allowed' using errcode='22023'; end if;
+  insert into public.booking_events (booking_id, status, note, actor)
+    values (v_row.id, v_row.status::text, 'rescheduled', v_uid);
+  return v_row;
+end; $$;
+revoke all on function public.reschedule_booking(uuid,timestamptz) from public;
+grant execute on function public.reschedule_booking(uuid,timestamptz) to authenticated;

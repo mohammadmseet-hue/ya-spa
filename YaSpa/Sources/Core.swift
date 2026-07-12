@@ -427,6 +427,11 @@ final class BookingStore: ObservableObject {
 
     func add(_ b: Booking) { bookings.insert(b, at: 0); save() }
     func remove(_ b: Booking) { bookings.removeAll { $0.id == b.id }; save() }
+    /// Replace a booking in place (same id) — e.g. after a reschedule — preserving its position.
+    func update(_ b: Booking) {
+        if let i = bookings.firstIndex(where: { $0.id == b.id }) { bookings[i] = b; save() }
+        else { add(b) }
+    }
 
     /// Merge cloud bookings into the on-device list, deduped by id. Bookings share
     /// the same id on cloud and device, so this never creates duplicates.

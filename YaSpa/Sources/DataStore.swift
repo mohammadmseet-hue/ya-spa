@@ -67,19 +67,27 @@ final class DataStore: ObservableObject {
     func refresh() async {
         guard Config.isConfigured, !Runtime.isUITest else { return }
 
+        // Fetch first, then swap in one animated transaction so the built-in catalog
+        // cross-fades into the live data instead of hard-cutting mid-screen.
+        var newMassages = massages, newTherapists = therapists, newReviews = reviews
         if let rows: [ServiceRow] = try? await SB.client.from("services")
             .select().eq("active", value: true).order("sort").execute().value, !rows.isEmpty {
-            massages = rows.map { $0.toMassage() }
+            newMassages = rows.map { $0.toMassage() }
         }
         if let rows: [TherapistRow] = try? await SB.client.from("therapists")
             .select().eq("active", value: true).order("rating", ascending: false).execute().value, !rows.isEmpty {
-            therapists = rows.map { $0.toTherapist() }
+            newTherapists = rows.map { $0.toTherapist() }
         }
         if let rows: [ReviewRow] = try? await SB.client.from("reviews")
             .select().order("created_at", ascending: false).execute().value, !rows.isEmpty {
-            reviews = rows.map { $0.toReview() }
+            newReviews = rows.map { $0.toReview() }
         }
-        loaded = true
+        withAnimation(.easeInOut(duration: 0.35)) {
+            massages = newMassages
+            therapists = newTherapists
+            reviews = newReviews
+            loaded = true
+        }
     }
 
     /// The real booked times for a therapist on a date (from the taken_slots RPC), so the

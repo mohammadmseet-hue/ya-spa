@@ -5,6 +5,14 @@ struct MyBookingsView: View {
     @EnvironmentObject var store: BookingStore
     @EnvironmentObject var data: DataStore
     @State private var cancelTarget: Booking?
+    @State private var rescheduleTarget: Booking?
+
+    /// Only pending/confirmed orders can be moved or cancelled (matches the server rules:
+    /// reschedule_booking + cancel_booking both reject on_the_way/terminal states).
+    private func canChange(_ b: Booking) -> Bool {
+        let s = b.status ?? .confirmed
+        return s == .pending || s == .confirmed
+    }
 
     var body: some View {
         NavigationStack {
@@ -52,6 +60,11 @@ struct MyBookingsView: View {
                 }
                 Button(app.t("تراجع", "Keep it"), role: .cancel) {}
             }
+            .sheet(item: $rescheduleTarget) { b in
+                RescheduleSheet(booking: b) { updated in
+                    withAnimation { store.update(updated) }
+                }
+            }
         }
     }
 
@@ -94,28 +107,45 @@ struct MyBookingsView: View {
                 StatusTimeline(status: b.status ?? .confirmed)
                     .padding(.top, Space.xs)
             }
-            HStack(spacing: Space.m) {
-                if let m = data.massages.first(where: { $0.id == b.massageId }) {
-                    NavigationLink(value: m) {
-                        Label(app.t("احجزي مجددًا", "Rebook"), systemImage: "arrow.clockwise")
+            VStack(spacing: Space.s) {
+                HStack(spacing: Space.m) {
+                    if let m = data.massages.first(where: { $0.id == b.massageId }) {
+                        NavigationLink(value: m) {
+                            Label(app.t("احجزي مجددًا", "Rebook"), systemImage: "arrow.clockwise")
+                                .font(.rubik(13, .semibold))
+                                .foregroundStyle(Brand.pinkDeep)
+                                .frame(maxWidth: .infinity).padding(.vertical, 9)
+                                .background(Brand.bg2).clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if canChange(b) {
+                        Button {
+                            Haptics.tap(); rescheduleTarget = b
+                        } label: {
+                            Label(app.t("تغيير الموعد", "Reschedule"), systemImage: "calendar.badge.clock")
+                                .font(.rubik(13, .semibold))
+                                .foregroundStyle(Brand.pinkDeep)
+                                .frame(maxWidth: .infinity).padding(.vertical, 9)
+                                .background(Brand.bg2).clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("reschedule-booking")
+                    }
+                }
+                if canChange(b) {
+                    Button {
+                        Haptics.tap(); cancelTarget = b
+                    } label: {
+                        Text(app.t("إلغاء", "Cancel"))
                             .font(.rubik(13, .semibold))
-                            .foregroundStyle(Brand.pinkDeep)
+                            .foregroundStyle(Brand.inkSoft)
                             .frame(maxWidth: .infinity).padding(.vertical, 9)
-                            .background(Brand.bg2).clipShape(Capsule())
+                            .overlay(Capsule().stroke(Brand.bg2, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("cancel-booking")
                 }
-                Button {
-                    Haptics.tap(); cancelTarget = b
-                } label: {
-                    Text(app.t("إلغاء", "Cancel"))
-                        .font(.rubik(13, .semibold))
-                        .foregroundStyle(Brand.inkSoft)
-                        .frame(maxWidth: .infinity).padding(.vertical, 9)
-                        .overlay(Capsule().stroke(Brand.bg2, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("cancel-booking")
             }
         }
         .padding(Space.l)
