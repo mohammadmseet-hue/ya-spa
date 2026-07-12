@@ -39,8 +39,16 @@ struct MyBookingsView: View {
                 presenting: cancelTarget
             ) { b in
                 Button(app.t("إلغاء الحجز", "Cancel booking"), role: .destructive) {
-                    if !Runtime.isUITest { Task { await CloudBookings.cancel(b.id) } }   // server state-machine
-                    withAnimation { store.remove(b) }
+                    // Honour the server state-machine + 3-hour cutoff: only drop it
+                    // locally once the backend actually cancelled it.
+                    if Runtime.isUITest || !Config.isConfigured {
+                        withAnimation { store.remove(b) }
+                    } else {
+                        Task {
+                            let ok = await CloudBookings.cancel(b.id)
+                            await MainActor.run { if ok { withAnimation { store.remove(b) } } }
+                        }
+                    }
                 }
                 Button(app.t("تراجع", "Keep it"), role: .cancel) {}
             }

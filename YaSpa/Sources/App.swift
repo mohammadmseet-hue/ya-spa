@@ -69,14 +69,21 @@ struct RootView: View {
             ProfileView()
                 .tabItem { Label(app.t("حسابي", "Profile"), systemImage: "person.crop.circle") }
                 .tag(3)
+            if data.isAdmin {
+                OwnerConsoleView()
+                    .tabItem { Label(app.t("الطلبات", "Orders"), systemImage: "tray.full.fill") }
+                    .tag(4)
+            }
         }
         // Never animate the tab container swap — TabView can't interpolate it and an
         // animated swap flashes a black frame on device.
         .animation(nil, value: tab)
         .task {
             // Load the live catalog from Supabase (falls back to built-in data),
-            // then pull this user's bookings from the cloud (no-op until signed in).
+            // then pull this user's bookings from the cloud (no-op until signed in),
+            // and check whether this device is an operator (shows the Orders tab).
             await data.refresh()
+            await data.checkAdmin()
             store.merge(await CloudBookings.list())
         }
     }

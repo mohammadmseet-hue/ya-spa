@@ -20,8 +20,8 @@ struct BookingConfirmationView: View {
 
                 summaryCard
 
-                Text(app.t("سنؤكّد معالِجتكِ عبر واتساب خلال دقائق.",
-                           "We'll confirm your therapist on WhatsApp within minutes."))
+                Text(app.t("سنتواصل معكِ لتأكيد معالِجتكِ قريبًا.",
+                           "We'll reach out shortly to confirm your therapist."))
                     .font(.rubik(14))
                     .foregroundStyle(Brand.inkSoft)
                     .multilineTextAlignment(.center)
@@ -61,6 +61,7 @@ struct BookingConfirmationView: View {
                 Spacer(minLength: 0)
             }
             Divider()
+            detail(app.t("المدة", "Duration"), app.t("\(booking.durationMin) دقيقة", "\(booking.durationMin) min"))
             detail(app.t("التاريخ", "Date"), booking.dateISO)
             detail(app.t("الوقت", "Time"), booking.time)
             detail(app.t("الحي", "District"), booking.district)

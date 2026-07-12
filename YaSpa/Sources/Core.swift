@@ -228,6 +228,16 @@ enum Reviews {
 enum Pricing {
     static let transport = 30
     static let vatRate = 0.15
+    static let durations = [60, 90, 120]
+    /// Duration-scaled service price. Mirrors the server catalog exactly
+    /// (service_durations: 90 ≈ ×1.40, 120 ≈ ×1.80, rounded to 5 SAR).
+    static func price(base: Int, duration: Int) -> Int {
+        switch duration {
+        case 90:  return Int((Double(base) * 1.40 / 5).rounded()) * 5
+        case 120: return Int((Double(base) * 1.80 / 5).rounded()) * 5
+        default:  return base
+        }
+    }
     static func vat(_ price: Int) -> Int { Int((Double(price + transport) * vatRate).rounded()) }
     static func total(_ price: Int) -> Int { price + transport + vat(price) }
 }
@@ -301,6 +311,25 @@ enum PaymentMethod: String, Codable, Hashable, CaseIterable, Identifiable {
     }
 }
 
+extension PaymentMethod {
+    /// The value stored server-side (matches the bookings.payment_method CHECK).
+    var serverValue: String {
+        switch self {
+        case .onArrival: return "on_arrival"
+        case .applePay:  return "apple_pay"
+        case .card:      return "card"
+        }
+    }
+    init?(serverValue: String) {
+        switch serverValue {
+        case "on_arrival":              self = .onArrival
+        case "apple_pay":               self = .applePay
+        case "card", "mada", "stc_pay": self = .card
+        default:                        return nil
+        }
+    }
+}
+
 // MARK: - Booking + store
 
 /// Server-governed booking lifecycle (matches the Postgres booking_status enum exactly).
@@ -338,21 +367,39 @@ struct Booking: Identifiable, Codable, Hashable {
     var massageNameAr: String
     var massageNameEn: String
     var minutes: Int
+    var durationMin: Int = 60
     var price: Int
     var dateISO: String
     var time: String
+    var therapistId: String = ""
     var therapistName: String
     var name: String
+    var contactPhone: String = ""
+    var addressLine: String = ""
+    var building: String = ""
+    var apartment: String = ""
     var district: String
+    var city: String = "Jeddah"
+    var lat: Double? = nil
+    var lng: Double? = nil
     var notes: String
     var paymentMethod: PaymentMethod? = .onArrival
     var status: BookingStatus? = .confirmed
     var createdAt = Date()
+
+    /// A Google-Maps navigation link for the therapist to reach the customer.
+    var mapsURL: URL? {
+        if let lat, let lng { return URL(string: "https://maps.google.com/?q=\(lat),\(lng)") }
+        let q = [addressLine, building.isEmpty ? nil : "Bldg \(building)",
+                 apartment.isEmpty ? nil : "Apt \(apartment)", district, city]
+            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")
+        return URL(string: "https://maps.google.com/?q=\(q.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")")
+    }
 }
 
 final class BookingStore: ObservableObject {
     @Published private(set) var bookings: [Booking] = []
-    private let key = "yaspa.bookings.v1"
+    private let key = "yaspa.bookings.v2"   // v2: duration + full address/geo + contact
 
     init() { load() }
 

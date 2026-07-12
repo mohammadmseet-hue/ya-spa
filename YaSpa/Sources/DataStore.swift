@@ -11,6 +11,13 @@ final class DataStore: ObservableObject {
     @Published var therapists: [Therapist] = Therapists.all
     @Published var reviews: [Review] = Reviews.all
     @Published var loaded = false
+    @Published var isAdmin = false          // true → the Owner console tab appears
+
+    /// Ask the backend whether this user is an operator (drives the Owner tab).
+    func checkAdmin() async {
+        guard Config.isConfigured, !Runtime.isUITest else { isAdmin = false; return }
+        isAdmin = await CloudBookings.isAdmin()
+    }
 
     // MARK: Row mappings
 

@@ -10,20 +10,32 @@ struct BookingView: View {
     @State private var selectedDay: Date = Calendar.current.startOfDay(for: Date())
     @State private var selectedTime: String?
     @State private var selectedTherapist: Therapist?
+    @State private var selectedDuration = 60
     @State private var name = ""
+    @State private var phone = ""
+    @State private var addressLine = ""
+    @State private var building = ""
+    @State private var apartment = ""
     @State private var district = ""
     @State private var notes = ""
     @State private var payment: PaymentMethod = .onArrival
     @State private var confirmed: Booking?
+    @State private var submitting = false
+    @State private var bookingFailed = false
     @State private var taken: Set<String> = []   // real booked times for the chosen therapist/day
+    @StateObject private var location = LocationManager()
 
     private let days = Scheduling.upcomingDays(14)
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 3)
+
+    private var chosenPrice: Int { Pricing.price(base: massage.price, duration: selectedDuration) }
 
     private var canBook: Bool {
         selectedTime != nil
             && selectedTherapist != nil
             && !name.trimmingCharacters(in: .whitespaces).isEmpty
+            && phone.filter(\.isNumber).count >= 8
+            && !addressLine.trimmingCharacters(in: .whitespaces).isEmpty
             && !district.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
@@ -40,6 +52,7 @@ struct BookingView: View {
             VStack(alignment: .leading, spacing: Space.xxl) {
                 StepProgress(total: 4, current: currentStep).padding(.top, Space.s)
                 header
+                durationSection
                 daySelector
                 timeGrid
                 therapistSection
@@ -58,6 +71,18 @@ struct BookingView: View {
         .fullScreenCover(item: $confirmed, onDismiss: { dismiss() }) { b in
             BookingConfirmationView(booking: b).opaqueCover()
         }
+        .alert(app.t("تعذّر حجز هذا الموعد", "Couldn't reserve that slot"),
+               isPresented: $bookingFailed) {
+            Button(app.t("حسناً", "OK"), role: .cancel) {}
+        } message: {
+            Text(app.t("جرّبي وقتاً آخر أو تحقّقي من الاتصال.",
+                       "Please try another time or check your connection."))
+        }
+        .onChange(of: location.resolvedAddress) { newValue in
+            if !newValue.isEmpty && addressLine.trimmingCharacters(in: .whitespaces).isEmpty {
+                addressLine = newValue
+            }
+        }
         .task(id: "\(Scheduling.iso(selectedDay))|\(selectedTherapist?.id ?? "")") {
             await loadTaken()
         }
@@ -75,8 +100,8 @@ struct BookingView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(app.t(massage.nameAr, massage.nameEn))
                     .spaFont(.cardTitle, ar: app.isAr).foregroundStyle(Brand.ink)
-                Text(app.t("\(massage.minutes) دقيقة · \(app.money(massage.price))",
-                           "\(massage.minutes) min · \(app.money(massage.price))"))
+                Text(app.t("\(selectedDuration) دقيقة · \(app.money(chosenPrice))",
+                           "\(selectedDuration) min · \(app.money(chosenPrice))"))
                     .font(.rubik(13)).foregroundStyle(Brand.inkSoft)
             }
             Spacer(minLength: 0)
@@ -89,6 +114,37 @@ struct BookingView: View {
         Label(app.t(ar, en), systemImage: icon)
             .spaFont(.section, ar: app.isAr)
             .foregroundStyle(Brand.ink)
+    }
+
+    private var durationSection: some View {
+        VStack(alignment: .leading, spacing: Space.m) {
+            sectionTitle("مدة الجلسة", "Session length", "clock.arrow.circlepath")
+            HStack(spacing: 10) {
+                ForEach(Pricing.durations, id: \.self) { d in
+                    let selected = selectedDuration == d
+                    Button {
+                        Haptics.tap()
+                        withAnimation(Motion.press) { selectedDuration = d }
+                    } label: {
+                        VStack(spacing: 3) {
+                            Text("\(d)").font(.rubik(18, .semibold))
+                            Text(app.t("دقيقة", "min")).font(.rubik(11))
+                            Text(app.money(Pricing.price(base: massage.price, duration: d)))
+                                .font(.rubik(12, .semibold))
+                                .foregroundStyle(selected ? Brand.paper : Brand.pinkDeep)
+                        }
+                        .frame(maxWidth: .infinity).padding(.vertical, 12)
+                        .background(selected ? AnyShapeStyle(Brand.brandGradient) : AnyShapeStyle(Brand.paper))
+                        .foregroundStyle(selected ? Brand.paper : Brand.ink)
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous)
+                            .stroke(Brand.bg2, lineWidth: selected ? 0 : 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("duration-\(d)")
+                }
+            }
+        }
     }
 
     private var daySelector: some View {
@@ -201,15 +257,55 @@ struct BookingView: View {
 
     private var detailsForm: some View {
         VStack(alignment: .leading, spacing: Space.m) {
-            sectionTitle("بياناتكِ", "Your details", "person")
+            sectionTitle("بياناتكِ والموقع", "Your details & location", "mappin.and.ellipse")
             field(app.t("الاسم", "Name"), id: "field-name", text: $name)
+            field(app.t("رقم الجوال", "Phone number"), id: "field-phone", text: $phone, keyboard: .phonePad)
+            locationRow
+            field(app.t("العنوان (الشارع / المبنى)", "Address (street / building)"), id: "field-address", text: $addressLine)
+            HStack(spacing: Space.m) {
+                field(app.t("رقم المبنى", "Building"), id: "field-building", text: $building)
+                field(app.t("الشقة", "Apt"), id: "field-apartment", text: $apartment)
+            }
             field(app.t("الحي في جدة", "District in Jeddah"), id: "field-district", text: $district)
             field(app.t("ملاحظات (اختياري)", "Notes (optional)"), id: "field-notes", text: $notes)
         }
     }
 
-    private func field(_ placeholder: String, id: String, text: Binding<String>) -> some View {
+    private var locationRow: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Button {
+                Haptics.tap(); location.request()
+            } label: {
+                HStack(spacing: Space.s) {
+                    if location.isResolving {
+                        ProgressView().tint(Brand.pinkDeep)
+                    } else {
+                        Image(systemName: location.hasPin ? "checkmark.circle.fill" : "location.fill")
+                    }
+                    Text(location.hasPin ? app.t("تم تحديد موقعكِ ✓", "Location pinned ✓")
+                                         : app.t("استخدمي موقعي الحالي", "Use my current location"))
+                        .font(.rubik(14, .semibold))
+                    Spacer(minLength: 0)
+                }
+                .foregroundStyle(location.hasPin ? Brand.pinkDeep : Brand.ink)
+                .padding(Space.m)
+                .background(Brand.bg2)
+                .clipShape(RoundedRectangle(cornerRadius: Radius.chip, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("use-location")
+            if location.denied {
+                Text(app.t("فعّلي إذن الموقع من الإعدادات، أو اكتبي العنوان يدويًا.",
+                           "Enable location in Settings, or just type your address."))
+                    .font(.rubik(11)).foregroundStyle(Brand.inkSoft)
+            }
+        }
+    }
+
+    private func field(_ placeholder: String, id: String, text: Binding<String>,
+                       keyboard: UIKeyboardType = .default) -> some View {
         TextField(placeholder, text: text)
+            .keyboardType(keyboard)
             .font(.rubik(16))
             .accessibilityIdentifier(id)
             .padding(Space.l)
@@ -269,11 +365,11 @@ struct BookingView: View {
 
     private var priceSummary: some View {
         VStack(spacing: Space.s) {
-            row(app.t("الجلسة", "Session"), massage.price)
+            row(app.t("الجلسة (\(selectedDuration) د)", "Session (\(selectedDuration) min)"), chosenPrice)
             row(app.t("المواصلات", "Transport"), Pricing.transport)
-            row(app.t("ضريبة ١٥٪", "VAT 15%"), Pricing.vat(massage.price))
+            row(app.t("ضريبة ١٥٪", "VAT 15%"), Pricing.vat(chosenPrice))
             Divider()
-            row(app.t("الإجمالي", "Total"), Pricing.total(massage.price), bold: true)
+            row(app.t("الإجمالي", "Total"), Pricing.total(chosenPrice), bold: true)
         }
         .padding(Space.l)
         .softCard()
@@ -298,40 +394,70 @@ struct BookingView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(app.t("الإجمالي", "Total"))
                         .font(.rubik(11)).foregroundStyle(Brand.inkSoft)
-                    Text(app.money(Pricing.total(massage.price)))
+                    Text(app.money(Pricing.total(chosenPrice)))
                         .spaFont(.price, ar: app.isAr).foregroundStyle(Brand.pinkDeep)
                 }
                 Button {
                     book()
                 } label: {
-                    Text(canBook ? app.t("تأكيد الحجز", "Confirm booking")
-                                 : app.t("أكملي بياناتكِ", "Complete your details"))
+                    if submitting {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text(canBook ? app.t("تأكيد الحجز", "Confirm booking")
+                                     : app.t("أكملي بياناتكِ", "Complete your details"))
+                    }
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .accessibilityIdentifier("confirm-booking")
-                .disabled(!canBook)
-                .opacity(canBook ? 1 : 0.55)
+                .disabled(!canBook || submitting)
+                .opacity(canBook && !submitting ? 1 : 0.55)
             }
         }
     }
 
     private func book() {
         guard let time = selectedTime, let therapist = selectedTherapist else { return }
-        let b = Booking(massageId: massage.id,
-                        massageNameAr: massage.nameAr,
-                        massageNameEn: massage.nameEn,
-                        minutes: massage.minutes,
-                        price: massage.price,
-                        dateISO: Scheduling.iso(selectedDay),
-                        time: time,
-                        therapistName: app.t(therapist.nameAr, therapist.nameEn),
-                        name: name.trimmingCharacters(in: .whitespaces),
-                        district: district.trimmingCharacters(in: .whitespaces),
-                        notes: notes.trimmingCharacters(in: .whitespaces),
-                        paymentMethod: payment)
-        store.add(b)
+        let b = Booking(
+            massageId: massage.id,
+            massageNameAr: massage.nameAr,
+            massageNameEn: massage.nameEn,
+            minutes: selectedDuration,
+            durationMin: selectedDuration,
+            price: chosenPrice,
+            dateISO: Scheduling.iso(selectedDay),
+            time: time,
+            therapistId: therapist.id,
+            therapistName: app.t(therapist.nameAr, therapist.nameEn),
+            name: name.trimmingCharacters(in: .whitespaces),
+            contactPhone: AuthStore.normalize(phone),
+            addressLine: addressLine.trimmingCharacters(in: .whitespaces),
+            building: building.trimmingCharacters(in: .whitespaces),
+            apartment: apartment.trimmingCharacters(in: .whitespaces),
+            district: district.trimmingCharacters(in: .whitespaces),
+            city: "Jeddah",
+            lat: location.coordinate?.latitude,
+            lng: location.coordinate?.longitude,
+            notes: notes.trimmingCharacters(in: .whitespaces),
+            paymentMethod: payment,
+            status: .pending)
+
         Haptics.success()
-        Task { await CloudBookings.save(b) }
-        confirmed = b
+        // Offline / tests: keep the instant on-device flow.
+        if Runtime.isUITest || !Config.isConfigured {
+            store.add(b); confirmed = b; return
+        }
+        submitting = true
+        Task {
+            let saved = await CloudBookings.create(b)
+            await MainActor.run {
+                submitting = false
+                if let saved {                 // only "booked" once the server persisted the order
+                    store.add(saved)
+                    confirmed = saved
+                } else {
+                    bookingFailed = true       // keep the form + entered data, surface the failure
+                }
+            }
+        }
     }
 }

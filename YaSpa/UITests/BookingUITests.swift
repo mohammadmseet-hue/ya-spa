@@ -50,6 +50,8 @@ final class BookingUITests: XCTestCase {
 
         // 4) Enter details (robust to keyboard overlap + font-metric height shifts)
         fillField(app, "field-name", "Sara")
+        fillField(app, "field-phone", "512345678")
+        fillField(app, "field-address", "King Road, Tower 2")
         fillField(app, "field-district", "Al Rawdah")
         shot(app, "03c-Fields")
 

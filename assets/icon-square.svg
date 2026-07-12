@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ya Spa">
   <defs>
-    <linearGradient id="icBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBF3F0"/><stop offset="1" stop-color="#F4DDE4"/></linearGradient>
-    <linearGradient id="icArch" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C2233"/><stop offset="1" stop-color="#561522"/></linearGradient>
+    <linearGradient id="sqBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBF3F0"/><stop offset="1" stop-color="#F4DDE4"/></linearGradient>
+    <linearGradient id="sqArch" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C2233"/><stop offset="1" stop-color="#561522"/></linearGradient>
   </defs>
-  <rect width="512" height="512" rx="116" fill="url(#icBg)"/>
-  <path d="M146,395 L146,206 Q146,96 256,96 Q366,96 366,206 L366,395 Q366,430 331,430 L181,430 Q146,430 146,395 Z" fill="url(#icArch)"/>
+  <rect width="512" height="512" fill="url(#sqBg)"/>
+  <path d="M146,395 L146,206 Q146,96 256,96 Q366,96 366,206 L366,395 Q366,430 331,430 L181,430 Q146,430 146,395 Z" fill="url(#sqArch)"/>
   <path d="M146,395 L146,206 Q146,96 256,96 Q366,96 366,206 L366,395 Q366,430 331,430 L181,430 Q146,430 146,395 Z" fill="none" stroke="#C9A15E" stroke-width="3" stroke-opacity="0.85"/>
   <g fill="#FBF3EE">
     <g transform="rotate(-90 256 250)"><ellipse cx="256" cy="208" rx="21" ry="40"/></g>
