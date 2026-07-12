@@ -9,30 +9,30 @@
 /* ---- Design tokens ---------------------------------------------------- */
 :root {
   /* Pink ramp — surfaces & accents. Pink<=400 = fills, >=600 = text-safe. */
-  --pink-50:  #FFF5F7;
-  --pink-100: #FDE8EE;
-  --pink-200: #FBD0DD;
-  --pink-300: #F7AEC4;
-  --pink-400: #F285A6;
-  --pink-500: #E45C86;
-  --pink-600: #C73E6B;
-  --pink-700: #9E2B52;
+  --pink-50:  #F4F6EC;
+  --pink-100: #E8EFDB;
+  --pink-200: #D5E1C1;
+  --pink-300: #AEC97F;
+  --pink-400: #8FB755;
+  --pink-500: #6E9B3E;
+  --pink-600: #4B7B37;
+  --pink-700: #2E4B34;
 
   /* Accents */
-  --gold-300: #E9D8B8;
-  --gold-500: #C9A24B;
-  --gold-600: #A6822F;
-  --mauve-500:#7A5C7E;
-  --mauve-600:#5F4763;
+  --gold-300: #E7D5AE;
+  --gold-500: #C9A15E;
+  --gold-600: #A98545;
+  --mauve-500:#94893F;
+  --mauve-600:#4E5D3B;
 
   /* Neutrals — warm plum-undertone, never cold black */
-  --ink-900:  #221019;
-  --ink-700:  #4A3540;
-  --ink-500:  #7A6B72;
-  --ink-300:  #D8CDD2;
-  --ink-200:  #EADFE3;
+  --ink-900:  #223420;
+  --ink-700:  #45543B;
+  --ink-500:  #717C64;
+  --ink-300:  #CFD7C4;
+  --ink-200:  #E4E8DA;
   --white:    #FFFFFF;
-  --cream-50: #FFFCFA;
+  --cream-50: #FBF8F0;
 
   /* Semantic */
   --success-600:#1E7A52; --success-100:#DCF3E8;
@@ -41,7 +41,7 @@
   --info-600:   #2563A8; --info-100:   #DEEBF8;
 
   /* Typography */
-  --font-display-ar: "Tajawal", system-ui, sans-serif;
+  --font-display-ar: "El Messiri", "Tajawal", system-ui, sans-serif;
   --font-body-ar:    "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
   --font-display-en: "Fraunces", Georgia, serif;
   --font-body-en:    "IBM Plex Sans", system-ui, sans-serif;
@@ -50,12 +50,12 @@
   --font-body:    var(--font-body-ar);
 
   /* Elevation — plum-tinted, soft */
-  --shadow-xs:  0 1px 2px rgba(34,16,25,.05);
-  --shadow-sm:  0 2px 8px rgba(34,16,25,.06);
-  --shadow-md:  0 10px 26px rgba(158,43,82,.09);
-  --shadow-lg:  0 20px 48px rgba(158,43,82,.13);
-  --shadow-xl:  0 34px 70px rgba(158,43,82,.16);
-  --ring:       0 0 0 3px rgba(228,92,134,.45);
+  --shadow-xs:  0 1px 2px rgba(34,52,32,.05);
+  --shadow-sm:  0 2px 8px rgba(34,52,32,.07);
+  --shadow-md:  0 12px 28px rgba(46,75,52,.10);
+  --shadow-lg:  0 22px 50px rgba(46,75,52,.15);
+  --shadow-xl:  0 36px 74px rgba(46,75,52,.19);
+  --ring:       0 0 0 3px rgba(110,155,62,.45);
 
   /* Radii */
   --r-sm: 10px; --r-md: 16px; --r-lg: 24px; --r-xl: 34px; --r-pill: 999px;
@@ -239,10 +239,10 @@ html[lang="en"] .display { font-optical-sizing: auto; font-variation-settings: "
 
 /* Hero phone mock */
 .hero-visual { position: relative; display: flex; justify-content: center; }
-.phone { width: min(330px, 80vw); aspect-ratio: 320/660; background: linear-gradient(160deg, #2a1620, #1a0d14); border-radius: 46px; padding: 12px;
+.phone { width: min(330px, 80vw); aspect-ratio: 320/660; background: linear-gradient(160deg, #25402A, #182619); border-radius: 46px; padding: 12px;
   box-shadow: var(--shadow-xl), inset 0 0 0 2px rgba(255,255,255,.06); position: relative; transform: rotate(-2.5deg); transition: transform .5s var(--ease); }
 .phone:hover { transform: rotate(0deg) translateY(-6px); }
-.phone::before { content: ""; position: absolute; top: 16px; inset-inline: 0; margin-inline: auto; width: 96px; height: 22px; background: #1a0d14; border-radius: var(--r-pill); z-index: 3; }
+.phone::before { content: ""; position: absolute; top: 16px; inset-inline: 0; margin-inline: auto; width: 96px; height: 22px; background: #182619; border-radius: var(--r-pill); z-index: 3; }
 .phone-screen { background: var(--pink-50); border-radius: 36px; height: 100%; overflow: hidden; position: relative; display: flex; flex-direction: column; }
 .ps-top { padding: 2.4rem 1.1rem .8rem; }
 .ps-hi { font-size: .8rem; color: var(--ink-500); }
@@ -318,14 +318,14 @@ html[lang="en"] .display { font-optical-sizing: auto; font-variation-settings: "
    Estimator (signature interactive)
    ========================================================================= */
 .estimator { background: var(--ink-900); color: #fff; border-radius: var(--r-xl); padding: clamp(1.6rem, 4vw, 3rem); box-shadow: var(--shadow-xl); position: relative; overflow: hidden; }
-.estimator::after { content: ""; position: absolute; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(228,92,134,.35), transparent 60%); top: -160px; inset-inline-end: -120px; }
+.estimator::after { content: ""; position: absolute; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(110,155,62,.35), transparent 60%); top: -160px; inset-inline-end: -120px; }
 .est-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(1.4rem, 3vw, 2.6rem); position: relative; z-index: 1; }
 .estimator h2 { color: #fff; }
 .estimator .lead { color: var(--pink-100); opacity: .85; }
 .est-items { display: grid; gap: .7rem; margin-top: 1.6rem; }
 .est-item { display: flex; align-items: center; gap: .9rem; padding: .85rem 1rem; border-radius: var(--r-md); background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); cursor: pointer; transition: .2s; }
 .est-item:hover { background: rgba(255,255,255,.09); }
-.est-item.active { background: rgba(228,92,134,.18); border-color: var(--pink-400); }
+.est-item.active { background: rgba(110,155,62,.18); border-color: var(--pink-400); }
 .est-check { width: 24px; height: 24px; border-radius: 7px; border: 2px solid rgba(255,255,255,.3); flex: none; display: grid; place-items: center; transition: .2s; }
 .est-item.active .est-check { background: var(--pink-500); border-color: var(--pink-500); }
 .est-check svg { width: 14px; height: 14px; color: #fff; opacity: 0; transform: scale(.5); transition: .2s; }
@@ -361,13 +361,13 @@ html[lang="en"] .display { font-optical-sizing: auto; font-variation-settings: "
    Trust stack
    ========================================================================= */
 .trust { background: var(--ink-900); color: #fff; position: relative; overflow: hidden; }
-.trust .blob.b1 { background: radial-gradient(circle, rgba(228,92,134,.4), transparent 60%); opacity: .5; }
+.trust .blob.b1 { background: radial-gradient(circle, rgba(110,155,62,.4), transparent 60%); opacity: .5; }
 .trust h2 { color: #fff; }
 .trust .lead { color: var(--pink-100); opacity: .82; }
 .trust-grid { grid-template-columns: repeat(5, 1fr); margin-top: 3rem; }
 .trust-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-lg); padding: 1.5rem 1.2rem; text-align: center; transition: .3s var(--ease); }
 .trust-card:hover { background: rgba(255,255,255,.09); transform: translateY(-6px); }
-.trust-card .tc-icon { width: 60px; height: 60px; margin: 0 auto 1rem; border-radius: 50%; background: rgba(228,92,134,.16); color: var(--pink-300); display: grid; place-items: center; }
+.trust-card .tc-icon { width: 60px; height: 60px; margin: 0 auto 1rem; border-radius: 50%; background: rgba(110,155,62,.16); color: var(--pink-300); display: grid; place-items: center; }
 .trust-card .tc-icon svg { width: 30px; height: 30px; }
 .trust-card h4 { color: #fff; font-size: 1.02rem; margin-bottom: .4rem; }
 .trust-card p { color: var(--pink-100); opacity: .65; font-size: .82rem; }
@@ -398,7 +398,7 @@ html[lang="en"] .display { font-optical-sizing: auto; font-variation-settings: "
 .pkg-grid { grid-template-columns: repeat(3, 1fr); margin-top: 1rem; }
 .pkg { background: #fff; border-radius: var(--r-lg); padding: 2rem 1.7rem; box-shadow: var(--shadow-sm); border: 1px solid var(--gold-300); position: relative; transition: .3s var(--ease); display: flex; flex-direction: column; }
 .pkg:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
-.pkg.featured { background: linear-gradient(170deg, #2a1620, #3a2230); color: #fff; border-color: var(--gold-500); transform: scale(1.03); }
+.pkg.featured { background: linear-gradient(170deg, #25402A, #31543A); color: #fff; border-color: var(--gold-500); transform: scale(1.03); }
 .pkg.featured:hover { transform: scale(1.03) translateY(-8px); }
 .pkg .tag { position: absolute; top: -14px; inset-inline-start: 50%; transform: translateX(-50%); background: linear-gradient(120deg, var(--gold-500), var(--gold-600)); color: #2b220c; font-size: .72rem; font-weight: 800; padding: .3rem .9rem; border-radius: var(--r-pill); white-space: nowrap; }
 [dir="rtl"] .pkg .tag { transform: translateX(50%); }
@@ -599,3 +599,42 @@ body.cart-open .wa-float, body.cart-open .totop { inset-block-end: 92px; }
   .footer-bottom { flex-direction: column; }
   :root { --section-y: clamp(48px, 12vw, 80px); }
 }
+
+/* =========================================================================
+   Editorial luxury layer (v3 — quiet Hijazi green)
+   ========================================================================= */
+/* Eyebrow: antique-gold hairline lead-ins on centered heads */
+.section-head.center .eyebrow { gap: .8rem; }
+.section-head.center .eyebrow::before,
+.section-head.center .eyebrow::after { content:""; width: 26px; height: 1px; background: var(--gold-500); opacity:.75; }
+
+/* Gold hairline rule under centered section titles */
+.section-head.center .section-title { position: relative; padding-bottom: .8rem; }
+.section-head.center .section-title::after {
+  content:""; position:absolute; inset-inline:0; bottom:0; margin-inline:auto;
+  width: 56px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+}
+
+/* Primary CTA — forest green with an antique-gold foil hairline (matches the app) */
+.btn-primary { background: linear-gradient(180deg, var(--pink-600), var(--pink-700)); position: relative; }
+.btn-primary::after { content:""; position:absolute; inset:3px; border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(201,161,94,.45); pointer-events:none; }
+.btn-primary:hover { background: var(--pink-700); }
+
+/* Warm gold hairline along the top edge of the dark (forest) sections */
+.valuestrip, .trust, .estimator, .site-footer { box-shadow: inset 0 1px 0 rgba(201,161,94,.30); }
+.estimator { box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(201,161,94,.30); }
+
+/* Hero accent — a soft gold wash underline instead of a flat block */
+.hero h1 .accent { color: var(--pink-700); }
+.hero h1 .accent::after { background: linear-gradient(90deg, var(--gold-300), var(--gold-500)); height:.28em; opacity:.6; }
+
+/* Cards: warm hairline on hover */
+.svc:hover, .feature:hover { border-color: var(--pink-200); }
+
+/* Arabic display (El Messiri) wants a touch more leading */
+[lang="ar"] .display, [lang="ar"] h2.section-title { line-height: 1.3; }
+
+/* Brand wordmark small-caps in gold-green */
+.brand small { color: var(--gold-600); }

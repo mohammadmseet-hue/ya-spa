@@ -1,14 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Ya Spa">
   <defs>
-    <linearGradient id="ysArch" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7C2233"/><stop offset="1" stop-color="#561522"/>
-    </linearGradient>
+    <linearGradient id="ysArch" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E4B34"/><stop offset="1" stop-color="#213827"/></linearGradient>
+    <linearGradient id="ysPetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB755"/><stop offset="1" stop-color="#7BA23F"/></linearGradient>
   </defs>
   <!-- mihrab (hammam) arch niche -->
   <path d="M30,92 L30,50 Q30,20 60,20 Q90,20 90,50 L90,92 Q90,100 82,100 L38,100 Q30,100 30,92 Z" fill="url(#ysArch)"/>
-  <path d="M30,92 L30,50 Q30,20 60,20 Q90,20 90,50 L90,92 Q90,100 82,100 L38,100 Q30,100 30,92 Z" fill="none" stroke="#C9A15E" stroke-width="1.4" stroke-opacity="0.9"/>
-  <!-- jasmine bloom (5 petals + gold center) -->
-  <g fill="#FBF3EE">
+  <path d="M30,92 L30,50 Q30,20 60,20 Q90,20 90,50 L90,92 Q90,100 82,100 L38,100 Q30,100 30,92 Z" fill="none" stroke="#C9A15E" stroke-width="1.4" stroke-opacity="0.92"/>
+  <!-- jasmine bloom (5 grass-green petals + gold center) -->
+  <g fill="url(#ysPetal)">
     <g transform="rotate(-90 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
     <g transform="rotate(-18 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
     <g transform="rotate(54 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
