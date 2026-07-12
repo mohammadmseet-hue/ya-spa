@@ -273,15 +273,18 @@ struct BookingView: View {
     private var detailsForm: some View {
         VStack(alignment: .leading, spacing: Space.m) {
             sectionTitle("بياناتكِ والموقع", "Your details & location", "mappin.and.ellipse")
-            field(app.t("الاسم", "Name"), id: "field-name", text: $name)
-            field(app.t("رقم الجوال", "Phone number"), id: "field-phone", text: $phone, keyboard: .phonePad)
+            field(app.t("الاسم", "Name"), id: "field-name", text: $name, contentType: .name)
+            field(app.t("رقم الجوال", "Phone number"), id: "field-phone", text: $phone,
+                  keyboard: .phonePad, contentType: .telephoneNumber)
             locationRow
-            field(app.t("العنوان (الشارع / المبنى)", "Address (street / building)"), id: "field-address", text: $addressLine)
+            field(app.t("العنوان (الشارع / المبنى)", "Address (street / building)"), id: "field-address",
+                  text: $addressLine, contentType: .fullStreetAddress, autocorrect: false)
             HStack(spacing: Space.m) {
                 field(app.t("رقم المبنى", "Building"), id: "field-building", text: $building)
                 field(app.t("الشقة", "Apt"), id: "field-apartment", text: $apartment)
             }
-            field(app.t("الحي في جدة", "District in Jeddah"), id: "field-district", text: $district)
+            field(app.t("الحي في جدة", "District in Jeddah"), id: "field-district", text: $district,
+                  contentType: .sublocality, autocorrect: false)
             field(app.t("ملاحظات (اختياري)", "Notes (optional)"), id: "field-notes", text: $notes)
         }
     }
@@ -318,9 +321,13 @@ struct BookingView: View {
     }
 
     private func field(_ placeholder: String, id: String, text: Binding<String>,
-                       keyboard: UIKeyboardType = .default) -> some View {
+                       keyboard: UIKeyboardType = .default,
+                       contentType: UITextContentType? = nil,
+                       autocorrect: Bool = true) -> some View {
         TextField(placeholder, text: text)
             .keyboardType(keyboard)
+            .textContentType(contentType)          // enables iOS autofill (name/phone/address)
+            .autocorrectionDisabled(!autocorrect)
             .font(.rubik(16))
             .accessibilityIdentifier(id)
             .padding(Space.l)

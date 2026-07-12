@@ -124,6 +124,7 @@ struct AmbientBackground: View {
             blob(Brand.gold.opacity(0.09), size: 300).offset(x: -150, y: 300)
         }
         .ignoresSafeArea()
+        .accessibilityHidden(true)   // decorative canvas
     }
 
     private func blob(_ color: Color, size: CGFloat) -> some View {

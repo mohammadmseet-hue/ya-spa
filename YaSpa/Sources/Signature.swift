@@ -44,6 +44,7 @@ struct ArchMedallion: View {
                 .offset(y: height * 0.06)
         }
         .frame(width: width, height: height)
+        .accessibilityHidden(true)   // decorative — the label sits beside it
     }
 }
 
@@ -79,6 +80,7 @@ struct JasmineDivider: View {
             Image(systemName: "seal").font(.system(size: 9)).foregroundStyle(Brand.gold)
             fade
         }
+        .accessibilityHidden(true)   // purely decorative chapter divider
     }
     private var fade: some View {
         Rectangle()

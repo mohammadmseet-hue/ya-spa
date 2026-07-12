@@ -22,6 +22,7 @@ struct SFSymbolMedallion: View {
                 .foregroundStyle(Brand.brandGradient)
         }
         .frame(width: size, height: size)
+        .accessibilityHidden(true)   // decorative — the service name sits beside it
     }
 }
 
@@ -50,6 +51,7 @@ struct GradientMonogramAvatar: View {
                         .offset(x: 2, y: 2)
                 }
             }
+            .accessibilityHidden(true)   // decorative monogram — the person's name sits beside it
     }
 }
 
@@ -58,6 +60,7 @@ struct GradientMonogramAvatar: View {
 struct StarRow: View {
     let rating: Double
     var size: CGFloat = 12
+    var a11yLabel: String? = nil   // callers pass a localized "4.9 out of 5"
 
     var body: some View {
         HStack(spacing: 2) {
@@ -67,6 +70,8 @@ struct StarRow: View {
                     .foregroundStyle(Brand.gold)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(a11yLabel ?? String(format: "%.1f", rating))
     }
 
     private func name(for i: Int) -> String {
@@ -302,7 +307,9 @@ struct RatingSummary: View {
                     .font(SpaFont.of(app.isAr ? SpaFont.elMessiriBold : SpaFont.frauncesSemibold,
                                      40, relativeTo: .largeTitle, fallback: .serif, weight: .bold))
                     .foregroundStyle(Brand.ink)
-                StarRow(rating: average, size: 12)
+                StarRow(rating: average, size: 12,
+                        a11yLabel: app.t("\(String(format: "%.1f", average)) من ٥",
+                                         "\(String(format: "%.1f", average)) out of 5"))
                 Text(app.t("\(count) تقييم", "\(count) reviews"))
                     .font(.rubik(12)).foregroundStyle(Brand.inkSoft)
             }
@@ -349,7 +356,8 @@ struct ReviewCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(app.t(review.nameAr, review.nameEn))
                         .font(.rubik(14, .semibold)).foregroundStyle(Brand.ink)
-                    StarRow(rating: Double(review.rating), size: 10)
+                    StarRow(rating: Double(review.rating), size: 10,
+                            a11yLabel: app.t("\(review.rating) من ٥", "\(review.rating) out of 5"))
                 }
                 Spacer(minLength: 0)
             }
