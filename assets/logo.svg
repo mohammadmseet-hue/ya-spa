@@ -1,18 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Ya Spa">
   <defs>
-    <linearGradient id="ysMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB755"/><stop offset="1" stop-color="#7BA23F"/></linearGradient>
-    <linearGradient id="ysCtr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7BA23F"/><stop offset="1" stop-color="#5E8A34"/></linearGradient>
+    <linearGradient id="ysPetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB755"/><stop offset="1" stop-color="#7BA23F"/></linearGradient>
   </defs>
-  <g>
-    <!-- outer petals -->
-    <path d="M60 100 C 36 74 40 40 60 16 C 80 40 84 74 60 100 Z" transform="rotate(-54 60 100)" fill="#B7CE8E"/>
-    <path d="M60 100 C 36 74 40 40 60 16 C 80 40 84 74 60 100 Z" transform="rotate(54 60 100)" fill="#B7CE8E"/>
-    <!-- mid petals -->
-    <path d="M60 100 C 38 76 42 42 60 18 C 78 42 82 76 60 100 Z" transform="rotate(-27 60 100)" fill="url(#ysMid)"/>
-    <path d="M60 100 C 38 76 42 42 60 18 C 78 42 82 76 60 100 Z" transform="rotate(27 60 100)" fill="url(#ysMid)"/>
-    <!-- center petal -->
-    <path d="M60 102 C 40 78 44 40 60 14 C 76 40 80 78 60 102 Z" fill="url(#ysCtr)"/>
-    <!-- gold dew center -->
-    <circle cx="60" cy="58" r="7" fill="#C9A15E"/>
+  <!-- jasmine bloom (exactly as it sat inside the arch), arch removed -->
+  <g transform="translate(60 60) scale(1.85) translate(-60 -58)">
+    <g fill="url(#ysPetal)">
+      <g transform="rotate(-90 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
+      <g transform="rotate(-18 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
+      <g transform="rotate(54 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
+      <g transform="rotate(126 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
+      <g transform="rotate(198 60 58)"><ellipse cx="60" cy="47" rx="5.4" ry="10"/></g>
+    </g>
+    <circle cx="60" cy="58" r="4" fill="#C9A15E"/>
   </g>
 </svg>

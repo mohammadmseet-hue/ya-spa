@@ -1,16 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ya Spa">
   <defs>
     <linearGradient id="sqBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F9F5EC"/><stop offset="1" stop-color="#F1EAD8"/></linearGradient>
-    <linearGradient id="sqMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB755"/><stop offset="1" stop-color="#7BA23F"/></linearGradient>
-    <linearGradient id="sqCtr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7BA23F"/><stop offset="1" stop-color="#5E8A34"/></linearGradient>
+    <linearGradient id="sqPetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB755"/><stop offset="1" stop-color="#7BA23F"/></linearGradient>
   </defs>
   <rect width="512" height="512" fill="url(#sqBg)"/>
-  <g transform="translate(52 66) scale(3.4)">
-    <path d="M60 100 C 36 74 40 40 60 16 C 80 40 84 74 60 100 Z" transform="rotate(-54 60 100)" fill="#B7CE8E"/>
-    <path d="M60 100 C 36 74 40 40 60 16 C 80 40 84 74 60 100 Z" transform="rotate(54 60 100)" fill="#B7CE8E"/>
-    <path d="M60 100 C 38 76 42 42 60 18 C 78 42 82 76 60 100 Z" transform="rotate(-27 60 100)" fill="url(#sqMid)"/>
-    <path d="M60 100 C 38 76 42 42 60 18 C 78 42 82 76 60 100 Z" transform="rotate(27 60 100)" fill="url(#sqMid)"/>
-    <path d="M60 102 C 40 78 44 40 60 14 C 76 40 80 78 60 102 Z" fill="url(#sqCtr)"/>
-    <circle cx="60" cy="58" r="7" fill="#C9A15E"/>
+  <g transform="translate(256 256) scale(1.85) translate(-256 -250)">
+    <g fill="url(#sqPetal)">
+      <g transform="rotate(-90 256 250)"><ellipse cx="256" cy="208" rx="21" ry="40"/></g>
+      <g transform="rotate(-18 256 250)"><ellipse cx="256" cy="208" rx="21" ry="40"/></g>
+      <g transform="rotate(54 256 250)"><ellipse cx="256" cy="208" rx="21" ry="40"/></g>
+      <g transform="rotate(126 256 250)"><ellipse cx="256" cy="208" rx="21" ry="40"/></g>
+      <g transform="rotate(198 256 250)"><ellipse cx="256" cy="208" rx="21" ry="40"/></g>
+    </g>
+    <circle cx="256" cy="250" r="15" fill="#C9A15E"/>
   </g>
 </svg>
