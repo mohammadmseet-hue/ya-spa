@@ -1,0 +1,134 @@
+name: iOS 16 cold-launch repro
+
+# The user's crash is device-specific and reproduces on iOS 16 but NOT on the iOS-26 sim the
+# main CI uses. This job builds with Xcode 16.4 (supports swift-tools 6.1 for supabase-swift
+# 2.51 AND can run an iOS 16 simulator) and cold-launches the app on a REAL iOS 16 runtime,
+# WITHOUT -uitest — to reproduce the launch crash and capture its backtrace.
+# Isolated on the fix branch so it never touches the shipping pipeline.
+
+on:
+  push:
+    branches: [ fix/launch-crash-hardening ]
+  workflow_dispatch:
+
+concurrency:
+  group: ios16-repro-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repro:
+    runs-on: macos-15
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 16.4 (swift-tools 6.1 + iOS 16 sim capable)
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: cd YaSpa && xcodegen generate
+
+      - name: Ensure an iOS 16 simulator runtime
+        id: rt
+        run: |
+          set -x
+          echo "Runtimes before:"; xcrun simctl list runtimes
+          if ! xcrun simctl list runtimes | grep -qi "iOS 16"; then
+            echo "No iOS 16 runtime present — attempting download of iOS 16.4..."
+            # Xcode 16 can fetch older sim runtimes on demand. Try a few known-good builds.
+            xcodebuild -downloadPlatform iOS -buildVersion 16.4 2>&1 | tail -20 \
+              || sudo xcrun simctl runtime add "iOS 16.4" 2>&1 | tail -20 \
+              || echo "runtime download failed"
+          fi
+          echo "Runtimes after:"; xcrun simctl list runtimes
+          if xcrun simctl list runtimes | grep -qi "iOS 16"; then
+            echo "have16=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have16=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No iOS 16 simulator runtime is available on this runner — cannot reproduce."
+          fi
+
+      - name: Create an iOS 16 iPhone simulator
+        id: sim
+        if: steps.rt.outputs.have16 == 'true'
+        run: |
+          set -x
+          RT_ID=$(xcrun simctl list runtimes -j | python3 -c "
+          import json,sys
+          for r in json.load(sys.stdin)['runtimes']:
+              if r.get('isAvailable') and 'iOS' in r.get('name','') and r.get('version','').startswith('16'):
+                  print(r['identifier']); break
+          ")
+          echo "iOS16 runtime id: $RT_ID"
+          DEV=$(xcrun simctl list devicetypes -j | python3 -c "
+          import json,sys
+          for d in json.load(sys.stdin)['devicetypes']:
+              if d['name'] in ('iPhone 14','iPhone 13','iPhone SE (3rd generation)'):
+                  print(d['identifier']); break
+          ")
+          echo "device type: $DEV"
+          UDID=$(xcrun simctl create "iOS16-repro" "$DEV" "$RT_ID")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b || true
+
+      - name: Build for the iOS 16 simulator
+        if: steps.sim.outputs.udid != ''
+        run: |
+          set -o pipefail
+          cd YaSpa
+          xcodebuild build \
+            -project YaSpa.xcodeproj \
+            -scheme App \
+            -sdk iphonesimulator \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Cold-launch on iOS 16 (NO -uitest) — reproduce & capture crash
+        if: steps.sim.outputs.udid != ''
+        run: |
+          set -o pipefail
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          UDID="${{ steps.sim.outputs.udid }}"
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name 'App.app' -path '*Debug-iphonesimulator*' | head -1)
+          echo "App bundle: $APP"
+          xcrun simctl install "$UDID" "$APP"
+          rm -f ~/Library/Logs/DiagnosticReports/*.ips 2>/dev/null || true
+          OUT=$(xcrun simctl launch --terminate-running-process "$UDID" sa.yaspa.app)
+          echo "$OUT"
+          PID=$(echo "$OUT" | awk -F': ' '{print $2}')
+          echo "Launched pid: $PID (iOS 16)"
+          sleep 12
+          FOUND=""
+          for f in $(ls -t ~/Library/Logs/DiagnosticReports/*.ips 2>/dev/null | head -10); do
+            if grep -qiE "sa\.yaspa\.app|YaSpa" "$f"; then FOUND="$f"; break; fi
+          done
+          if [ -n "$FOUND" ]; then
+            echo "::error::REPRODUCED — app crashed on iOS 16 cold launch. Report: $FOUND"
+            cp "$FOUND" "$GITHUB_WORKSPACE/artifacts/ios16-crash.ips" 2>/dev/null || true
+            echo "================= iOS 16 CRASH REPORT ================="
+            cat "$FOUND"
+            echo "======================================================"
+            exit 1
+          fi
+          if [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; then
+            echo "NOT reproduced: app alive 12s after iOS 16 cold launch."
+          else
+            echo "::warning::pid $PID not observed alive but no crash report matched — inconclusive."
+          fi
+          xcrun simctl io "$UDID" screenshot "$GITHUB_WORKSPACE/artifacts/ios16-launch.png" || true
+
+      - name: Upload iOS 16 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios16-repro-evidence
+          path: artifacts/
+          if-no-files-found: warn
