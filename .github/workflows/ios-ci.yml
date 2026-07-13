@@ -2,7 +2,7 @@ name: iOS build check
 
 on:
   push:
-    branches: [ massage-only-ios-app ]
+    branches: [ massage-only-ios-app, fix/launch-crash-hardening ]
   workflow_dispatch:
 
 # Only one build/release at a time on this branch. A new push cancels the
@@ -58,6 +58,49 @@ jobs:
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO
+
+      # The UI test below launches with `-uitest`, which short-circuits the ENTIRE real
+      # cold-launch path (AuthStore.restore + SB.client + anonymous sign-in, the splash, and
+      # onboarding are all skipped). So a green UI test says nothing about what a real user sees
+      # when they open the app. This step launches WITHOUT `-uitest` and fails the build if the
+      # process crashes — turning the previously-invisible "crashes on open" into a caught,
+      # symbolicated backtrace we can act on.
+      - name: Cold-launch smoke test (real launch path, NO -uitest)
+        run: |
+          set -o pipefail
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          UDID="${{ steps.sim.outputs.udid }}"
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name 'App.app' -path '*Debug-iphonesimulator*' | head -1)
+          echo "App bundle: $APP"
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          xcrun simctl bootstatus "$UDID" -b || true
+          xcrun simctl install "$UDID" "$APP"
+          # Start from a clean crash-report slate so we only see crashes from THIS launch.
+          rm -f ~/Library/Logs/DiagnosticReports/*.ips 2>/dev/null || true
+          OUT=$(xcrun simctl launch --terminate-running-process "$UDID" sa.yaspa.app)
+          echo "$OUT"
+          PID=$(echo "$OUT" | awk -F': ' '{print $2}')
+          echo "Launched pid: $PID"
+          # Let the real cold-launch path run: 1.6s splash + anonymous sign-in + catalog fetch.
+          sleep 12
+          FOUND=""
+          for f in $(ls -t ~/Library/Logs/DiagnosticReports/*.ips 2>/dev/null | head -10); do
+            if grep -qiE "sa\.yaspa\.app|YaSpa" "$f"; then FOUND="$f"; break; fi
+          done
+          if [ -n "$FOUND" ]; then
+            echo "::error::App CRASHED on cold launch (no -uitest). Report: $FOUND"
+            cp "$FOUND" "$GITHUB_WORKSPACE/artifacts/cold-launch-crash.ips" 2>/dev/null || true
+            echo "================= CRASH REPORT ================="
+            cat "$FOUND"
+            echo "==============================================="
+            exit 1
+          fi
+          if [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; then
+            echo "OK: app still alive 12s after a real (no -uitest) cold launch."
+          else
+            echo "::warning::pid $PID not observed alive and no crash report matched — inconclusive, not failing."
+          fi
+          xcrun simctl io "$UDID" screenshot "$GITHUB_WORKSPACE/artifacts/cold-launch.png" || true
 
       - name: UI test — real booking flow on the simulator
         run: |
@@ -117,6 +160,10 @@ jobs:
   release:
     runs-on: macos-15
     needs: build
+    # Only the canonical shipping branch delivers to TestFlight. Fix/feature branches (e.g.
+    # fix/launch-crash-hardening) run the build + cold-launch smoke test for validation but
+    # NEVER auto-ship a build to Apple.
+    if: github.ref == 'refs/heads/massage-only-ios-app'
     timeout-minutes: 50
     env:
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}

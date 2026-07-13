@@ -338,6 +338,7 @@ struct RatingSummary: View {
     }
 
     private func fraction(_ i: Int) -> CGFloat {
+        guard distribution.indices.contains(i) else { return 0 }   // total-safe: never index past a short array
         let total = max(distribution.reduce(0, +), 1)
         return CGFloat(distribution[i]) / CGFloat(total)
     }

@@ -13,7 +13,12 @@ extension Brand {
     /// No pink→gold gradient — a quiet tonal disc with ivory initials.
     static func monogramGradient(seed: String) -> LinearGradient {
         let tones = [Color(hex: 0x6E1E2E), Color(hex: 0x2A2320), Color(hex: 0x8A5A3C), Color(hex: 0x6B5F58)]
-        let c = tones[abs(seed.hashValue) % tones.count]
+        // Deterministic djb2 over the bytes: stable across launches (Swift's String.hashValue is
+        // per-process randomized, so it re-colored avatars every open) and overflow-safe — `abs`
+        // on a hashValue of Int.min traps, and `&*`/`&+` can never overflow-trap.
+        var h: UInt64 = 5381
+        for b in seed.utf8 { h = (h &* 33) &+ UInt64(b) }
+        let c = tones[Int(h % UInt64(tones.count))]
         return LinearGradient(colors: [c, c], startPoint: .top, endPoint: .bottom)
     }
 }

@@ -14,7 +14,11 @@ settings:
 packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift
-    from: "2.0.0"
+    # Pinned exactly (was `from: 2.0.0`, which floated to the newest 2.x on every clean
+    # resolve — so two machines / two days could embed different SDK builds for the same
+    # commit, and the TestFlight binary need not match what CI ever launched). 2.51.0 is the
+    # version CI validates; its iOS-16 package floor matches this app's deploymentTarget.
+    exactVersion: "2.51.0"
 targets:
   App:
     type: application
