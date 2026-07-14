@@ -150,7 +150,11 @@ struct HomeDashboardView: View {
 
     private var firstBookCTA: some View {
         VStack(spacing: Space.l) {
-            ArchMedallion(symbol: "sparkles", width: 70, height: 88)
+            JasmineBloom(size: 62)
+                .frame(width: 96, height: 96)
+                .background(Circle().fill(Brand.pinkSoft.opacity(0.6)))
+                .overlay(Circle().stroke(Brand.gold.opacity(0.35), lineWidth: 1))
+                .shadow(color: Brand.sage.opacity(0.18), radius: 12, y: 6)
             Text(app.t("جاهزة للاسترخاء؟", "Ready to relax?"))
                 .spaFont(.serviceName, ar: app.isAr).foregroundStyle(Brand.ink)
             Text(app.t("احجزي أول جلسة مساج، وتجيكِ المعالِجة إلى البيت.",
