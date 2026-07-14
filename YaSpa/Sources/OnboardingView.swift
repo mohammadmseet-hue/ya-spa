@@ -71,7 +71,7 @@ struct OnboardingView: View {
                 } label: {
                     Text(page < slides.count - 1
                          ? app.t("التالي", "Next")
-                         : app.t("لنبدأ 🌸", "Get started 🌸"))
+                         : app.t("لنبدأ 🌿", "Get started 🌿"))
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .padding(.horizontal, 24)

@@ -49,10 +49,16 @@ struct MassageDetailView: View {
         .frame(maxWidth: .infinity)
         .padding(Space.xl)
         .background(
-            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).fill(Brand.heroGradient)
+            ZStack {
+                SageMesh(tone: .hero)
+                LinearGradient(colors: [.clear, Brand.paper.opacity(0.35)], startPoint: .top, endPoint: .bottom)
+                JasmineSprig(size: 78).rotationEffect(.degrees(16)).offset(x: 108, y: -70).opacity(0.8)
+                JasmineBloom(size: 34).offset(x: -118, y: 74).opacity(0.75)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Brand.paper.opacity(0.5), lineWidth: 1)
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous).stroke(Brand.gold.opacity(0.35), lineWidth: 1)
         )
         .shadow(color: Brand.shadowBloom.opacity(0.1), radius: 24, y: 12)
     }

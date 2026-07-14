@@ -24,7 +24,6 @@ struct SageMesh: View {
             ],
             colors: tone == .hero ? heroColors : canvasColors
         )
-        .ignoresSafeArea()
     }
 
     private var canvasColors: [Color] {

@@ -12,7 +12,7 @@ struct BookingConfirmationView: View {
                 YaSpaWordmark(compact: true).padding(.top, Space.xxl)
                 AnimatedCheckmark().padding(.top, Space.s)
 
-                Text(app.t("تم تأكيد حجزكِ 🌸", "You're booked 🌸"))
+                Text(app.t("تم تأكيد حجزكِ 🌿", "You're booked 🌿"))
                     .spaFont(.serviceName, ar: app.isAr)
                     .foregroundStyle(Brand.ink)
                     .multilineTextAlignment(.center)
