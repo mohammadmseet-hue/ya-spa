@@ -35,15 +35,21 @@ struct ArchMedallion: View {
     var body: some View {
         ZStack {
             ArchShape()
-                .fill(RadialGradient(colors: [Brand.bg2, Brand.pinkSoft.opacity(0.4)],
-                                     center: .center, startRadius: 2, endRadius: width * 0.7))
-            ArchShape().stroke(Brand.gold.opacity(0.5), lineWidth: 1)
+                .fill(
+                    LinearGradient(colors: [Color(hex: 0xE7EFDB), Color(hex: 0xF3F0E6)],
+                                   startPoint: .top, endPoint: .bottom)
+                )
+            ArchShape()
+                .fill(RadialGradient(colors: [Brand.sage.opacity(0.22), .clear],
+                                     center: .center, startRadius: 2, endRadius: width * 0.85))
+            ArchShape().stroke(Brand.gold.opacity(0.55), lineWidth: 1)
             Image(systemName: symbol)
                 .font(.system(size: width * 0.42, weight: .regular))
                 .foregroundStyle(Brand.accent)
                 .offset(y: height * 0.06)
         }
         .frame(width: width, height: height)
+        .shadow(color: Brand.sage.opacity(0.14), radius: width * 0.08, y: width * 0.05)
         .accessibilityHidden(true)   // decorative — the label sits beside it
     }
 }

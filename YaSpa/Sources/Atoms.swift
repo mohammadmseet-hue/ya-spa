@@ -146,25 +146,35 @@ struct PromiseStrip: View {
             divider
             item("lock.shield.fill", app.t("خصوصية", "Privacy"), app.t("بيتكِ فقط", "Your home"))
             divider
-            item("drop.fill", app.t("زيوت فاخرة", "Premium oils"), app.t("معتمدة", "SFDA"))
+            item("leaf.fill", app.t("زيوت فاخرة", "Premium oils"), app.t("معتمدة", "SFDA"))
         }
         .padding(.vertical, Space.l).padding(.horizontal, Space.s)
-        .background(Brand.ink)
+        .background(Brand.paper)
         .clipShape(RoundedRectangle(cornerRadius: Radius.card, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: Radius.card, style: .continuous)
+                .stroke(Brand.gold.opacity(0.30), lineWidth: 1)
+        )
+        .shadow(color: Brand.shadowBloom.opacity(0.06), radius: 16, y: 8)
     }
 
     private func item(_ icon: String, _ title: String, _ sub: String) -> some View {
-        VStack(spacing: 6) {
-            Image(systemName: icon).font(.system(size: 16)).foregroundStyle(Brand.gold)
-            Text(title).font(.rubik(12, .semibold)).foregroundStyle(Brand.ivory)
-            Text(sub).font(.rubik(10, .medium)).foregroundStyle(Brand.ivory.opacity(0.7))
+        VStack(spacing: 7) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Brand.accent)
+                .frame(width: 38, height: 38)
+                .background(Circle().fill(Brand.pinkSoft))
+                .overlay(Circle().stroke(Brand.gold.opacity(0.35), lineWidth: 0.75))
+            Text(title).font(.rubik(12, .semibold)).foregroundStyle(Brand.ink)
+            Text(sub).font(.rubik(10, .medium)).foregroundStyle(Brand.inkSoft)
         }
         .frame(maxWidth: .infinity)
         .multilineTextAlignment(.center)
     }
 
     private var divider: some View {
-        Rectangle().fill(Brand.gold.opacity(0.25)).frame(width: 1, height: 34)
+        Rectangle().fill(Brand.hairline).frame(width: 1, height: 40)
     }
 }
 

@@ -42,30 +42,36 @@ extension Color {
 }
 
 enum Brand {
-    // "Quiet luxury at-home hammam" — oat/bordeaux/gold by day, an espresso-black
-    // dusk palette by night. Every value adapts to the appearance, so dark mode
-    // cascades app-wide with zero view edits.
-    static let pinkDeep = Color(light: 0x6E1E2E, dark: 0x9A3B4E)   // Bordeaux accent (lifted in dusk for AA)
-    static let accent   = Color(light: 0x6E1E2E, dark: 0x9A3B4E)
-    static let accentPressed = Color(light: 0x571623, dark: 0x7C2C3C)
-    static let pink     = Color(light: 0xD9B3AC, dark: 0x855A5E)   // Clay Rose — tint only
-    static let pinkSoft = Color(light: 0xE8CFC9, dark: 0x4A3A38)   // Dusty Rose — tint only
-    static let gold     = Color(light: 0xA98545, dark: 0xC9A15E)   // Antique Gold (lifted in dusk)
-    static let bg       = Color(light: 0xF4EFE7, dark: 0x161210)   // canvas
-    static let bg2      = Color(light: 0xECE4D8, dark: 0x221C18)   // wash
-    static let ink      = Color(light: 0x2A2320, dark: 0xF3EEE6)   // primary text (inverts in dusk)
-    static let muted    = Color(light: 0x6B5F58, dark: 0xA99E94)   // secondary text
-    static let paper    = Color(light: 0xFFFDFB, dark: 0x2C2420)   // cards
-    static let hairline = Color(light: 0xDED5C8, dark: 0x3A322D)   // card edge
-    static let ivory    = Color(light: 0xFBF7F0, dark: 0xFBF7F0)   // on-accent text (both modes)
+    // "Sage & Jasmine" — a bright botanical-luxury palette: warm linen + cream by day,
+    // a deep forest dusk by night. Sage-green is the signature (cohesive with the jasmine
+    // logo), warmed by terracotta and antique gold. Every value adapts to the appearance,
+    // so dark mode cascades app-wide with zero view edits. (Names kept for a drop-in swap;
+    // "pink*" are now the sage accent family.)
+    static let pinkDeep = Color(light: 0x47654E, dark: 0x86A880)   // Deep eucalyptus — primary accent / CTA
+    static let accent   = Color(light: 0x47654E, dark: 0x86A880)
+    static let accentPressed = Color(light: 0x37503D, dark: 0x6E8F68)
+    static let pink     = Color(light: 0x9FBE96, dark: 0x53694E)   // Soft sage — tint only
+    static let pinkSoft = Color(light: 0xD9E5CE, dark: 0x36432F)   // Pale sage — tint only
+    static let gold     = Color(light: 0xB4894A, dark: 0xCBA46A)   // Antique gold (lifted in dusk)
+    static let bg       = Color(light: 0xF5F2EA, dark: 0x14180F)   // warm linen canvas
+    static let bg2      = Color(light: 0xEBE9DA, dark: 0x1F241A)   // wash
+    static let ink      = Color(light: 0x2C3A2E, dark: 0xEDF1E6)   // pine-ink text (inverts in dusk)
+    static let muted    = Color(light: 0x6E7A66, dark: 0xA6AE9C)   // secondary text
+    static let paper    = Color(light: 0xFFFDF8, dark: 0x1F271F)   // cream cards
+    static let hairline = Color(light: 0xE0E1CF, dark: 0x37402F)   // card edge (sage-tinted)
+    static let ivory    = Color(light: 0xFBF8F1, dark: 0xFBF8F1)   // on-accent text (both modes)
+
+    // Warm counter-accent + a lighter sage, used by the new botanical layer.
+    static let terra    = Color(light: 0xC88A6A, dark: 0xD59B7B)   // terracotta warmth
+    static let sage     = Color(light: 0x6F8F6A, dark: 0x86A67F)   // soft sage
 
     static let heroGradient = LinearGradient(
-        colors: [Color(light: 0xF4EFE7, dark: 0x161210), Color(light: 0xEDE4D6, dark: 0x221C18)],
+        colors: [Color(light: 0xEAF0DF, dark: 0x1B2117), Color(light: 0xF5F2EA, dark: 0x14180F)],
         startPoint: .top, endPoint: .bottom)
-    // Near-flat bordeaux so every prior gradient call-site reads as one flat accent.
+    // Sage gradient for selected states / monograms / segments.
     static let brandGradient = LinearGradient(
-        colors: [Color(light: 0x6E1E2E, dark: 0x9A3B4E), Color(light: 0x571623, dark: 0x7C2C3C)],
-        startPoint: .top, endPoint: .bottom)
+        colors: [Color(light: 0x5B7B58, dark: 0x86A880), Color(light: 0x47654E, dark: 0x6E8F68)],
+        startPoint: .topLeading, endPoint: .bottomTrailing)
     static let whiteGradient = LinearGradient(
         colors: [paper, paper], startPoint: .top, endPoint: .bottom)
 }

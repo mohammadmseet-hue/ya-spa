@@ -100,21 +100,27 @@ struct HomeDashboardView: View {
     }
 
     private var greeting: some View {
-        HStack(alignment: .center, spacing: Space.l) {
+        BotanicalHero(height: 212) {
             VStack(alignment: .leading, spacing: 8) {
-                Text(app.t("نساء فقط · بجدة", "WOMEN ONLY · JEDDAH"))
-                    .font(.rubik(12, .semibold))
-                    .tracking(app.isAr ? 0 : 1.8).foregroundStyle(Brand.inkSoft)
-                Rectangle().fill(Brand.gold.opacity(0.6)).frame(width: 100, height: 1)
-                Text(app.t("أهلًا بكِ 🌸", "Welcome 🌸"))
-                    .spaFont(.display, ar: app.isAr).foregroundStyle(Brand.ink)
-                Text(app.t("السبا يجيكِ البيت", "Your spa, at home"))
-                    .font(.rubik(15)).foregroundStyle(Brand.inkSoft)
+                Spacer(minLength: 0)
+                Text(app.t("نساء فقط · جدة", "WOMEN ONLY · JEDDAH"))
+                    .font(.rubik(11, .bold))
+                    .tracking(app.isAr ? 0 : 2)
+                    .foregroundStyle(Brand.accent)
+                Text(app.t("أهلًا بكِ 🌿", "Welcome"))
+                    .spaFont(.display, ar: app.isAr)
+                    .foregroundStyle(Brand.ink)
+                    .shadow(color: Brand.ivory.opacity(0.6), radius: 6, y: 1)
+                Text(app.t("سبا فاخر يجيكِ إلى باب بيتكِ", "A luxury spa, at your doorstep"))
+                    .font(.rubik(15, .medium))
+                    .foregroundStyle(Brand.ink.opacity(0.78))
+                Spacer(minLength: 0)
             }
-            Spacer(minLength: 0)
-            ArchMedallion(symbol: "sparkles", width: 56, height: 70)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, Space.xl)
+            .padding(.vertical, Space.l)
         }
-        .padding(.top, Space.s)
+        .padding(.top, Space.xs)
     }
 
     private func upcomingCard(_ b: Booking) -> some View {

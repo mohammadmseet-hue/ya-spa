@@ -5,21 +5,28 @@ import UIKit
 // Additive layer on top of Brand. Screens consume these instead of ad-hoc values.
 
 extension Brand {
-    static let inkSoft     = Color(light: 0x6B5F58, dark: 0xA99E94)   // secondary text/icons
-    static let shadowRose  = Color(light: 0x2A2320, dark: 0x000000)   // tight contact shadow
-    static let shadowBloom = Color(light: 0x6E1E2E, dark: 0x000000)   // wide ambient bloom
+    static let inkSoft     = Color(light: 0x6E7A66, dark: 0xA6AE9C)   // secondary text/icons
+    static let shadowRose  = Color(light: 0x2C3A2E, dark: 0x000000)   // tight contact shadow
+    static let shadowBloom = Color(light: 0x47654E, dark: 0x000000)   // wide sage ambient bloom
 
-    /// Deterministic FLAT earth-tone fill seeded from a string (photo-free identity).
-    /// No pink→gold gradient — a quiet tonal disc with ivory initials.
+    /// Deterministic botanical-tone gradient seeded from a string (photo-free people identity).
+    /// A soft two-tone disc (sage / terracotta / gold / pine) with ivory initials — richer than
+    /// the old flat fill so avatars feel alive.
     static func monogramGradient(seed: String) -> LinearGradient {
-        let tones = [Color(hex: 0x6E1E2E), Color(hex: 0x2A2320), Color(hex: 0x8A5A3C), Color(hex: 0x6B5F58)]
+        let tones: [(UInt, UInt)] = [
+            (0x5B7B58, 0x3C5340),   // sage
+            (0xC88A6A, 0xA96A4C),   // terracotta
+            (0xB4894A, 0x8C6636),   // gold
+            (0x47654E, 0x2C3A2E),   // pine
+        ]
         // Deterministic djb2 over the bytes: stable across launches (Swift's String.hashValue is
         // per-process randomized, so it re-colored avatars every open) and overflow-safe — `abs`
         // on a hashValue of Int.min traps, and `&*`/`&+` can never overflow-trap.
         var h: UInt64 = 5381
         for b in seed.utf8 { h = (h &* 33) &+ UInt64(b) }
-        let c = tones[Int(h % UInt64(tones.count))]
-        return LinearGradient(colors: [c, c], startPoint: .top, endPoint: .bottom)
+        let (top, bottom) = tones[Int(h % UInt64(tones.count))]
+        return LinearGradient(colors: [Color(hex: top), Color(hex: bottom)],
+                              startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 }
 
@@ -125,8 +132,9 @@ struct AmbientBackground: View {
     var body: some View {
         ZStack {
             Brand.bg
-            blob(Brand.pinkSoft.opacity(0.28), size: 320).offset(x: 150, y: -260)
-            blob(Brand.gold.opacity(0.09), size: 300).offset(x: -150, y: 300)
+            blob(Brand.sage.opacity(0.16), size: 360).offset(x: 150, y: -260)
+            blob(Brand.gold.opacity(0.10), size: 300).offset(x: -160, y: 300)
+            blob(Brand.terra.opacity(0.07), size: 250).offset(x: 130, y: 400)
         }
         .ignoresSafeArea()
         .accessibilityHidden(true)   // decorative canvas
