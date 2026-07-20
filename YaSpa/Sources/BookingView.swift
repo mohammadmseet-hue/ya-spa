@@ -22,6 +22,8 @@ struct BookingView: View {
     @State private var confirmed: Booking?
     @State private var submitting = false
     @State private var bookingFailed = false
+    @State private var failTitle = ""
+    @State private var failMessage = ""
     @State private var taken: Set<String> = []   // real booked times for the chosen therapist/day
     @State private var didPrefill = false
     @StateObject private var location = LocationManager()
@@ -72,12 +74,10 @@ struct BookingView: View {
         .fullScreenCover(item: $confirmed, onDismiss: { dismiss() }) { b in
             BookingConfirmationView(booking: b).opaqueCover()
         }
-        .alert(app.t("تعذّر حجز هذا الموعد", "Couldn't reserve that slot"),
-               isPresented: $bookingFailed) {
+        .alert(failTitle, isPresented: $bookingFailed) {
             Button(app.t("حسناً", "OK"), role: .cancel) {}
         } message: {
-            Text(app.t("جرّبي وقتاً آخر أو تحقّقي من الاتصال.",
-                       "Please try another time or check your connection."))
+            Text(failMessage)
         }
         .onChange(of: location.resolvedAddress) { newValue in
             if !newValue.isEmpty && addressLine.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -470,16 +470,43 @@ struct BookingView: View {
         }
         submitting = true
         Task {
-            let saved = await CloudBookings.create(b)
+            let result = await CloudBookings.create(b)
             await MainActor.run {
-                submitting = false
-                if let saved {                 // only "booked" once the server persisted the order
-                    store.add(saved)
+                submitting = false             // ALWAYS release the spinner — never spins forever
+                switch result {
+                case .success(let saved):
+                    store.add(saved)           // only "booked" once the server persisted the order
                     confirmed = saved
-                } else {
-                    bookingFailed = true       // keep the form + entered data, surface the failure
+                case .slotTaken:
+                    selectedTime = nil         // free the now-taken pick…
+                    fail(app.t("عذرًا، حُجز هذا الوقت للتو", "Sorry — that time was just booked"),
+                         app.t("اختاري وقتًا آخر؛ حدّثنا الأوقات المتاحة لكِ.",
+                               "Please pick another time — we've refreshed what's available."))
+                    Task { await loadTaken() } // …and re-fetch so the grid greys it out
+                case .invalidTime:
+                    fail(app.t("هذا الوقت لم يعد متاحًا", "That time has passed"),
+                         app.t("اختاري وقتًا في المستقبل.", "Please choose a time in the future."))
+                case .timedOut:
+                    fail(app.t("تأخّر الاتصال", "This is taking too long"),
+                         app.t("تحقّقي من اتصالكِ وحاولي مرة أخرى — لم يُحجز أي موعد ولم يتم خصم.",
+                               "Check your connection and try again — nothing was booked or charged."))
+                case .notConnected:
+                    fail(app.t("تعذّر الاتصال بالخادم", "Couldn't reach the server"),
+                         app.t("تحقّقي من اتصالكِ بالإنترنت وحاولي مرة أخرى.",
+                               "Check your internet connection and try again."))
+                case .failed:
+                    fail(app.t("تعذّر إتمام الحجز", "Couldn't complete the booking"),
+                         app.t("حدث خطأ غير متوقع. حاولي مرة أخرى.",
+                               "Something went wrong. Please try again."))
                 }
             }
         }
+    }
+
+    /// Surface a booking failure without discarding the form — she can fix and retry.
+    private func fail(_ title: String, _ message: String) {
+        failTitle = title
+        failMessage = message
+        bookingFailed = true
     }
 }
